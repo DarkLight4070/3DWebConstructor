@@ -1,0 +1,613 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"projectsM",
+				"projectsManagementForm"
+			],
+			[
+				"usersMa",
+				"usersManagementForm"
+			],
+			[
+				"getC",
+				"getCmp"
+			],
+			[
+				"users",
+				"usersManagentLink"
+			],
+			[
+				"user",
+				"usersManagementForm"
+			],
+			[
+				"adress",
+				"adressValue"
+			],
+			[
+				"ap",
+				"alpha"
+			],
+			[
+				"se",
+				"selectedAxeName"
+			],
+			[
+				"x",
+				"xAxeMesh"
+			],
+			[
+				"__",
+				"__selection"
+			],
+			[
+				"axe",
+				"yAxeMesh"
+			],
+			[
+				"z",
+				"zLine"
+			],
+			[
+				"bou",
+				"boundingBox"
+			],
+			[
+				"boun",
+				"boundingInfo"
+			],
+			[
+				"is",
+				"isPickable"
+			],
+			[
+				"Ver",
+				"Vertex"
+			],
+			[
+				"ve",
+				"vertexMeshs"
+			],
+			[
+				"las",
+				"lastPickedVertex"
+			],
+			[
+				"Ob",
+				"objectSelectionMode"
+			],
+			[
+				"vert",
+				"vertexSelectionMode"
+			],
+			[
+				"ver",
+				"vertexSelectionMode"
+			],
+			[
+				"ob",
+				"objectSelectionMode"
+			],
+			[
+				"selection",
+				"selectionMode"
+			],
+			[
+				"vertexMode",
+				"vertextMode"
+			],
+			[
+				"y",
+				"y1"
+			],
+			[
+				"meshes",
+				"meshesNode"
+			],
+			[
+				"filed",
+				"fieldLabel"
+			],
+			[
+				"add",
+				"appendChild"
+			],
+			[
+				"po",
+				"position2"
+			],
+			[
+				"wi",
+				"wireframe"
+			],
+			[
+				"ma",
+				"material"
+			],
+			[
+				"create",
+				"createBox"
+			],
+			[
+				"Cons",
+				"Constructor"
+			],
+			[
+				"roo",
+				"rootNode"
+			],
+			[
+				"sc",
+				"scene"
+			],
+			[
+				"__sce",
+				"__scene"
+			],
+			[
+				"tree",
+				"treeStore"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/C/Users/marouan.graiet/workspace/TaifLicensing/WebContent/WEB-INF/jsp/citizen/licenseRequestManagement.jsp",
+			"settings":
+			{
+				"buffer_size": 32511,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "main.html",
+			"settings":
+			{
+				"buffer_size": 29736,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/marouan.graiet/workspace/ProjectsTimeTrachingSystem/src/main/webapp/WEB-INF/views/userManagement.jsp",
+			"settings":
+			{
+				"buffer_size": 20304,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "userManagement.html",
+			"settings":
+			{
+				"buffer_size": 7730,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 203.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"Install",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 800.0
+	},
+	"console":
+	{
+		"height": 246.0,
+		"history":
+		[
+			"Install Package",
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by) "
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/D/Dev tools/Web3DConstuctor",
+		"/D/Dev tools/Web3DConstuctor/babylon",
+		"/D/Dev tools/Web3DConstuctor/extjs"
+	],
+	"file_history":
+	[
+		"/C/Users/marouan.graiet/Desktop/userManagement.html",
+		"/D/Dev tools/Web3DConstuctor/babylon/prefabUIUtils.js",
+		"/D/Dev tools/Web3DConstuctor/main.html",
+		"/C/Users/marouan.graiet/workspace/TaifLicensing/WebContent/WEB-INF/jsp/citizen/licenseRequestManagement.jsp",
+		"/D/Dev tools/Web3DConstuctor/babylon/babylon.js",
+		"/D/Dev tools/Web3DConstuctor/babylon/oimo.js",
+		"/D/Dev tools/Web3DConstuctor/babylon/cannon.js",
+		"/D/Dev tools/Web3DConstuctor/babylon/hand.minified-1.2.js",
+		"/C/Users/marouan.graiet/Downloads/sample/index.html",
+		"/C/Users/marouan.graiet/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings"
+	],
+	"find":
+	{
+		"height": 64.0
+	},
+	"find_in_files":
+	{
+		"height": 176.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"fillUsersGridStore",
+			"Management",
+			"projectsStore",
+			"projectName",
+			"projectResponsible",
+			"projectResposible",
+			"projectType",
+			"projectStartDate",
+			"projectEndDate",
+			"projectsStore",
+			"usersGrid",
+			"userForm",
+			"usersGrid",
+			"projectsForm",
+			"projectsGrid",
+			"idCenterRegion",
+			"usersManagementForm",
+			"idCenterRegion",
+			"usersManagementLink",
+			"projectsManagementLink",
+			"link",
+			"usersManagementForm",
+			"usersManagentLink",
+			"usersManagementForm",
+			"link",
+			"center",
+			"button",
+			"frame",
+			"margin",
+			"paddig",
+			"getCount",
+			"selectedRe",
+			"fillUsersGridStore",
+			"select",
+			"refresh",
+			"fillUsersGridStore",
+			"fillDistrictCombo",
+			"usersGrid",
+			"object",
+			"GenericComboModel",
+			"Ext.getC",
+			"require",
+			"Ext",
+			"licenseService",
+			"commercialActivityService",
+			"cityService",
+			"buildingService",
+			"districtService",
+			"content_space",
+			"PI",
+			"createPlanePrefabUi",
+			"evt.clientX",
+			"					\n",
+			"lastSelectedAxe",
+			"camera",
+			"createControleMesh",
+			"axeMesh",
+			"data",
+			"createBoxPrefabUi",
+			"box",
+			"console",
+			"light",
+			"light#",
+			"lights",
+			"vertexSelectionMode",
+			"showWorldAxis",
+			"positions",
+			"positionsdd",
+			"vetices",
+			"lastPickedMesh",
+			"sideOrientation",
+			"MeshBuilder",
+			".data =",
+			"data.",
+			"updateSelectionSpacialAttributes",
+			"updateMeshPropertiesUiFromSelection",
+			"updateSelectionSpacialAttributes",
+			"updateMeshSpacialAttributesFromUi",
+			"lastPickedVertex",
+			"updateSelectionSpacialAttributes",
+			"update",
+			"updateMeshPropertiesUiFromSelection",
+			"mesh.data",
+			"data",
+			"executeVertexMode",
+			"meshes",
+			"append",
+			"executeVertexMode",
+			"&&",
+			"Material",
+			"position",
+			"sphere",
+			"wireframe",
+			"vertexSelectionMode",
+			"updateSelectionSpacialAttributes",
+			"updateMeshPropertiesUiFromSelection",
+			"updateSelectionSpacialAttributes",
+			"updateMeshPropertiesUiFromSelection",
+			"updateMeshSpacialAttributesFromUi",
+			"options",
+			"createBoxPrefab",
+			"lastPickedMesh",
+			"updateRootTreeUi",
+			"mainTree",
+			"rootNode",
+			"Cube",
+			"updateRootTreeUi",
+			"ootTree",
+			"updatRootTreeUi",
+			"sceneDataModel",
+			"parseScene",
+			"prefabCreationFunction",
+			"buildPrefabEntriesUi",
+			"prefabCreationFunction",
+			"width",
+			"prefabCreationFunction",
+			"prefabParamsFieldSet",
+			"buildPrefabEntriesUi",
+			"store",
+			"listeners",
+			"combo",
+			"select",
+			"appendChild",
+			"default",
+			"add",
+			"prefabsStore",
+			"plain",
+			"pla"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/C/Users/marouan.graiet/workspace/TaifLicensing/WebContent/WEB-INF/jsp/citizen/licenseRequestManagement.jsp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 32511,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7798,
+								7806
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java Server Pages (JSP).sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 6175.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "main.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 29736,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								694,
+								694
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 930.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/C/Users/marouan.graiet/workspace/ProjectsTimeTrachingSystem/src/main/webapp/WEB-INF/views/userManagement.jsp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 20304,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5826,
+								5844
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Java/Java Server Pages (JSP).sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3416.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "userManagement.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7730,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								256,
+								259
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 39.0
+	},
+	"input":
+	{
+		"height": 55.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "Web3DConstructor.sublime-project",
+	"replace":
+	{
+		"height": 74.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 541.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

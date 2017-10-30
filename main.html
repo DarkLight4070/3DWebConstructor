@@ -1,0 +1,677 @@
+<html>
+	<head>
+	    <title>Web 3D Constructor</title>
+	    <link rel="stylesheet" type="text/css" href="extjs/resources/css/ext-all.css">
+    	<script type="text/javascript" src="extjs/ext-all.js"></script>
+
+    	<!-- Babylon.js -->
+    	<script src="babylon/hand.minified-1.2.js"></script>
+        <script src="babylon/cannon.js"></script>
+        <script src="babylon/oimo.js"></script>
+        <script src="babylon/prefabUIUtils.js"></script>
+        <!--script src="babylon/babylon.js"></script-->
+		<script src="https://cdn.babylonjs.com/babylon.js"></script>
+		<script src="babylon/OBJFileLoader.js"></script>
+		<script src="babylon/editcontrol.js"></script>
+		
+		<script src="babylon/SceneManager.js"></script>
+		<script src="babylon/SelectionManager.js"></script>
+		<script src="babylon/UiManager.js"></script>
+		
+	</head>
+	<body>
+		<script type="text/javascript">
+			
+			var uiManager = null;
+			
+			function updateMeshPropertiesUiFromSelection(__selection)
+			{
+				if(__selection == null)
+				{
+					Ext.getCmp('pXId').reset();
+					Ext.getCmp('pYId').reset();
+					Ext.getCmp('pZId').reset();
+					Ext.getCmp('pRXId').reset();
+					Ext.getCmp('pRYId').reset();
+					Ext.getCmp('pRZId').reset();
+				}
+				else
+				{
+					Ext.getCmp('pXId').setValue(__selection.position.x);
+					Ext.getCmp('pYId').setValue(__selection.position.y);
+					Ext.getCmp('pZId').setValue(__selection.position.z);
+
+					Ext.getCmp('pRXId').setValue(__selection.rotation.x * (180 / Math.PI));
+					Ext.getCmp('pRYId').setValue(__selection.rotation.y * (180 / Math.PI));
+					Ext.getCmp('pRZId').setValue(__selection.rotation.z * (180 / Math.PI));
+				}
+			}
+
+			function updateSelectionSpacialAttributes(__selection)
+			{
+
+				if(selectionMode == vertexSelectionMode)
+				{
+					var positions = lastPickedMesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+					//mesh.data = {type: 'VERTEX_OBJECT', vertexIndex: i, mesh: lastPickedMeshMaterial}
+					positions[__selection.data.vertexIndex] = Ext.getCmp('pXId').getValue();
+					positions[__selection.data.vertexIndex + 1] = Ext.getCmp('pYId').getValue();
+					positions[__selection.data.vertexIndex + 2] = Ext.getCmp('pZId').getValue();
+					for(var i = 0; i < lastPickedMesh.data.vertexMeshs.length; i++)
+					{
+						var vertexMesh = lastPickedMesh.data.vertexMeshs[i];
+						if(vertexMesh.data.vertexIndex != __selection.data.vertexIndex)
+						{
+							//console.log('S Position: ' + __selection.position);
+							//console.log('V Position: ' + vertexMesh.position);
+							if(vertexMesh.position.x == __selection.position.x && vertexMesh.position.y == __selection.position.y && vertexMesh.position.z == __selection.position.z)
+							{
+								positions[vertexMesh.data.vertexIndex] = Ext.getCmp('pXId').getValue();
+								positions[vertexMesh.data.vertexIndex + 1] = Ext.getCmp('pYId').getValue();
+								positions[vertexMesh.data.vertexIndex + 2] = Ext.getCmp('pZId').getValue();
+								vertexMesh.position.x = Ext.getCmp('pXId').getValue();
+								vertexMesh.position.y = Ext.getCmp('pYId').getValue();
+								vertexMesh.position.z = Ext.getCmp('pZId').getValue();
+							}
+						}
+					}
+					var positionFunction = function(__positions) {
+						__positions = positions;
+					};
+					lastPickedMesh.updateMeshPositions(positionFunction, true);
+					lastPickedMesh.refreshBoundingInfo();
+
+				}
+
+				__selection.position.x = Ext.getCmp('pXId').getValue();
+				__selection.position.y = Ext.getCmp('pYId').getValue();
+				__selection.position.z = Ext.getCmp('pZId').getValue();
+
+				__selection.rotation.x = Ext.getCmp('pRXId').getValue() * (Math.PI / 180);
+				__selection.rotation.y = Ext.getCmp('pRYId').getValue() * (Math.PI / 180);
+				__selection.rotation.z = Ext.getCmp('pRZId').getValue() * (Math.PI / 180);
+
+			}
+
+			function UI_CreateNumberField(__label, __id, __defaultValue)
+			{
+				return Ext.create('Ext.form.field.Number', {
+					fieldLabel: __label,
+					id: __id,
+					value: __defaultValue
+				});
+			}
+
+			function updateMeshSpacialAttributesFromUi(__mesh)
+			{
+				__mesh.position.x = Ext.getCmp('xId').getValue();
+				__mesh.position.y = Ext.getCmp('yId').getValue();
+				__mesh.position.z = Ext.getCmp('zId').getValue();
+
+				__mesh.rotation.x = Ext.getCmp('rXId').getValue() * (Math.PI / 180);
+				__mesh.rotation.y = Ext.getCmp('rYId').getValue() * (Math.PI / 180);
+				__mesh.rotation.z = Ext.getCmp('rZId').getValue() * (Math.PI / 180);
+			}
+
+			Ext.require([
+			    'Ext.tree.*',
+			    'Ext.data.*',
+			    'Ext.tip.*'
+			]);
+
+			Ext.onReady(function()
+			{
+
+				var prefabsStore = Ext.create('Ext.data.Store', {
+				    fields: 
+				    ['id', 'name'],
+				    data : 
+				    [
+				    	{"id": "Line", "name": "Line"},
+				    	{"id": "Plane", "name": "Plane"},
+				        {"id": "Box", "name": "Box"},
+				        {"id": "Sphere", "name": "Sphere"},
+				        {"id": "Cylinder", "name": "Cylinder"}
+				    ]
+				});
+
+				Ext.create('Ext.panel.Panel', {
+				    width: '100%',
+					height: '100%',
+				    title: '3D Web Constructor',
+				    layout: 'border',
+				    items:
+				    [
+				    {
+				        title: 'Modifiers',
+				        region: 'east',
+				        xtype: 'tabpanel',
+				        width: 400,
+				        split: false,
+				        margins: '5 0 0 0',
+				        collapsible: true,
+				        layout: 'fit',
+				        items: 
+				        [
+					        {
+	        					title: 'Properties',
+	        					layout: 'fit',
+	        					height: '100%',
+    							items: 
+				        		[
+				        			{
+				        				xtype: 'form',
+				        				bodyPadding: 5,
+				        				layout: 'anchor',
+									    defaults: 
+									    {
+									        anchor: '100%'
+									    },
+									    items: 
+									    [
+									    	{
+										    	xtype:'fieldset',
+										    	title: 'Position',
+										    	id: 'selectionPropertiesPositionFieldSet',
+										    	defaults: 
+										    	{
+										        	anchor: '100%'
+											    },
+											    defaultType: 'numberfield',
+											    layout: 'anchor',
+	        									items :
+	        									[
+	        										{
+	        											xtype: 'numberfield',
+	        											fieldLabel: 'X',
+	        											value: 0,
+	        											id: 'pXId'
+	        										},
+	        										{
+	        											xtype: 'numberfield',
+	        											fieldLabel: 'Y',
+	        											value: 0,
+	        											id: 'pYId'
+	        										},
+	        										{
+	        											xtype: 'numberfield',
+	        											fieldLabel: 'Z',
+	        											value: 0,
+	        											id: 'pZId'
+	        										}
+											    ]
+											},
+											{
+										    	xtype:'fieldset',
+										    	title: 'Rotation',
+										    	id: 'selectionPropertiesRotationFieldSet',
+										    	defaults: 
+										    	{
+										        	anchor: '100%'
+											    },
+											    defaultType: 'numberfield',
+											    layout: 'anchor',
+	        									items :
+	        									[
+	        										{
+	        											xtype: 'numberfield',
+	        											fieldLabel: 'X',
+	        											value: 0,
+	        											id: 'pRXId'
+	        										},
+	        										{
+	        											xtype: 'numberfield',
+	        											fieldLabel: 'Y',
+	        											value: 0,
+	        											id: 'pRYId'
+	        										},
+	        										{
+	        											xtype: 'numberfield',
+	        											fieldLabel: 'Z',
+	        											value: 0,
+	        											id: 'pRZId'
+	        										}
+											    ]
+											}
+									    ],
+									    buttons: 
+									    [
+										    {
+										        text: 'Update',
+										        handler: function()
+										        {
+										        	console.log(' Update Handler called');
+										        	if(selectionMode == objectSelectionMode)
+										        	{
+										        		updateSelectionSpacialAttributes(lastPickedMesh);
+										        	}
+										        	else if(selectionMode == vertexSelectionMode)
+										        	{
+										        		updateSelectionSpacialAttributes(lastPickedVertex);
+										        	}
+										        }
+										    }
+									    ]
+									}
+							    ]
+						    }, 
+						    {
+						        title: 'Prefabs Factory',
+						        layout: 'fit',
+	        					height: '100%',
+    							items: 
+				        		[
+				        			{
+				        				xtype: 'form',
+				        				bodyPadding: 5,
+				        				layout: 'anchor',
+									    defaults: 
+									    {
+									        anchor: '100%'
+									    },
+									    items: 
+									    [
+									    	{
+										    	xtype:'fieldset',
+										    	title: 'Prefab Type',
+										    	defaults: 
+										    	{
+										        	anchor: '100%'
+											    },
+											    layout: 'anchor',
+	        									items :
+	        									[
+												    {
+												        xtype: 'combo',
+												        fieldLabel: 'Type',
+												        store: prefabsStore,
+												        queryMode: 'local',
+													    displayField: 'name',
+													    valueField: 'id',
+													    listeners:
+													    {
+															change: 
+															{
+
+																fn: function(_this, newValue, oldValue, eOpts)
+																{
+																	console.log(newValue);
+																	uiManager.buildPrefabEntriesUi(newValue);
+																}
+															}
+														}
+												    }
+											    ]
+											},
+											{
+										    	xtype:'fieldset',
+										    	title: 'Position',
+										    	id: 'prefabPositionFieldSet',
+										    	defaults: 
+										    	{
+										        	anchor: '100%'
+											    },
+											    defaultType: 'numberfield',
+											    layout: 'anchor',
+	        									items :
+	        									[
+	        										{
+	        											xtype: 'numberfield',
+	        											fieldLabel: 'X',
+	        											value: 0,
+	        											id: 'xId'
+	        										},
+	        										{
+	        											xtype: 'numberfield',
+	        											fieldLabel: 'Y',
+	        											value: 0,
+	        											id: 'yId'
+	        										},
+	        										{
+	        											xtype: 'numberfield',
+	        											fieldLabel: 'Z',
+	        											value: 0,
+	        											id: 'zId'
+	        										}
+											    ]
+											},
+											{
+										    	xtype:'fieldset',
+										    	title: 'Rotation',
+										    	id: 'prefabRotationFieldSet',
+										    	defaults: 
+										    	{
+										        	anchor: '100%'
+											    },
+											    defaultType: 'numberfield',
+											    layout: 'anchor',
+	        									items :
+	        									[
+	        										{
+	        											xtype: 'numberfield',
+	        											fieldLabel: 'X',
+	        											value: 0,
+	        											id: 'rXId'
+	        										},
+	        										{
+	        											xtype: 'numberfield',
+	        											fieldLabel: 'Y',
+	        											value: 0,
+	        											id: 'rYId'
+	        										},
+	        										{
+	        											xtype: 'numberfield',
+	        											fieldLabel: 'Z',
+	        											value: 0,
+	        											id: 'rZId'
+	        										}
+											    ]
+											},
+									    	{
+										    	xtype:'fieldset',
+										    	title: 'Prefab properties',
+										    	id: 'prefabParamsFieldSet',
+										    	defaults: 
+										    	{
+										        	anchor: '100%'
+											    },
+											    defaultType: 'numberfield',
+											    layout: 'anchor',
+	        									items :
+	        									[
+											    ]
+											}
+									    ],
+									    buttons: 
+									    [
+										    {
+										        text: 'Reset',
+										        handler: function() 
+										        {
+										        }
+										    }, 
+										    {
+										        text: 'Create',
+										        handler: function()
+										        {
+										        	console.log(' Creation Handler handler called');
+										        	prefabCreationFunction();
+										        }
+										    }
+									    ]
+				        			}
+							    ]
+						    }, 
+						    {
+						        title: 'Others'
+						    }
+					    ]
+				    },
+				    {
+				        title: 'Project Structure Navigator',
+				        region:'west',
+				        xtype: 'tabpanel',
+				        margins: '5 0 0 0',
+				        width: 400,
+				        height: '100%',
+				        collapsible: true,
+				        id: 'project-structure-navigator',
+				        layout: 'fit',
+				        items: 
+				        [
+					        {
+	        					title: '3D Structure',
+	        					layout: 'fit',
+	        					height: '100%',
+    							items: 
+				        		[
+				        			{
+		    							xtype: 'treepanel',
+		    							id: 'mainTree',
+		    							border: 0,
+									    width: '100%',
+									    height: '100%',
+									    rootVisible: true,
+									    viewConfig: 
+									    {
+										    plugins: 
+										    { 
+										    	ptype: 'treeviewdragdrop' 
+										    }
+										}
+									}
+							    ]
+						    }, 
+						    {
+						        title: 'Resources'
+						    }, 
+						    {
+						        title: 'Others'
+						    }
+					    ]
+				    },
+				    {
+				        title: '3D View',
+				        region: 'center',
+				        xtype: 'panel',
+				        margins: '5 0 0 0',
+				        html: '<canvas id="renderCanvas" style="width:100%;height:100%;" touch-action="none"></canvas>',
+				        tbar: 
+				    	[
+			        		{
+			        			xtype: 'button',
+			        			text: 'Rendering',
+							    menu: 
+							    [
+							    	{
+							        	text: 'Wireframe'
+							        },
+							        {
+							        	text: 'Solid'
+							        },
+							        {
+							        	text: 'Edges'
+							        },
+							        {
+							        	text: 'XRay'
+							        },
+							        {
+							        	text: 'Points'
+							        }
+							    ]
+			        		},
+			        		{ 
+				        		xtype: 'tbseparator' 
+				        	},
+				        	{
+				        		xtype: 'button',
+								id: 'translateButton',
+				        		enableToggle: true,
+								toggleGroup: 'transformGroup',
+				        		text: 'Translate',
+								toggleHandler: function (button, state) 
+								{
+									if(state)
+									{
+										transform = 't';
+									}
+									else
+									{
+										transform = '';
+									}
+							
+					        	}
+				        	},
+				        	{
+				        		xtype: 'button',
+				        		enableToggle: true,
+								toggleGroup: 'transformGroup',
+				        		text: 'Rotate',
+								id: 'rotateButton',
+								toggleHandler: function (button, state) 
+								{
+									if(state)
+									{
+										transform = 'r';
+									}
+									else
+									{
+										transform = '';
+									}
+								}
+				        	},
+				        	{
+				        		xtype: 'button',
+				        		enableToggle: true,
+								toggleGroup: 'transformGroup',
+				        		text: 'Scale',
+								toggleHandler: function (button, state) 
+								{
+									if(state)
+									{
+										transform = 's';
+									}
+									else
+									{
+										transform = '';
+									}
+								}
+				        	},
+				        	{ 
+				        		xtype: 'tbseparator' 
+				        	},
+				        	{
+				        		xtype: 'button',
+				        		enableToggle: true,
+				        		text: 'Selection',
+				        		id: 'selectionMaterialButton',
+				        		listeners:
+					        	{
+					        		click:
+					        		{
+					        			fn: function( menu, item, e, eOpts )
+					        			{
+					        				wireframe = !wireframe;
+					        			}
+					        		}
+					        	}
+				        	},
+				        	{ 
+				        		xtype: 'tbseparator' 
+				        	},
+				        	{
+				        		xtype: 'button',
+				        		enableToggle: true,
+				        		text: 'Vertex Mode',
+				        		id: 'vertexModeSelectionButtonId',
+				        		listeners:
+					        	{
+					        		toggle:
+					        		{
+					        			fn: function( __this, pressed, eOpts )
+					        			{
+					        				if(!pressed)
+					        				{
+					        					selectionMode = objectSelectionMode;
+					        					lastPickedMesh.isPickable = true;
+					        					for(var i = 0; i < lastPickedMesh.data.vertexMeshs.length; i++)
+			        							{
+			        								scene.removeMesh(lastPickedMesh.data.vertexMeshs[i]);
+			        							}
+					        				}
+					        				else
+					        				{
+					        					if(!executeVertexMode())
+					        					{
+					        						__this.toggle(false, true);
+					        						Ext.MessageBox.alert('Vertex Mode', 'Please select an object !');
+					        						if(lastPickedMesh != null)
+					        						{
+					        							lastPickedMesh.isPickable = true;
+					        						}
+					        						selectionMode = objectSelectionMode;
+					        					}
+					        					else
+					        					{
+					        						lastPickedMesh.isPickable = false;
+					        						selectionMode = vertexSelectionMode;
+					        					}
+					        				}
+					        			}
+					        		}
+					        	}
+				        	}
+		        		]
+				    }
+			    	],
+			    	tbar: 
+			    	[
+		        		{
+		        			xtype: 'button',
+		        			text: 'File',
+						    menu: 
+						    [
+						        {
+						        	text: 'New Project'
+						        },
+						        {
+						        	text: 'Load Project'
+						        },
+						        {
+						        	text: 'Save'
+						        },
+						        {
+						        	text: 'Export'
+						        }
+						    ]
+		        		},
+				        { 
+				        	xtype: 'tbseparator' 
+				        },
+				        {
+		        			xtype: 'button',
+		        			text: 'View',
+						    menu: 
+						    [
+						        {
+						        	text: 'Select All'
+						        },
+						        {
+						        	text: 'Hide Selected'
+						        },
+						        {
+						        	text: 'Show All'
+						        }
+						    ]
+		        		},
+		        		{ 
+				        	xtype: 'tbseparator' 
+				        },
+		        		{
+		        			xtype: 'button',
+		        			text: 'Preferences',
+						    menu: 
+						    [
+						        {
+						        	text: 'Camera'
+						        },
+						        {
+						        	text: 'Scene'
+						        },
+						        {
+						        	text: 'Rendering'
+						        }
+						    ]
+		        		}
+				    ],
+				    renderTo: Ext.getBody()
+				});
+				var sceneManager = new SceneManager();
+				sceneManager.create3DScene();				
+				uiManager = new UiManager(sceneManager.scene);
+				uiManager.updateRootTreeUi(sceneManager.scene);
+			});
+		</script>
+
+	</body>
+</html>
