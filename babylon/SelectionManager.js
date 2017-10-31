@@ -10,7 +10,7 @@ function SelectionManager(__sceneManager)
 	this.editControl = null;
 	this.vertexSelectionMode = 0;
 	this.objectSelectionMode = 1;
-	var transform = '';
+	this.transform = '';
 	this.selectionMode = this.objectSelectionMode;
 	this.compoundObjectsMode = false;
 	this.coFirst = null;
@@ -66,6 +66,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 				if(this.editControl != null)
 				{
 					this.editControl.detach();
+					this.editControl = null;
 				}
 			}
 
@@ -108,6 +109,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			if(this.editControl != null)
 			{
 				this.editControl.detach();
+				this.editControl = null;
 			}
 		}
 	}

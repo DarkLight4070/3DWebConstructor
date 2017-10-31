@@ -69,8 +69,28 @@ SceneManager.prototype.renderFrames = function()
 	this.engine.resize();
 	this.camera.update();
 	
-	if(this.selectionManager.editControl != null && this.selectionManager.lastPickedMesh != null)
+	if(this.selectionManager.lastPickedMesh != null)
 	{
+		if(this.selectionManager.editControl == null && this.selectionManager.transform != '')
+		{
+			var EditControl = org.ssatguru.babylonjs.component.EditControl;
+			this.selectionManager.editControl = new EditControl(this.selectionManager.lastPickedMesh, this.camera, this.canvas, 0.75, true);
+			this.selectionManager.editControl.enableTranslation(3.14/18);
+			this.selectionManager.editControl.enableTranslation(3.14/18);
+			this.selectionManager.editControl.setRotSnapValue(3.14 / 18);
+			this.selectionManager.editControl.setScaleSnapValue(.5);
+			this.selectionManager.editControl.setTransSnapValue(.1);
+		}
+		
+		if(this.selectionManager.transform == '')
+		{
+			if(this.selectionManager.editControl != null)
+			{
+				this.selectionManager.editControl.detach();
+				this.selectionManager.editControl = null;
+			}
+		}
+		
 		if(this.selectionManager.transform == 't')
 		{
 			this.selectionManager.editControl.enableTranslation();
@@ -91,6 +111,7 @@ SceneManager.prototype.removeMesh = function()
 	if(this.selectionManager.editControl != null)
 	{
 		this.selectionManager.editControl.detach();
+		this.selectionManager.editControl = null;
 	}
 	this.scene.removeMesh(this.selectionManager.lastPickedMesh);
 };
