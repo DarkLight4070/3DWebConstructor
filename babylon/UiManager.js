@@ -1,9 +1,27 @@
 function UiManager(__scene)
 {
 	this.scene = __scene;
+	emmiter.on('UI_UPDATE_SELECTION', this.updateUiSelection.bind(this));
+	this.uid = 0;
 }
 
-UiManager.prototype.createBoxPrefabUi = function(__container)
+UiManager.prototype.updateUiSelection = function(uid)
+{
+	var mainTree = Ext.getCmp('mainTree');
+	if(uid == null)
+	{
+		mainTree.getSelectionModel().deselectAll();
+	}
+	var rootNode = mainTree.getRootNode();
+	var node = rootNode.findChild('text', uid, true);
+	if(node != null)
+	{
+		console.log('Mesh found in tree' + node);
+		mainTree.getSelectionModel().select(node);
+	}
+}
+
+UiManager.prototype.createBoxPrefabUi = function(__container, uid)
 {
 	var widthField = UI_CreateNumberField('Width', 'widthId', 1);
 	var heightField = UI_CreateNumberField('Height', 'heightId', 1);
@@ -25,21 +43,23 @@ UiManager.prototype.createBoxPrefabUi = function(__container)
 		    updatable: false,
 		    sideOrientation: BABYLON.Mesh.DOUBLESIDE
 	  	};
-		var box = BABYLON.MeshBuilder.CreateBox('box', options, this.scene);
+		var box = BABYLON.MeshBuilder.CreateBox('Box' + uid, options, this.scene);
+		console.log(box.uniqueId);
 		box.material = new BABYLON.StandardMaterial("boxMat", this.scene);
 		box.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 		box.material.backFaceCulling = false;
 		updateMeshSpacialAttributesFromUi(box);
-		box.data = {type: 'sceneObject'};
+		box.data = {type: 'sceneObject', uid: uid};
+		console.log('Creation UID: ' + uid);
 
 		var mainTree = Ext.getCmp('mainTree');
 		var rootNode = mainTree.getRootNode();
 		var meshesNode = rootNode.findChild('text', 'Meshes');
-		meshesNode.appendChild({text: box.id, leaf: true, object: box});
+		meshesNode.appendChild({text: box.id, leaf: true, object: box, uid: box.data.uid});
 	};
 };
 
-UiManager.prototype.createCylinderPrefabUi = function(__container)
+UiManager.prototype.createCylinderPrefabUi = function(__container, uid)
 {
 	var heightField = UI_CreateNumberField('Height', 'heightId', 1);
 	var topDiameterField = UI_CreateNumberField('Top Diameter', 'topDiameterId', 1);
@@ -58,21 +78,21 @@ UiManager.prototype.createCylinderPrefabUi = function(__container)
 		var tesselation = tesselationField.getValue();
 
 	  	//name, height, diameterTop, diameterBottom, tessellation, subdivisions, scene, updatable, sideOrientation
-		var cylinder = BABYLON.Mesh.CreateCylinder("cylinder", height, topDiameter, bottomDiameter, tesselation, 10, this.scene, true, BABYLON.Mesh.DOUBLESIDE);
+		var cylinder = BABYLON.Mesh.CreateCylinder("Cylinder" + uid, height, topDiameter, bottomDiameter, tesselation, 10, this.scene, true, BABYLON.Mesh.DOUBLESIDE);
 		cylinder.material = new BABYLON.StandardMaterial("cylinderMat", this.scene);
 		cylinder.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 		cylinder.material.backFaceCulling = false;
-		cylinder.data = {type: 'sceneObject'};
+		cylinder.data = {type: 'sceneObject', uid: uid};
 		updateMeshSpacialAttributesFromUi(cylinder);
 
 		var mainTree = Ext.getCmp('mainTree');
 		var rootNode = mainTree.getRootNode();
 		var meshesNode = rootNode.findChild('text', 'Meshes');
-		meshesNode.appendChild({text: cylinder.id, leaf: true, object: cylinder});
+		meshesNode.appendChild({text: cylinder.id, leaf: true, object: cylinder, uid: cylinder.data.uid});
 	};
 };
 
-UiManager.prototype.createSpherePrefabUi = function(__container)
+UiManager.prototype.createSpherePrefabUi = function(__container, uid)
 {
 	var diameterField = UI_CreateNumberField('Diameter', 'diameterId', 1);
 	var segmentsField = UI_CreateNumberField('Segments', 'segmentsId', 10);
@@ -86,21 +106,21 @@ UiManager.prototype.createSpherePrefabUi = function(__container)
 		var segments = segmentsField.getValue();
 
 	  	//CreateSphere(name, segments, diameter, scene, updatable, sideOrientation)
-		var mesh = BABYLON.Mesh.CreateSphere("Sphere", segments, diameter, this.scene, true, BABYLON.Mesh.DOUBLESIDE);
+		var mesh = BABYLON.Mesh.CreateSphere("Sphere" + uid, segments, diameter, this.scene, true, BABYLON.Mesh.DOUBLESIDE);
 		mesh.material = new BABYLON.StandardMaterial("SphereMat", this.scene);
 		mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 		mesh.material.backFaceCulling = false;
-		mesh.data = {type: 'sceneObject'};
+		mesh.data = {type: 'sceneObject', uid: uid};
 		updateMeshSpacialAttributesFromUi(mesh);
 
 		var mainTree = Ext.getCmp('mainTree');
 		var rootNode = mainTree.getRootNode();
 		var meshesNode = rootNode.findChild('text', 'Meshes');
-		meshesNode.appendChild({text: mesh.id, leaf: true, object: mesh});
+		meshesNode.appendChild({text: mesh.id, leaf: true, object: mesh, uid: mesh.data.uid});
 	};
 }
 
-UiManager.prototype.createPlanePrefabUi = function(__container)
+UiManager.prototype.createPlanePrefabUi = function(__container, uid)
 {
 	var widthField = UI_CreateNumberField('Width', 'widthId', 1);
 	var heightField = UI_CreateNumberField('Height', 'heightId', 1);
@@ -124,22 +144,22 @@ UiManager.prototype.createPlanePrefabUi = function(__container)
 	  	};
 
 	  	//CreatePlane(name, options, scene)
-		var mesh = BABYLON.MeshBuilder.CreateGround("Plane", options, this.scene);
+		var mesh = BABYLON.MeshBuilder.CreateGround("Plane" + uid, options, this.scene);
 		mesh.material = new BABYLON.StandardMaterial("PlaneMat", this.scene);
 		mesh.material.backFaceCulling = false;
 		mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-		mesh.data = {type: 'sceneObject'};
+		mesh.data = {type: 'sceneObject', uid: uid};
 		
 		updateMeshSpacialAttributesFromUi(mesh);
 
 		var mainTree = Ext.getCmp('mainTree');
 		var rootNode = mainTree.getRootNode();
 		var meshesNode = rootNode.findChild('text', 'Meshes');
-		meshesNode.appendChild({text: mesh.id, leaf: true, object: mesh});
+		meshesNode.appendChild({text: mesh.id, leaf: true, object: mesh, uid: mesh.data.uid});
 	};
 };
 
-UiManager.prototype.createLinePrefabUi = function(__container)
+UiManager.prototype.createLinePrefabUi = function(__container, uid)
 {
 	var x1Field = UI_CreateNumberField('X1', 'x1Id', 1);
 	var y1Field = UI_CreateNumberField('Y1', 'y1Id', 1);
@@ -169,17 +189,17 @@ UiManager.prototype.createLinePrefabUi = function(__container)
 		var options = {
 		    points: [new BABYLON.Vector3(x1, y1, z1), new BABYLON.Vector3(x2, y2, z2)]
 	  	};
-		var line = BABYLON.MeshBuilder.CreateLines('Line', options, this.scene);
+		var line = BABYLON.MeshBuilder.CreateLines('Line' + uid, options, this.scene);
 		line.material = new BABYLON.StandardMaterial("boxMat", this.scene);
 		line.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-		line.data = {type: 'sceneObject'};
+		line.data = {type: 'sceneObject', uid: uid};
 		
 		updateMeshSpacialAttributesFromUi(line);
 
 		var mainTree = Ext.getCmp('mainTree');
 		var rootNode = mainTree.getRootNode();
 		var meshesNode = rootNode.findChild('text', 'Meshes');
-		meshesNode.appendChild({text: line.id, leaf: true, object: line});
+		meshesNode.appendChild({text: line.id, leaf: true, object: line, uid: line.data.uid});
 	};
 };
 
@@ -189,23 +209,23 @@ UiManager.prototype.buildPrefabEntriesUi = function(__prefabType)
 	fieldSet.removeAll(true);
 	if(__prefabType == 'Box')
 	{
-		this.createBoxPrefabUi(fieldSet);
+		this.createBoxPrefabUi(fieldSet, this.uid++);
 	}
 	else if(__prefabType == 'Line')
 	{
-		this.createLinePrefabUi(fieldSet);
+		this.createLinePrefabUi(fieldSet, this.uid++);
 	}
 	else if(__prefabType == 'Cylinder')
 	{
-		this.createCylinderPrefabUi(fieldSet);
+		this.createCylinderPrefabUi(fieldSet, this.uid++);
 	}
 	else if(__prefabType == 'Sphere')
 	{
-		this.createSpherePrefabUi(fieldSet);
+		this.createSpherePrefabUi(fieldSet, this.uid++);
 	}
 	else if(__prefabType == 'Plane')
 	{
-		this.createPlanePrefabUi(fieldSet);
+		this.createPlanePrefabUi(fieldSet, this.uid++);
 	}
 };
 
@@ -250,7 +270,7 @@ UiManager.prototype.updateRootTreeUi = function()
 
 	for(var i = 0; i < sceneDataModel.meshes.length; i++)
 	{
-		meshes.children.push({text: sceneDataModel.meshes[i].id, leaf: true, object: sceneDataModel.meshes[i]});
+		meshes.children.push({text: sceneDataModel.meshes[i].id, leaf: true, object: sceneDataModel.meshes[i], uid: sceneDataModel.meshes[i].data.uid});
 	}
 
 	for(var i = 0; i < sceneDataModel.cameras.length; i++)

@@ -43,12 +43,13 @@ SceneManager.prototype.create3DScene = function()
 	lightDown.intensity = 0.4;
 
 	// Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
-	var ground = BABYLON.Mesh.CreateGround("ground1", 20, 20, 20, this.scene);
-	ground.material = new BABYLON.StandardMaterial("m3", this.scene);
+	var ground = BABYLON.Mesh.CreateGround("Grid", 20, 20, 20, this.scene);
+	ground.material = new BABYLON.StandardMaterial("GridMaterial", this.scene);
 	ground.material.wireframe = true;
 	ground.material.backFaceCulling = false;
 	ground.material.diffuseColor = new BABYLON.Color3(1, 1, 1);
 	ground.isPickable = false;
+	ground.data = {uid: -1};
 	this.selectionManager = new SelectionManager(this);
 	this.selectionManager.initSceneSelection(this);
 	

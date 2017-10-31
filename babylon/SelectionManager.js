@@ -70,7 +70,9 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			}
 
 			//updateMeshPropertiesUiFromSelection(pickResult.pickedMesh);
-
+			var meshUid = pickResult.pickedMesh.data.uid;
+			console.log('Picked Mesh UID: ', meshUid);
+			emmiter.emit('UI_UPDATE_SELECTION', pickResult.pickedMesh.name);
 			this.lastPickedMeshMaterial = pickResult.pickedMesh.material.diffuseColor;
 			pickResult.pickedMesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
 			pickResult.pickedMesh.material.alpha = .3;
@@ -101,6 +103,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 		}
 		else
 		{
+			emmiter.emit('UI_UPDATE_SELECTION', null);
 			this.lastPickedMesh = null;
 			if(this.editControl != null)
 			{
