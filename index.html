@@ -508,54 +508,11 @@
 					    ]
 				    },
 				    {
-				        title: 'Project Structure Navigator',
-				        region:'west',
-				        xtype: 'tabpanel',
-				        margins: '5 0 0 0',
-				        width: 200,
-				        height: '100%',
-				        collapsible: true,
-				        id: 'project-structure-navigator',
-				        layout: 'fit',
-				        items: 
-				        [
-					        {
-	        					title: '3D Structure',
-	        					layout: 'fit',
-	        					height: '100%',
-    							items: 
-				        		[
-				        			{
-		    							xtype: 'treepanel',
-		    							id: 'mainTree',
-		    							border: 0,
-									    width: '100%',
-									    height: '100%',
-									    rootVisible: true,
-									    viewConfig: 
-									    {
-										    plugins: 
-										    { 
-										    	ptype: 'treeviewdragdrop' 
-										    }
-										}
-									}
-							    ]
-						    }, 
-						    {
-						        title: 'Resources'
-						    }, 
-						    {
-						        title: 'Others'
-						    }
-					    ]
-				    },
-				    {
 				        title: '3D View',
 				        region: 'center',
 				        xtype: 'panel',
 				        margins: '5 0 0 0',
-				        html: '<canvas id="renderCanvas" style="width:100%;height:100%;" touch-action="none"></canvas>',
+						html: '<canvas id="renderCanvas" style="width:100%;height:100%;" touch-action="none"></canvas>',
 				        tbar: 
 				    	[
 			        		{
@@ -862,6 +819,45 @@
 				    ],
 				    renderTo: Ext.getBody()
 				});
+				
+				var navPanel = Ext.create('Ext.panel.Panel', 
+				{
+					margins: '5 0 0 0',
+					width: 200,
+					height: 400,
+					collapsible: true,
+					collapsed: false,
+					floating: true,
+					shadow: false,
+					id: 'project-structure-navigator',
+					layout: 'fit',
+					title: '3D Structure',
+					layout: 'fit',
+					items: 
+					[
+						{
+							xtype: 'treepanel',
+							id: 'mainTree',
+							border: 0,
+							width: '100%',
+							height: '100%',
+							rootVisible: true,
+							viewConfig: 
+							{
+								plugins: 
+								{ 
+									ptype: 'treeviewdragdrop' 
+								}
+							}
+						}
+					]
+				}).show();
+				var canvas = Ext.get('renderCanvas');
+				var box = canvas.getBox();
+				navPanel.setPosition({x: box.x, y: box.y});
+				navPanel.setHeight(box.height);
+				navPanel.collapse();
+				
 				sceneManager = new SceneManager();
 				sceneManager.create3DScene();				
 				uiManager = new UiManager(sceneManager.scene);

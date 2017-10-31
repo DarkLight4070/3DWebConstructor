@@ -18,7 +18,8 @@ function SelectionManager(__sceneManager)
 	
 	this.sceneManager = __sceneManager;
 	
-	emmiter.on('PICK_EVENT', this.processSelection.bind(this));
+	emmiter.on('POINTER_UP', this.pointerUp.bind(this));
+	emmiter.on('POINTER_DOWN', this.pointerDown.bind(this));
 	emmiter.on('ENABLE_CO_MODE', this.setCompoundObjectsMode.bind(this));
 }
 
@@ -31,7 +32,13 @@ SelectionManager.prototype.instance = function()
 	return this.__instance;
 };
 
-SelectionManager.prototype.processSelection = function(pickResult)
+SelectionManager.prototype.pointerDown = function(evt)
+{
+		this.lastClickX = evt.clientX;
+		this.lastClickY = evt.clientY;
+}
+
+SelectionManager.prototype.pointerUp = function(evt, pickResult)
 {
 	if(pickResult == null)
 	{
@@ -39,7 +46,7 @@ SelectionManager.prototype.processSelection = function(pickResult)
 	}
 	console.log('PICK EVENT');
 	console.log(this.objectSelectionMode);
-	if(this.objectSelectionMode == 1)
+	if(this.lastClickX == evt.clientX && this.lastClickY == evt.clientY && this.objectSelectionMode == 1)
 	{
 		if(this.lastPickedMesh != null)
 		{
@@ -148,13 +155,12 @@ SelectionManager.prototype.initSceneSelection = function(__sceneManager)
 	
 	__sceneManager.scene.onPointerDown = function (evt, pickResult)
 	{
-		this.lastClickX = evt.clientX;
-		this.lastClickY = evt.clientY;
+		emmiter.emit('POINTER_DOWN', evt);
 	};
 	
 	__sceneManager.scene.onPointerUp = function (evt, pickResult) 
 	{	
-		emmiter.emit('PICK_EVENT', pickResult);
+		emmiter.emit('POINTER_UP', evt, pickResult);
 		if(this.lastClickX == evt.clientX && this.lastClickY == evt.clientY && this.selectionMode == this.vertexSelectionMode)
 		{
 			if(this.lastPickedVertex != null)
