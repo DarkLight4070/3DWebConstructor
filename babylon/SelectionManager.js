@@ -12,8 +12,14 @@ function SelectionManager(__sceneManager)
 	this.objectSelectionMode = 1;
 	var transform = '';
 	this.selectionMode = this.objectSelectionMode;
+	this.compoundObjectsMode = false;
+	this.coFirst = null;
+	this.coSecond = null;
 	
 	this.sceneManager = __sceneManager;
+	
+	emmiter.on('PICK_EVENT', this.processSelection.bind(this));
+	emmiter.on('ENABLE_CO_MODE', this.setCompoundObjectsMode.bind(this));
 }
 
 SelectionManager.prototype.instance = function()
@@ -25,6 +31,77 @@ SelectionManager.prototype.instance = function()
 	return this.__instance;
 };
 
+SelectionManager.prototype.processSelection = function(pickResult)
+{
+	if(pickResult == null)
+	{
+		return;
+	}
+	console.log('PICK EVENT');
+	console.log(this.objectSelectionMode);
+	if(this.objectSelectionMode == 1)
+	{
+		if(this.lastPickedMesh != null)
+		{
+			this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
+			this.lastPickedMesh.material.alpha = 1;
+			this.lastPickedMesh.material.wireframe = false;
+			//updateMeshPropertiesUiFromSelection(null);
+		}
+
+		if (pickResult.hit) 
+		{
+			if(this.lastPickedMesh != null)
+			{
+				this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
+				this.lastPickedMesh.material.alpha = 1;
+				this.lastPickedMesh.material.wireframe = false;
+				if(this.editControl != null)
+				{
+					this.editControl.detach();
+				}
+			}
+
+			//updateMeshPropertiesUiFromSelection(pickResult.pickedMesh);
+
+			this.lastPickedMeshMaterial = pickResult.pickedMesh.material.diffuseColor;
+			pickResult.pickedMesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+			pickResult.pickedMesh.material.alpha = .3;
+			pickResult.pickedMesh.material.wireframe = this.wireframe;
+			this.lastPickedMesh = pickResult.pickedMesh;
+			if(this.lastPickedMesh.data != undefined && this.lastPickedMesh.data.type == 'sceneObject' && this.lastPickedMesh.data.gizmo == undefined)
+			{
+				if(this.transform != '')
+				{
+					var EditControl = org.ssatguru.babylonjs.component.EditControl;
+					this.editControl = new EditControl(this.lastPickedMesh, this.sceneManager.camera, this.sceneManager.canvas, 0.75, true);
+					//editControl.setLocal(true);
+					//enable translation controls
+					this.editControl.enableTranslation(3.14/18);
+					this.editControl.enableTranslation(3.14/18);
+					//set rotational snap valie in radians
+					this.editControl.setRotSnapValue(3.14 / 18);
+					this.editControl.setScaleSnapValue(.5);
+					//set transalation sna value in meters
+					this.editControl.setTransSnapValue(.1);
+				}
+			}
+			if(this.compoundObjectsMode == true)
+			{
+				this.coSecond = this.lastPickedMesh;
+				Ext.getCmp('secondObjectId').setValue(this.coSecond.name);
+			}
+		}
+		else
+		{
+			this.lastPickedMesh = null;
+			if(this.editControl != null)
+			{
+				this.editControl.detach();
+			}
+		}
+	}
+};
 
 SelectionManager.prototype.executeVertexMode = function()
 {
@@ -76,7 +153,8 @@ SelectionManager.prototype.initSceneSelection = function(__sceneManager)
 	};
 	
 	__sceneManager.scene.onPointerUp = function (evt, pickResult) 
-	{
+	{	
+		emmiter.emit('PICK_EVENT', pickResult);
 		if(this.lastClickX == evt.clientX && this.lastClickY == evt.clientY && this.selectionMode == this.vertexSelectionMode)
 		{
 			if(this.lastPickedVertex != null)
@@ -99,65 +177,29 @@ SelectionManager.prototype.initSceneSelection = function(__sceneManager)
 				}
 			}
 		}
-
-		if(this.lastClickX == evt.clientX && this.lastClickY == evt.clientY && this.selectionMode == this.objectSelectionMode)
-		{
-
-			if(this.lastPickedMesh != null)
-			{
-				this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
-				this.lastPickedMesh.material.alpha = 1;
-				this.lastPickedMesh.material.wireframe = false;
-				//updateMeshPropertiesUiFromSelection(null);
-			}
-
-			if (pickResult.hit) 
-			{
-				if(this.lastPickedMesh != null)
-				{
-					this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
-					this.lastPickedMesh.material.alpha = 1;
-					this.lastPickedMesh.material.wireframe = false;
-					if(this.editControl != null)
-					{
-						this.editControl.detach();
-					}
-				}
-
-				//updateMeshPropertiesUiFromSelection(pickResult.pickedMesh);
-
-				this.lastPickedMeshMaterial = pickResult.pickedMesh.material.diffuseColor;
-				pickResult.pickedMesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
-				pickResult.pickedMesh.material.alpha = .3;
-				pickResult.pickedMesh.material.wireframe = this.wireframe;
-				this.lastPickedMesh = pickResult.pickedMesh;
-				if(this.lastPickedMesh.data != undefined && this.lastPickedMesh.data.type == 'sceneObject' && this.lastPickedMesh.data.gizmo == undefined)
-				{
-					if(this.transform != '')
-					{
-						var EditControl = org.ssatguru.babylonjs.component.EditControl;
-						this.editControl = new EditControl(this.lastPickedMesh, __sceneManager.camera, __sceneManager.canvas, 0.75, true);
-						//editControl.setLocal(true);
-						//enable translation controls
-						this.editControl.enableTranslation(3.14/18);
-						this.editControl.enableTranslation(3.14/18);
-						//set rotational snap valie in radians
-						this.editControl.setRotSnapValue(3.14 / 18);
-						this.editControl.setScaleSnapValue(.5);
-						//set transalation sna value in meters
-						this.editControl.setTransSnapValue(.1);
-					}
-				}
-			}
-			else
-			{
-				this.lastPickedMesh = null;
-				if(this.editControl != null)
-				{
-					this.editControl.detach();
-				}
-			}
-		}
 	};
 };
 
+SelectionManager.prototype.setCompoundObjectsMode = function(enable, uiElement)
+{
+	if(enable && !this.compoundObjectsMode)
+	{
+		if(this.lastPickedMesh == null)
+		{
+			//TO REMOVE FROM HERE NO UI ACESS
+			Ext.MessageBox.alert('Compound Objects', 'Please select an object !');
+			uiElement.toggle(false, true);
+		}
+		else
+		{
+			this.compoundObjectsMode = true;
+			this.coFirst = this.lastPickedMesh;
+			//TO REMOVE FROM HERE NO UI ACESS
+			Ext.getCmp('firstObjectId').setValue(this.coFirst.name);
+		}
+	}
+	else
+	{
+		this.compoundObjectsMode = false;
+	}
+};

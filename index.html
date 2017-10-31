@@ -17,13 +17,16 @@
 		<script src="babylon/SceneManager.js"></script>
 		<script src="babylon/SelectionManager.js"></script>
 		<script src="babylon/UiManager.js"></script>
+		<script src="babylon/event_emitter.js"></script>
 		
 	</head>
 	<body>
 		<script type="text/javascript">
 			
 			var uiManager = null;
-			
+			var sceneManager = null;
+
+			const emmiter = new EventEmitter();
 			function updateMeshPropertiesUiFromSelection(__selection)
 			{
 				if(__selection == null)
@@ -134,7 +137,18 @@
 				        {"id": "Cylinder", "name": "Cylinder"}
 				    ]
 				});
-
+				
+				var coStore = Ext.create('Ext.data.Store', {
+				    fields: 
+				    ['id', 'name'],
+				    data : 
+				    [
+				    	{"id": "sub", "name": "Substruct"},
+				    	{"id": "union", "name": "Union"},
+				        {"id": "intersect", "name": "Intersect"}
+				    ]
+				});
+				
 				Ext.create('Ext.panel.Panel', {
 				    width: '100%',
 					height: '100%',
@@ -401,7 +415,93 @@
 									    ]
 				        			}
 							    ]
-						    }, 
+						    },
+						    {
+						        title: 'Compound Objects',
+								layout: 'fit',
+	        					height: '100%',
+    							items: 
+				        		[
+				        			{
+				        				xtype: 'form',
+				        				bodyPadding: 5,
+				        				layout: 'anchor',
+									    defaults: 
+									    {
+									        anchor: '100%'
+									    },
+									    items: 
+									    [
+									    	{
+										    	xtype:'fieldset',
+										    	title: 'Objects',
+										    	defaults: 
+										    	{
+										        	anchor: '100%'
+											    },
+											    layout: 'anchor',
+	        									items :
+	        									[
+													{
+	        											xtype: 'textfield',
+	        											fieldLabel: 'First Object',
+	        											id: 'firstObjectId'
+	        										},
+													{
+	        											xtype: 'textfield',
+	        											fieldLabel: 'Second Object',
+	        											id: 'secondObjectId'
+	        										}
+												]
+											},
+											{
+										    	xtype:'fieldset',
+										    	title: 'Options',
+										    	defaults: 
+										    	{
+										        	anchor: '100%'
+											    },
+											    layout: 'anchor',
+	        									items :
+	        									[
+													{
+												        xtype: 'combo',
+												        fieldLabel: 'Type',
+												        store: coStore,
+												        queryMode: 'local',
+													    displayField: 'name',
+													    valueField: 'id',
+														id: 'coTypeId'
+												    },
+													{
+	        											xtype: 'checkboxfield',
+	        											fieldLabel: 'Delete objects',
+	        											id: 'coDeleteObjectsId'
+	        										}
+												]
+											}
+										],
+										buttons: 
+									    [
+										    {
+										        text: 'Reset',
+										        handler: function() 
+										        {
+										        }
+										    }, 
+										    {
+										        text: 'Create',
+										        handler: function()
+										        {
+													var operationType = Ext.getCmp('coTypeId').getValue();
+													var deleteObjs = Ext.getCmp('coDeleteObjectsId').getValue();
+													emmiter.emit('EXECUTE_CO', operationType, deleteObjs);
+										        }
+										    }
+									    ]
+									}
+								]
+						    },							
 						    {
 						        title: 'Others'
 						    }
@@ -412,7 +512,7 @@
 				        region:'west',
 				        xtype: 'tabpanel',
 				        margins: '5 0 0 0',
-				        width: 400,
+				        width: 200,
 				        height: '100%',
 				        collapsible: true,
 				        id: 'project-structure-navigator',
@@ -493,11 +593,11 @@
 								{
 									if(state)
 									{
-										transform = 't';
+										sceneManager.selectionManager.transform = 't';
 									}
 									else
 									{
-										transform = '';
+										sceneManager.selectionManager.transform = '';
 									}
 							
 					        	}
@@ -512,11 +612,12 @@
 								{
 									if(state)
 									{
-										transform = 'r';
+										sceneManager.selectionManager.transform = 'r';
+										console.log(sceneManager.selectionManager.transform);
 									}
 									else
 									{
-										transform = '';
+										sceneManager.selectionManager.transform = '';
 									}
 								}
 				        	},
@@ -529,13 +630,31 @@
 								{
 									if(state)
 									{
-										transform = 's';
+										sceneManager.selectionManager.transform = 's';
 									}
 									else
 									{
-										transform = '';
+										sceneManager.selectionManager.transform = '';
 									}
 								}
+				        	},
+				        	{ 
+				        		xtype: 'tbseparator' 
+				        	},
+				        	{
+				        		xtype: 'button',
+				        		enableToggle: true,
+				        		text: 'C-Ojects',
+				        		listeners:
+					        	{
+					        		toggle:
+					        		{
+					        			fn: function( __this, pressed, eOpts )
+					        			{
+											emmiter.emit('ENABLE_CO_MODE', pressed, __this);
+					        			}
+					        		}
+					        	}
 				        	},
 				        	{ 
 				        		xtype: 'tbseparator' 
@@ -601,7 +720,68 @@
 					        		}
 					        	}
 				        	}
-		        		]
+		        		],
+						dockedItems: 
+						[
+							{
+								xtype: 'toolbar',
+								dock: 'bottom',
+								items:
+								[
+									{
+										xtype: 'button',
+										text: 'Front',
+										handler: function()
+										{
+											emmiter.emit('CHANGE_VIEW', 'FRONT');
+										}
+									},
+									{
+										xtype: 'button',
+										text: 'Back',
+										handler: function()
+										{
+											emmiter.emit('CHANGE_VIEW', 'BACK');
+										}
+									},
+									{
+										xtype: 'button',
+										text: 'Left',
+										handler: function()
+										{
+											emmiter.emit('CHANGE_VIEW', 'LEFT');
+										}
+									},
+									{
+										xtype: 'button',
+										text: 'Right',
+										handler: function()
+										{
+											emmiter.emit('CHANGE_VIEW', 'RIGHT');
+										}
+									},
+									{
+										xtype: 'button',
+										text: 'Top',
+										handler: function()
+										{
+											emmiter.emit('CHANGE_VIEW', 'TOP');
+										}
+									},
+									{
+										xtype: 'button',
+										text: 'Bottom',
+										handler: function()
+										{
+											emmiter.emit('CHANGE_VIEW', 'BOTTOM');
+										}
+									},
+									{ 
+										xtype: 'tbseparator' 
+									}
+								]
+							}
+						]
 				    }
 			    	],
 			    	tbar: 
@@ -662,11 +842,27 @@
 						        	text: 'Rendering'
 						        }
 						    ]
-		        		}
+		        		},
+						{
+							xtype: 'button',
+							text: 'Delete',
+							handler: function()
+							{
+								emmiter.emit('REMOVE_MESH');
+							}
+						},
+						{
+							xtype: 'button',
+							text: 'Clone',
+							handler: function()
+							{
+								emmiter.emit('CLONE_MESH');
+							}
+						}
 				    ],
 				    renderTo: Ext.getBody()
 				});
-				var sceneManager = new SceneManager();
+				sceneManager = new SceneManager();
 				sceneManager.create3DScene();				
 				uiManager = new UiManager(sceneManager.scene);
 				uiManager.updateRootTreeUi(sceneManager.scene);

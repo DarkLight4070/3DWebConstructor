@@ -16,23 +16,16 @@ UiManager.prototype.createBoxPrefabUi = function(__container)
 	{
 		var width = widthField.getValue();
 		var height = heightField.getValue();
-		var depth = heightField.getValue();
-	
-		var faceColors = new Array(6);
+		var depth = depthField.getValue();
 
-		faceColors[4] = new BABYLON.Color4(1,0,0,1);
-		faceColors[1] = new BABYLON.Color4(0,1,0,1);
-		var options = 
-		{
+		var options = {
 		    width: width,
 		    height: height,
 		    depth: depth,
-		    updatable: true,
-			faceColors : faceColors,
+		    updatable: false,
 		    sideOrientation: BABYLON.Mesh.DOUBLESIDE
 	  	};
 		var box = BABYLON.MeshBuilder.CreateBox('box', options, this.scene);
-		
 		box.material = new BABYLON.StandardMaterial("boxMat", this.scene);
 		box.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 		box.material.backFaceCulling = false;
