@@ -193,23 +193,23 @@ UiManager.prototype.buildPrefabEntriesUi = function(__prefabType)
 	fieldSet.removeAll(true);
 	if(__prefabType == 'Box')
 	{
-		this.createBoxPrefabUi(fieldSet, this.sceneManager.uid++);
+		this.createBoxPrefabUi(fieldSet, this.sceneManager.getNextUid());
 	}
 	else if(__prefabType == 'Line')
 	{
-		this.createLinePrefabUi(fieldSet, this.sceneManager.uid++);
+		this.createLinePrefabUi(fieldSet, this.sceneManager.getNextUid());
 	}
 	else if(__prefabType == 'Cylinder')
 	{
-		this.createCylinderPrefabUi(fieldSet, this.sceneManager.uid++);
+		this.createCylinderPrefabUi(fieldSet, this.sceneManager.getNextUid());
 	}
 	else if(__prefabType == 'Sphere')
 	{
-		this.createSpherePrefabUi(fieldSet, this.sceneManager.uid++);
+		this.createSpherePrefabUi(fieldSet, this.sceneManager.getNextUid());
 	}
 	else if(__prefabType == 'Plane')
 	{
-		this.createPlanePrefabUi(fieldSet, this.sceneManager.uid++);
+		this.createPlanePrefabUi(fieldSet, this.sceneManager.getNextUid());
 	}
 };
 

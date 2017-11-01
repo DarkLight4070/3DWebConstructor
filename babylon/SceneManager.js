@@ -131,7 +131,7 @@ SceneManager.prototype.cloneMesh = function()
 	clone.material.backFaceCulling = false;
 	clone.data = {type: 'sceneObject', uid: this.uid++};
 	emmiter.emit('UI_ADD_MESH_TO_TREE', clone);
-}
+};
 
 SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 {
@@ -198,3 +198,9 @@ SceneManager.prototype.setView = function(view)
 		this.camera.beta = Math.PI / 2;
 	}
 };
+
+SceneManager.prototype.getNextUid = function()
+{
+	this.uid ++;
+	return this.uid;
+}
