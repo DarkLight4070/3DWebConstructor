@@ -21,7 +21,7 @@ UiManager.prototype.updateUiSelection = function(uid)
 	}
 }
 
-UiManager.prototype.createBoxPrefabUi = function(__container, uid)
+UiManager.prototype.createBoxPrefabUi = function(__container)
 {
 	var widthField = UI_CreateNumberField('Width', 'widthId', 1);
 	var heightField = UI_CreateNumberField('Height', 'heightId', 1);
@@ -32,30 +32,14 @@ UiManager.prototype.createBoxPrefabUi = function(__container, uid)
 	__container.add(depthField);
 	prefabCreationFunction = function()
 	{
-		var width = widthField.getValue();
-		var height = heightField.getValue();
-		var depth = depthField.getValue();
-
-		var options = {
-		    width: width,
-		    height: height,
-		    depth: depth,
-		    updatable: false,
-		    sideOrientation: BABYLON.Mesh.DOUBLESIDE
-	  	};
-		var box = BABYLON.MeshBuilder.CreateBox('Box' + uid, options, this.sceneManager.scene);
-		console.log(box.uniqueId);
-		box.material = new BABYLON.StandardMaterial("boxMat", this.sceneManager.scene);
-		box.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-		box.material.backFaceCulling = false;
-		updateMeshSpacialAttributesFromUi(box);
-		box.data = {type: 'sceneObject', uid: uid};
-
-		emmiter.emit('UI_ADD_MESH_TO_TREE', box);
+			var width = widthField.getValue();
+			var height = heightField.getValue();
+			var depth = depthField.getValue();
+			emmiter.emit('MESH_CREATE_BOX', width, height, depth);
 	};
 };
 
-UiManager.prototype.createCylinderPrefabUi = function(__container, uid)
+UiManager.prototype.createCylinderPrefabUi = function(__container)
 {
 	var heightField = UI_CreateNumberField('Height', 'heightId', 1);
 	var topDiameterField = UI_CreateNumberField('Top Diameter', 'topDiameterId', 1);
@@ -72,20 +56,11 @@ UiManager.prototype.createCylinderPrefabUi = function(__container, uid)
 		var topDiameter = topDiameterField.getValue();
 		var bottomDiameter = bottomDiameterField.getValue();
 		var tesselation = tesselationField.getValue();
-
-	  	//name, height, diameterTop, diameterBottom, tessellation, subdivisions, scene, updatable, sideOrientation
-		var cylinder = BABYLON.Mesh.CreateCylinder("Cylinder" + uid, height, topDiameter, bottomDiameter, tesselation, 10, this.sceneManager.scene, true, BABYLON.Mesh.DOUBLESIDE);
-		cylinder.material = new BABYLON.StandardMaterial("cylinderMat", this.sceneManager.scene);
-		cylinder.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-		cylinder.material.backFaceCulling = false;
-		cylinder.data = {type: 'sceneObject', uid: uid};
-		updateMeshSpacialAttributesFromUi(cylinder);
-
-		emmiter.emit('UI_ADD_MESH_TO_TREE', cylinder);
+		emmiter.emit('MESH_CREATE_CYLINDER', height, topDiameter, bottomDiameter, tesselation);
 	};
 };
 
-UiManager.prototype.createSpherePrefabUi = function(__container, uid)
+UiManager.prototype.createSpherePrefabUi = function(__container)
 {
 	var diameterField = UI_CreateNumberField('Diameter', 'diameterId', 1);
 	var segmentsField = UI_CreateNumberField('Segments', 'segmentsId', 10);
@@ -97,20 +72,12 @@ UiManager.prototype.createSpherePrefabUi = function(__container, uid)
 	{
 		var diameter = diameterField.getValue();
 		var segments = segmentsField.getValue();
-
-	  	//CreateSphere(name, segments, diameter, scene, updatable, sideOrientation)
-		var mesh = BABYLON.Mesh.CreateSphere("Sphere" + uid, segments, diameter, this.sceneManager.scene, true, BABYLON.Mesh.DOUBLESIDE);
-		mesh.material = new BABYLON.StandardMaterial("SphereMat", this.sceneManager.scene);
-		mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-		mesh.material.backFaceCulling = false;
-		mesh.data = {type: 'sceneObject', uid: uid};
-		updateMeshSpacialAttributesFromUi(mesh);
-
-		emmiter.emit('UI_ADD_MESH_TO_TREE', mesh);
+		emmiter.emit('MESH_CREATE_SPHERE', diameter, segments);
+		
 	};
 }
 
-UiManager.prototype.createPlanePrefabUi = function(__container, uid)
+UiManager.prototype.createPlanePrefabUi = function(__container)
 {
 	var widthField = UI_CreateNumberField('Width', 'widthId', 1);
 	var heightField = UI_CreateNumberField('Height', 'heightId', 1);
@@ -125,28 +92,11 @@ UiManager.prototype.createPlanePrefabUi = function(__container, uid)
 		var width = widthField.getValue();
 		var height = heightField.getValue();
 		var subdivisions = subdivisionsField.getValue();
-
-		var options = {
-		    width: width,
-		    height: height,
-		    subdivisions: subdivisions,
-		    updatable: true
-	  	};
-
-	  	//CreatePlane(name, options, scene)
-		var mesh = BABYLON.MeshBuilder.CreateGround("Plane" + uid, options, this.sceneManager.scene);
-		mesh.material = new BABYLON.StandardMaterial("PlaneMat", this.sceneManager.scene);
-		mesh.material.backFaceCulling = false;
-		mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-		mesh.data = {type: 'sceneObject', uid: uid};
-		
-		updateMeshSpacialAttributesFromUi(mesh);
-
-		emmiter.emit('UI_ADD_MESH_TO_TREE', mesh);
+		emmiter.emit('MESH_CREATE_PLANE', width, height, subdivisions);
 	};
 };
 
-UiManager.prototype.createLinePrefabUi = function(__container, uid)
+UiManager.prototype.createLinePrefabUi = function(__container)
 {
 	var x1Field = UI_CreateNumberField('X1', 'x1Id', 1);
 	var y1Field = UI_CreateNumberField('Y1', 'y1Id', 1);
@@ -172,18 +122,7 @@ UiManager.prototype.createLinePrefabUi = function(__container, uid)
 		var x2 = x2Field.getValue();
 		var y2 = y2Field.getValue();
 		var z2 = z2Field.getValue();
-
-		var options = {
-		    points: [new BABYLON.Vector3(x1, y1, z1), new BABYLON.Vector3(x2, y2, z2)]
-	  	};
-		var line = BABYLON.MeshBuilder.CreateLines('Line' + uid, options, this.sceneManager.scene);
-		line.material = new BABYLON.StandardMaterial("boxMat", this.sceneManager.scene);
-		line.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-		line.data = {type: 'sceneObject', uid: uid};
-		
-		updateMeshSpacialAttributesFromUi(line);
-
-		emmiter.emit('UI_ADD_MESH_TO_TREE', line);
+		emmiter.emit('MESH_CREATE_LINE', x1, y1, z1, x2, y2, z2);
 	};
 };
 
@@ -193,23 +132,23 @@ UiManager.prototype.buildPrefabEntriesUi = function(__prefabType)
 	fieldSet.removeAll(true);
 	if(__prefabType == 'Box')
 	{
-		this.createBoxPrefabUi(fieldSet, this.sceneManager.getNextUid());
+		this.createBoxPrefabUi(fieldSet);
 	}
 	else if(__prefabType == 'Line')
 	{
-		this.createLinePrefabUi(fieldSet, this.sceneManager.getNextUid());
+		this.createLinePrefabUi(fieldSet);
 	}
 	else if(__prefabType == 'Cylinder')
 	{
-		this.createCylinderPrefabUi(fieldSet, this.sceneManager.getNextUid());
+		this.createCylinderPrefabUi(fieldSet);
 	}
 	else if(__prefabType == 'Sphere')
 	{
-		this.createSpherePrefabUi(fieldSet, this.sceneManager.getNextUid());
+		this.createSpherePrefabUi(fieldSet);
 	}
 	else if(__prefabType == 'Plane')
 	{
-		this.createPlanePrefabUi(fieldSet, this.sceneManager.getNextUid());
+		this.createPlanePrefabUi(fieldSet);
 	}
 };
 

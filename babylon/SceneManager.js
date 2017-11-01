@@ -8,10 +8,15 @@ function SceneManager()
 	this.selectionManager = null;
 	this.uid = 0;
 	
-	emmiter.on('REMOVE_MESH', this.removeMesh.bind(this));
+	emmiter.on('DELETE_SELECTED_MESH', this.deleteSelectedMesh.bind(this));
 	emmiter.on('CLONE_MESH', this.cloneMesh.bind(this));
 	emmiter.on('EXECUTE_CO', this.executeCo.bind(this));
 	emmiter.on('CHANGE_VIEW', this.setView.bind(this));
+	emmiter.on('MESH_CREATE_BOX', this.createBox.bind(this));
+	emmiter.on('MESH_CREATE_CYLINDER', this.createCylinder.bind(this));
+	emmiter.on('MESH_CREATE_SPHERE', this.createSphere.bind(this));
+	emmiter.on('MESH_CREATE_PLANE', this.createPlane.bind(this));
+	emmiter.on('MESH_CREATE_LINE', this.createLine.bind(this));
 }
 
 SceneManager.prototype.instance = function()
@@ -108,28 +113,34 @@ SceneManager.prototype.renderFrames = function()
 	}
 };
 
-SceneManager.prototype.removeMesh = function()
+SceneManager.prototype.deleteSelectedMesh = function()
+{
+	this.removeMesh(this.selectionManager.lastPickedMesh);
+}
+
+SceneManager.prototype.removeMesh = function(mesh)
 {
 	if(this.selectionManager.editControl != null)
 	{
 		this.selectionManager.editControl.detach();
 		this.selectionManager.editControl = null;
 	}
-	this.scene.removeMesh(this.selectionManager.lastPickedMesh);
+	this.scene.removeMesh(mesh);
 	this.selectionManager.lastPickedMesh = null;
 };
 
 SceneManager.prototype.cloneMesh = function()
 {
+	var uid = this.getNextUid();
 	if(this.selectionManager.lastPickedMesh == null)
 	{
 		Ext.MessageBox.alert('Clone Operation', 'Please select an object !');
 	}
-	var clone = this.selectionManager.lastPickedMesh.clone(this.selectionManager.lastPickedMesh.name + 1);
+	var clone = this.selectionManager.lastPickedMesh.clone('Clone-' + this.selectionManager.lastPickedMesh.name + uid);
 	clone.material = new BABYLON.StandardMaterial("mat", this.scene);
 	clone.material.diffuseColor = this.selectionManager.lastPickedMeshMaterial;
 	clone.material.backFaceCulling = false;
-	clone.data = {type: 'sceneObject', uid: this.uid++};
+	clone.data = {type: 'sceneObject', uid: uid};
 	emmiter.emit('UI_ADD_MESH_TO_TREE', clone);
 };
 
@@ -153,16 +164,17 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 		csg = firstCsg.subtract(secondCsg);
 	}
 	
-	var result = csg.toMesh("a*b", new BABYLON.StandardMaterial("mat", this.scene), this.scene);
-	result.material = new BABYLON.StandardMaterial("mat", this.scene);
-	result.material.backFaceCulling = false;
-	result.material.diffuseColor = new BABYLON.Color3(1, 1, 1);
-	result.data = {type: 'sceneObject'};
+	var material = new BABYLON.StandardMaterial("mat", this.scene);
+	material.backFaceCulling = false;
+	material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
+	var result = csg.toMesh(this.selectionManager.coFirst.name + "*" + this.selectionManager.coSecond.name, material, this.scene);
+	result.data = {type: 'sceneObject', uid: this.getNextUid()};
+	emmiter.emit('UI_ADD_MESH_TO_TREE', result);
 	
 	if(deleteObjs)
 	{
-		this.scene.removeMesh(this.selectionManager.coFirst);
-		this.scene.removeMesh(this.selectionManager.coSecond);
+		this.removeMesh(this.selectionManager.coFirst);
+		this.removeMesh(this.selectionManager.coSecond);
 	}
 };
 
@@ -203,4 +215,92 @@ SceneManager.prototype.getNextUid = function()
 {
 	this.uid ++;
 	return this.uid;
+};
+
+SceneManager.prototype.createBox = function(width, height, depth)
+{
+	var uid = this.getNextUid();
+	var options = {
+		width: width,
+		height: height,
+		depth: depth,
+		updatable: false,
+		sideOrientation: BABYLON.Mesh.DOUBLESIDE
+	};
+	var box = BABYLON.MeshBuilder.CreateBox('Box' + uid, options, this.scene);
+	console.log(box.uniqueId);
+	box.material = new BABYLON.StandardMaterial("boxMat", this.scene);
+	box.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
+	box.material.backFaceCulling = false;
+	//updateMeshSpacialAttributesFromUi(box);
+	box.data = {type: 'sceneObject', uid: uid};
+	emmiter.emit('UI_ADD_MESH_TO_TREE', box);
+};
+
+SceneManager.prototype.createCylinder = function(height, topDiameter, bottomDiameter, tesselation)
+{
+	var uid = this.getNextUid();
+	
+	var cylinder = BABYLON.Mesh.CreateCylinder("Cylinder" + uid, height, topDiameter, bottomDiameter, tesselation, 10, this.scene, true, BABYLON.Mesh.DOUBLESIDE);
+	cylinder.material = new BABYLON.StandardMaterial("cylinderMat", this.scene);
+	cylinder.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
+	cylinder.material.backFaceCulling = false;
+	cylinder.data = {type: 'sceneObject', uid: uid};
+	//updateMeshSpacialAttributesFromUi(cylinder);
+
+	emmiter.emit('UI_ADD_MESH_TO_TREE', cylinder);
+};
+
+SceneManager.prototype.createSphere = function(diameter, segments)
+{
+	var uid = this.getNextUid();
+	
+	var mesh = BABYLON.Mesh.CreateSphere("Sphere" + uid, segments, diameter, this.scene, true, BABYLON.Mesh.DOUBLESIDE);
+	mesh.material = new BABYLON.StandardMaterial("SphereMat", this.scene);
+	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
+	mesh.material.backFaceCulling = false;
+	mesh.data = {type: 'sceneObject', uid: uid};
+	//updateMeshSpacialAttributesFromUi(mesh);
+
+	emmiter.emit('UI_ADD_MESH_TO_TREE', mesh);
+};
+
+SceneManager.prototype.createPlane = function(width, height, subdivisions)
+{
+	var uid = this.getNextUid();
+	
+	var options = {
+		width: width,
+		height: height,
+		subdivisions: subdivisions,
+		updatable: true
+	};
+
+	//CreatePlane(name, options, scene)
+	var mesh = BABYLON.MeshBuilder.CreateGround("Plane" + uid, options, this.scene);
+	mesh.material = new BABYLON.StandardMaterial("PlaneMat", this.scene);
+	mesh.material.backFaceCulling = false;
+	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
+	mesh.data = {type: 'sceneObject', uid: uid};
+	
+	//updateMeshSpacialAttributesFromUi(mesh);
+
+	emmiter.emit('UI_ADD_MESH_TO_TREE', mesh);
+};
+
+SceneManager.prototype.createLine = function(x1, y1, z1, x2, y2, z2)
+{
+	var uid = this.getNextUid();
+	
+	var options = {
+		points: [new BABYLON.Vector3(x1, y1, z1), new BABYLON.Vector3(x2, y2, z2)]
+	};
+	var line = BABYLON.MeshBuilder.CreateLines('Line' + uid, options, this.scene);
+	line.material = new BABYLON.StandardMaterial("boxMat", this.scene);
+	line.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
+	line.data = {type: 'sceneObject', uid: uid};
+	
+	//updateMeshSpacialAttributesFromUi(line);
+
+	emmiter.emit('UI_ADD_MESH_TO_TREE', line);
 }
