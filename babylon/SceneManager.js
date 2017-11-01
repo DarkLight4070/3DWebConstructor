@@ -6,6 +6,8 @@ function SceneManager()
 	this.canvas = null;
 	this.engine = null;
 	this.selectionManager = null;
+	this.uid = 0;
+	
 	emmiter.on('REMOVE_MESH', this.removeMesh.bind(this));
 	emmiter.on('CLONE_MESH', this.cloneMesh.bind(this));
 	emmiter.on('EXECUTE_CO', this.executeCo.bind(this));
@@ -126,7 +128,8 @@ SceneManager.prototype.cloneMesh = function()
 	clone.material = new BABYLON.StandardMaterial("mat", this.scene);
 	clone.material.diffuseColor = this.selectionManager.lastPickedMeshMaterial;
 	clone.material.backFaceCulling = false;
-	clone.data = {type: 'sceneObject'};
+	clone.data = {type: 'sceneObject', uid: this.uid++};
+	emmiter.emit('UI_ADD_MESH_TO_TREE', clone);
 }
 
 SceneManager.prototype.executeCo = function(operationType, deleteObjs)

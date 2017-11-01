@@ -861,8 +861,8 @@
 				
 				sceneManager = new SceneManager();
 				sceneManager.create3DScene();				
-				uiManager = new UiManager(sceneManager.scene);
-				uiManager.updateRootTreeUi(sceneManager.scene);
+				uiManager = new UiManager(sceneManager);
+				uiManager.updateRootTreeUi();
 			});
 		</script>
 

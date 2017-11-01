@@ -1,8 +1,8 @@
-function UiManager(__scene)
+function UiManager(__sceneManager)
 {
-	this.scene = __scene;
+	this.sceneManager = __sceneManager;
 	emmiter.on('UI_UPDATE_SELECTION', this.updateUiSelection.bind(this));
-	this.uid = 0;
+	emmiter.on('UI_ADD_MESH_TO_TREE', this.addMeshToTree.bind(this));
 }
 
 UiManager.prototype.updateUiSelection = function(uid)
@@ -43,19 +43,15 @@ UiManager.prototype.createBoxPrefabUi = function(__container, uid)
 		    updatable: false,
 		    sideOrientation: BABYLON.Mesh.DOUBLESIDE
 	  	};
-		var box = BABYLON.MeshBuilder.CreateBox('Box' + uid, options, this.scene);
+		var box = BABYLON.MeshBuilder.CreateBox('Box' + uid, options, this.sceneManager.scene);
 		console.log(box.uniqueId);
-		box.material = new BABYLON.StandardMaterial("boxMat", this.scene);
+		box.material = new BABYLON.StandardMaterial("boxMat", this.sceneManager.scene);
 		box.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 		box.material.backFaceCulling = false;
 		updateMeshSpacialAttributesFromUi(box);
 		box.data = {type: 'sceneObject', uid: uid};
-		console.log('Creation UID: ' + uid);
 
-		var mainTree = Ext.getCmp('mainTree');
-		var rootNode = mainTree.getRootNode();
-		var meshesNode = rootNode.findChild('text', 'Meshes');
-		meshesNode.appendChild({text: box.id, leaf: true, object: box, uid: box.data.uid});
+		emmiter.emit('UI_ADD_MESH_TO_TREE', box);
 	};
 };
 
@@ -78,17 +74,14 @@ UiManager.prototype.createCylinderPrefabUi = function(__container, uid)
 		var tesselation = tesselationField.getValue();
 
 	  	//name, height, diameterTop, diameterBottom, tessellation, subdivisions, scene, updatable, sideOrientation
-		var cylinder = BABYLON.Mesh.CreateCylinder("Cylinder" + uid, height, topDiameter, bottomDiameter, tesselation, 10, this.scene, true, BABYLON.Mesh.DOUBLESIDE);
-		cylinder.material = new BABYLON.StandardMaterial("cylinderMat", this.scene);
+		var cylinder = BABYLON.Mesh.CreateCylinder("Cylinder" + uid, height, topDiameter, bottomDiameter, tesselation, 10, this.sceneManager.scene, true, BABYLON.Mesh.DOUBLESIDE);
+		cylinder.material = new BABYLON.StandardMaterial("cylinderMat", this.sceneManager.scene);
 		cylinder.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 		cylinder.material.backFaceCulling = false;
 		cylinder.data = {type: 'sceneObject', uid: uid};
 		updateMeshSpacialAttributesFromUi(cylinder);
 
-		var mainTree = Ext.getCmp('mainTree');
-		var rootNode = mainTree.getRootNode();
-		var meshesNode = rootNode.findChild('text', 'Meshes');
-		meshesNode.appendChild({text: cylinder.id, leaf: true, object: cylinder, uid: cylinder.data.uid});
+		emmiter.emit('UI_ADD_MESH_TO_TREE', cylinder);
 	};
 };
 
@@ -106,17 +99,14 @@ UiManager.prototype.createSpherePrefabUi = function(__container, uid)
 		var segments = segmentsField.getValue();
 
 	  	//CreateSphere(name, segments, diameter, scene, updatable, sideOrientation)
-		var mesh = BABYLON.Mesh.CreateSphere("Sphere" + uid, segments, diameter, this.scene, true, BABYLON.Mesh.DOUBLESIDE);
-		mesh.material = new BABYLON.StandardMaterial("SphereMat", this.scene);
+		var mesh = BABYLON.Mesh.CreateSphere("Sphere" + uid, segments, diameter, this.sceneManager.scene, true, BABYLON.Mesh.DOUBLESIDE);
+		mesh.material = new BABYLON.StandardMaterial("SphereMat", this.sceneManager.scene);
 		mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 		mesh.material.backFaceCulling = false;
 		mesh.data = {type: 'sceneObject', uid: uid};
 		updateMeshSpacialAttributesFromUi(mesh);
 
-		var mainTree = Ext.getCmp('mainTree');
-		var rootNode = mainTree.getRootNode();
-		var meshesNode = rootNode.findChild('text', 'Meshes');
-		meshesNode.appendChild({text: mesh.id, leaf: true, object: mesh, uid: mesh.data.uid});
+		emmiter.emit('UI_ADD_MESH_TO_TREE', mesh);
 	};
 }
 
@@ -144,18 +134,15 @@ UiManager.prototype.createPlanePrefabUi = function(__container, uid)
 	  	};
 
 	  	//CreatePlane(name, options, scene)
-		var mesh = BABYLON.MeshBuilder.CreateGround("Plane" + uid, options, this.scene);
-		mesh.material = new BABYLON.StandardMaterial("PlaneMat", this.scene);
+		var mesh = BABYLON.MeshBuilder.CreateGround("Plane" + uid, options, this.sceneManager.scene);
+		mesh.material = new BABYLON.StandardMaterial("PlaneMat", this.sceneManager.scene);
 		mesh.material.backFaceCulling = false;
 		mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 		mesh.data = {type: 'sceneObject', uid: uid};
 		
 		updateMeshSpacialAttributesFromUi(mesh);
 
-		var mainTree = Ext.getCmp('mainTree');
-		var rootNode = mainTree.getRootNode();
-		var meshesNode = rootNode.findChild('text', 'Meshes');
-		meshesNode.appendChild({text: mesh.id, leaf: true, object: mesh, uid: mesh.data.uid});
+		emmiter.emit('UI_ADD_MESH_TO_TREE', mesh);
 	};
 };
 
@@ -189,17 +176,14 @@ UiManager.prototype.createLinePrefabUi = function(__container, uid)
 		var options = {
 		    points: [new BABYLON.Vector3(x1, y1, z1), new BABYLON.Vector3(x2, y2, z2)]
 	  	};
-		var line = BABYLON.MeshBuilder.CreateLines('Line' + uid, options, this.scene);
-		line.material = new BABYLON.StandardMaterial("boxMat", this.scene);
+		var line = BABYLON.MeshBuilder.CreateLines('Line' + uid, options, this.sceneManager.scene);
+		line.material = new BABYLON.StandardMaterial("boxMat", this.sceneManager.scene);
 		line.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 		line.data = {type: 'sceneObject', uid: uid};
 		
 		updateMeshSpacialAttributesFromUi(line);
 
-		var mainTree = Ext.getCmp('mainTree');
-		var rootNode = mainTree.getRootNode();
-		var meshesNode = rootNode.findChild('text', 'Meshes');
-		meshesNode.appendChild({text: line.id, leaf: true, object: line, uid: line.data.uid});
+		emmiter.emit('UI_ADD_MESH_TO_TREE', line);
 	};
 };
 
@@ -209,29 +193,29 @@ UiManager.prototype.buildPrefabEntriesUi = function(__prefabType)
 	fieldSet.removeAll(true);
 	if(__prefabType == 'Box')
 	{
-		this.createBoxPrefabUi(fieldSet, this.uid++);
+		this.createBoxPrefabUi(fieldSet, this.sceneManager.uid++);
 	}
 	else if(__prefabType == 'Line')
 	{
-		this.createLinePrefabUi(fieldSet, this.uid++);
+		this.createLinePrefabUi(fieldSet, this.sceneManager.uid++);
 	}
 	else if(__prefabType == 'Cylinder')
 	{
-		this.createCylinderPrefabUi(fieldSet, this.uid++);
+		this.createCylinderPrefabUi(fieldSet, this.sceneManager.uid++);
 	}
 	else if(__prefabType == 'Sphere')
 	{
-		this.createSpherePrefabUi(fieldSet, this.uid++);
+		this.createSpherePrefabUi(fieldSet, this.sceneManager.uid++);
 	}
 	else if(__prefabType == 'Plane')
 	{
-		this.createPlanePrefabUi(fieldSet, this.uid++);
+		this.createPlanePrefabUi(fieldSet, this.sceneManager.uid++);
 	}
 };
 
 UiManager.prototype.updateRootTreeUi = function()
 {
-	var sceneDataModel = this.parseScene(this.scene);
+	var sceneDataModel = this.parseScene(this.sceneManager.scene);
 
 	var mainTree = Ext.getCmp('mainTree');
 	var rootNode = {
@@ -290,13 +274,21 @@ UiManager.prototype.updateRootTreeUi = function()
 	root.appendChild(meshes);
 };
 
+UiManager.prototype.addMeshToTree = function(mesh)
+{
+	var mainTree = Ext.getCmp('mainTree');
+	var root = mainTree.getRootNode();
+	var meshesNode = root.findChild('text', 'Meshes');
+	meshesNode.appendChild({text: mesh.name, leaf: true, object: mesh, uid: mesh.data.uid});
+}
+
 UiManager.prototype.parseScene = function()
 {
 	var sceneStructure = {lights: [], cameras: [], meshes: []};
 
-	var cameras = this.scene.cameras;
-	var lights = this.scene.lights;
-	var meshes = this.scene.meshes;
+	var cameras = this.sceneManager.scene.cameras;
+	var lights = this.sceneManager.scene.lights;
+	var meshes = this.sceneManager.scene.meshes;
 	
 	for(var i = 0; i < cameras.length; i++)
 	{
