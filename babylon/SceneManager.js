@@ -116,6 +116,7 @@ SceneManager.prototype.removeMesh = function()
 		this.selectionManager.editControl = null;
 	}
 	this.scene.removeMesh(this.selectionManager.lastPickedMesh);
+	this.selectionManager.lastPickedMesh = null;
 };
 
 SceneManager.prototype.cloneMesh = function()
