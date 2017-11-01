@@ -127,6 +127,8 @@ SceneManager.prototype.removeMesh = function(mesh)
 	}
 	this.scene.removeMesh(mesh);
 	this.selectionManager.lastPickedMesh = null;
+	emmiter.emit('UI_REMOVE_MESH_FROM_TREE', mesh.name);
+	
 };
 
 SceneManager.prototype.cloneMesh = function()

@@ -3,6 +3,7 @@ function UiManager(__sceneManager)
 	this.sceneManager = __sceneManager;
 	emmiter.on('UI_UPDATE_SELECTION', this.updateUiSelection.bind(this));
 	emmiter.on('UI_ADD_MESH_TO_TREE', this.addMeshToTree.bind(this));
+	emmiter.on('UI_REMOVE_MESH_FROM_TREE', this.removeMeshFromTree.bind(this));
 }
 
 UiManager.prototype.updateUiSelection = function(uid)
@@ -219,6 +220,18 @@ UiManager.prototype.addMeshToTree = function(mesh)
 	var root = mainTree.getRootNode();
 	var meshesNode = root.findChild('text', 'Meshes');
 	meshesNode.appendChild({text: mesh.name, leaf: true, object: mesh, uid: mesh.data.uid});
+}
+
+UiManager.prototype.removeMeshFromTree = function(meshId)
+{
+	var mainTree = Ext.getCmp('mainTree');
+	var root = mainTree.getRootNode();
+	var meshesNode = root.findChild('text', 'Meshes');
+	var toRemove = meshesNode.findChild('text', meshId);
+	if(toRemove != null)
+	{
+		meshesNode.removeChild(toRemove);
+	}
 }
 
 UiManager.prototype.parseScene = function()
