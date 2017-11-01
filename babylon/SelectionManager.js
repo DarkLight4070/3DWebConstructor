@@ -21,6 +21,7 @@ function SelectionManager(__sceneManager)
 	emmiter.on('POINTER_UP', this.pointerUp.bind(this));
 	emmiter.on('POINTER_DOWN', this.pointerDown.bind(this));
 	emmiter.on('ENABLE_CO_MODE', this.setCompoundObjectsMode.bind(this));
+	emmiter.on('SELECT_MESH', this.selectMesh.bind(this));
 }
 
 SelectionManager.prototype.instance = function()
@@ -69,10 +70,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 					this.editControl = null;
 				}
 			}
-
-			//updateMeshPropertiesUiFromSelection(pickResult.pickedMesh);
-			var meshUid = pickResult.pickedMesh.data.uid;
-			console.log('Picked Mesh UID: ', meshUid);
+			
 			emmiter.emit('UI_UPDATE_SELECTION', pickResult.pickedMesh.name);
 			this.lastPickedMeshMaterial = pickResult.pickedMesh.material.diffuseColor;
 			pickResult.pickedMesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
@@ -212,5 +210,62 @@ SelectionManager.prototype.setCompoundObjectsMode = function(enable, uiElement)
 	else
 	{
 		this.compoundObjectsMode = false;
+	}
+};
+
+SelectionManager.prototype.selectMesh = function(mesh)
+{
+	if(mesh.name == 'Grid')
+	{
+		return;
+	}
+	if(!this.compoundObjectsMode)
+	{
+		
+		if(this.lastPickedMesh != null)
+		{
+			this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
+			this.lastPickedMesh.material.alpha = 1;
+			this.lastPickedMesh.material.wireframe = false;
+			if(this.editControl != null)
+			{
+				this.editControl.detach();
+				this.editControl = null;
+			}
+		}
+		
+		this.lastPickedMeshMaterial = mesh.material.diffuseColor;
+		mesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+		mesh.material.alpha = .3;
+		mesh.material.wireframe = this.wireframe;
+		this.lastPickedMesh = mesh;
+		if(mesh.data != undefined && mesh.data.type == 'sceneObject' && mesh.data.gizmo == undefined)
+		{
+			if(this.transform != '')
+			{
+				var EditControl = org.ssatguru.babylonjs.component.EditControl;
+				this.editControl = new EditControl(this.lastPickedMesh, this.sceneManager.camera, this.sceneManager.canvas, 0.75, true);
+				//editControl.setLocal(true);
+				//enable translation controls
+				this.editControl.enableTranslation(3.14/18);
+				this.editControl.enableTranslation(3.14/18);
+				//set rotational snap valie in radians
+				this.editControl.setRotSnapValue(3.14 / 18);
+				this.editControl.setScaleSnapValue(.5);
+				//set transalation sna value in meters
+				this.editControl.setTransSnapValue(.1);
+			}
+		}
+	}
+	else
+	{
+		if(this.coFirst == null)
+		{
+			this.coFirst = mesh;
+		}
+		else
+		{
+			this.coSecond = mesh;
+		}
 	}
 };

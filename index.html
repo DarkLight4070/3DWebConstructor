@@ -849,6 +849,20 @@
 								{ 
 									ptype: 'treeviewdragdrop' 
 								}
+							},
+							listeners: 
+							{
+								itemclick: 
+								{
+
+									fn: function (view, record, item, index, e) 
+									{
+										if(record.parentNode.data.text == 'Meshes')
+										{
+											emmiter.emit('SELECT_MESH', record.raw.object);
+										}
+									}
+								}
 							}
 						}
 					]

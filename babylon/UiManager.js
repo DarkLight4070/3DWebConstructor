@@ -33,10 +33,10 @@ UiManager.prototype.createBoxPrefabUi = function(__container)
 	__container.add(depthField);
 	prefabCreationFunction = function()
 	{
-			var width = widthField.getValue();
-			var height = heightField.getValue();
-			var depth = depthField.getValue();
-			emmiter.emit('MESH_CREATE_BOX', width, height, depth);
+		var width = widthField.getValue();
+		var height = heightField.getValue();
+		var depth = depthField.getValue();
+		emmiter.emit('MESH_CREATE_BOX', width, height, depth);
 	};
 };
 
