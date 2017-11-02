@@ -580,13 +580,14 @@
 				        		xtype: 'button',
 				        		enableToggle: true,
 				        		text: 'C-Objects',
+								id: 'enableCOModeButtonId',
 				        		listeners:
 					        	{
 					        		toggle:
 					        		{
 					        			fn: function( __this, pressed, eOpts )
 					        			{
-											emmiter.emit('ENABLE_CO_MODE', pressed, __this);
+											emmiter.emit('ENABLE_CO_MODE', pressed);
 					        			}
 					        		}
 					        	}

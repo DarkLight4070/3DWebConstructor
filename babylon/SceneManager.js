@@ -173,7 +173,7 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 	var material = new BABYLON.StandardMaterial("mat", this.scene);
 	material.backFaceCulling = false;
 	material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-	var result = csg.toMesh(this.selectionManager.coFirst.name + "*" + this.selectionManager.coSecond.name, material, this.scene);
+	var result = csg.toMesh(this.selectionManager.coFirst.name + "*" + this.selectionManager.coSecond.name + this.getNextUid(), material, this.scene);
 	result.data = {type: 'sceneObject', uid: this.getNextUid()};
 	emmiter.emit('UI_ADD_MESH_TO_TREE', result);
 	
@@ -182,6 +182,10 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 		this.removeMesh(this.selectionManager.coFirst);
 		this.removeMesh(this.selectionManager.coSecond);
 	}
+	this.selectionManager.coFirst = null;
+	this.selectionManager.coSecond = null;
+	this.selectionManager.compoundObjectsMode = false;
+	emmiter.emit('UI_CO_RESET');
 };
 
 SceneManager.prototype.setView = function(view)

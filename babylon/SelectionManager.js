@@ -55,7 +55,6 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
 			this.lastPickedMesh.material.alpha = 1;
 			this.lastPickedMesh.material.wireframe = false;
-			//updateMeshPropertiesUiFromSelection(null);
 		}
 
 		if (pickResult.hit) 
@@ -85,14 +84,10 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 				{
 					var EditControl = org.ssatguru.babylonjs.component.EditControl;
 					this.editControl = new EditControl(this.lastPickedMesh, this.sceneManager.camera, this.sceneManager.canvas, 0.75, true);
-					//editControl.setLocal(true);
-					//enable translation controls
 					this.editControl.enableTranslation(3.14/18);
 					this.editControl.enableTranslation(3.14/18);
-					//set rotational snap valie in radians
 					this.editControl.setRotSnapValue(3.14 / 18);
 					this.editControl.setScaleSnapValue(.5);
-					//set transalation sna value in meters
 					this.editControl.setTransSnapValue(.1);
 					this.bindEditControlActionListeners();
 				}
@@ -100,7 +95,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			if(this.compoundObjectsMode == true)
 			{
 				this.coSecond = this.lastPickedMesh;
-				Ext.getCmp('secondObjectId').setValue(this.coSecond.name);
+				emmiter.emit('UI_CO_SET_SECOND', this.coSecond.name);
 			}
 			emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.lastPickedMesh);
 		}
@@ -195,27 +190,25 @@ SelectionManager.prototype.initSceneSelection = function(__sceneManager)
 	};
 };
 
-SelectionManager.prototype.setCompoundObjectsMode = function(enable, uiElement)
+SelectionManager.prototype.setCompoundObjectsMode = function(enable)
 {
 	if(enable && !this.compoundObjectsMode)
 	{
 		if(this.lastPickedMesh == null)
 		{
-			//TO REMOVE FROM HERE NO UI ACESS
-			Ext.MessageBox.alert('Compound Objects', 'Please select an object !');
-			uiElement.toggle(false, true);
+			emmiter.emit('UI_CO_SET_FIRST', null);
 		}
 		else
 		{
 			this.compoundObjectsMode = true;
 			this.coFirst = this.lastPickedMesh;
-			//TO REMOVE FROM HERE NO UI ACESS
-			Ext.getCmp('firstObjectId').setValue(this.coFirst.name);
+			emmiter.emit('UI_CO_SET_FIRST', this.coFirst.name);
 		}
 	}
 	else
 	{
 		this.compoundObjectsMode = false;
+		emmiter.emit('UI_CO_RESET');
 	}
 };
 
@@ -226,53 +219,57 @@ SelectionManager.prototype.selectMesh = function(mesh)
 		emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', null);
 		return;
 	}
-	if(!this.compoundObjectsMode)
+	
+		
+	if(this.lastPickedMesh != null)
 	{
-		
-		if(this.lastPickedMesh != null)
+		this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
+		this.lastPickedMesh.material.alpha = 1;
+		this.lastPickedMesh.material.wireframe = false;
+		if(this.editControl != null)
 		{
-			this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
-			this.lastPickedMesh.material.alpha = 1;
-			this.lastPickedMesh.material.wireframe = false;
-			if(this.editControl != null)
-			{
-				this.editControl.removeAllActionListeners();
-				this.editControl.detach();
-				this.editControl = null;
-			}
-		}
-		
-		this.lastPickedMeshMaterial = mesh.material.diffuseColor;
-		mesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
-		mesh.material.alpha = .3;
-		mesh.material.wireframe = this.wireframe;
-		this.lastPickedMesh = mesh;
-		if(mesh.data != undefined && mesh.data.type == 'sceneObject' && mesh.data.gizmo == undefined)
-		{
-			if(this.transform != '')
-			{
-				var EditControl = org.ssatguru.babylonjs.component.EditControl;
-				this.editControl = new EditControl(this.lastPickedMesh, this.sceneManager.camera, this.sceneManager.canvas, 0.75, true);
-				this.editControl.enableTranslation(3.14/18);
-				this.editControl.enableTranslation(3.14/18);
-				this.editControl.setRotSnapValue(3.14 / 18);
-				this.editControl.setScaleSnapValue(.5);
-				this.editControl.setTransSnapValue(.1);
-				this.bindEditControlActionListeners();
-			}
+			this.editControl.removeAllActionListeners();
+			this.editControl.detach();
+			this.editControl = null;
 		}
 	}
-	else
+	
+	this.lastPickedMeshMaterial = mesh.material.diffuseColor;
+	mesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
+	mesh.material.alpha = .3;
+	mesh.material.wireframe = this.wireframe;
+	this.lastPickedMesh = mesh;
+	if(mesh.data != undefined && mesh.data.type == 'sceneObject' && mesh.data.gizmo == undefined)
+	{
+		if(this.transform != '')
+		{
+			var EditControl = org.ssatguru.babylonjs.component.EditControl;
+			this.editControl = new EditControl(this.lastPickedMesh, this.sceneManager.camera, this.sceneManager.canvas, 0.75, true);
+			this.editControl.enableTranslation(3.14/18);
+			this.editControl.enableTranslation(3.14/18);
+			this.editControl.setRotSnapValue(3.14 / 18);
+			this.editControl.setScaleSnapValue(.5);
+			this.editControl.setTransSnapValue(.1);
+			this.bindEditControlActionListeners();
+		}
+	}
+	
+	if(this.compoundObjectsMode)
 	{
 		if(this.coFirst == null)
 		{
 			this.coFirst = mesh;
+			console.log('First object selected for CO');
+			emmiter.emit('UI_CO_SET_FIRST', this.coFirst.name);
 		}
 		else
 		{
 			this.coSecond = mesh;
+			console.log('Second object selected for CO');
+			emmiter.emit('UI_CO_SET_SECOND', this.coSecond.name);
 		}
 	}
+	
 	emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', mesh);
 };
 

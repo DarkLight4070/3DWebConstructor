@@ -5,6 +5,9 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_ADD_MESH_TO_TREE', this.addMeshToTree.bind(this));
 	emmiter.on('UI_REMOVE_MESH_FROM_TREE', this.removeMeshFromTree.bind(this));
 	emmiter.on('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.updateMeshPropertiesUiFromSelection.bind(this));
+	emmiter.on('UI_CO_SET_FIRST', this.setCoFirst.bind(this));
+	emmiter.on('UI_CO_SET_SECOND', this.setCoSecond.bind(this));
+	emmiter.on('UI_CO_RESET', this.resetCoUi.bind(this));
 }
 
 UiManager.prototype.updateUiSelection = function(uid)
@@ -282,4 +285,31 @@ UiManager.prototype.updateMeshPropertiesUiFromSelection = function(mesh)
 		Ext.getCmp('pRYId').setValue(mesh.rotation.y * (180 / Math.PI));
 		Ext.getCmp('pRZId').setValue(mesh.rotation.z * (180 / Math.PI));
 	}
+};
+
+UiManager.prototype.setCoFirst = function(meshName)
+{
+	if(meshName == null)
+	{
+		Ext.MessageBox.alert('Compound Objects', 'Please select an object !');
+		Ext.getCmp('enableCOModeButtonId').toggle(false, true);
+	}
+	else
+	{
+		Ext.getCmp('firstObjectId').setValue(meshName);
+	}
+};
+
+UiManager.prototype.setCoSecond = function(meshName)
+{
+	Ext.getCmp('secondObjectId').setValue(meshName);
+};
+
+UiManager.prototype.resetCoUi = function()
+{
+	Ext.getCmp('firstObjectId').reset();
+	Ext.getCmp('secondObjectId').reset();
+	Ext.getCmp('coTypeId').reset();
+	Ext.getCmp('coDeleteObjectsId').reset();
+	Ext.getCmp('enableCOModeButtonId').toggle(false, true);
 };
