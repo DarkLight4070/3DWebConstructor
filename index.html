@@ -96,7 +96,9 @@
 
 			Ext.onReady(function()
 			{
-
+				
+				Ext.QuickTips.init();
+				
 				var prefabsStore = Ext.create('Ext.data.Store', {
 				    fields: 
 				    ['id', 'name'],
@@ -135,7 +137,7 @@
 						id: 'toolsTabPanelId',
 				        width: 400,
 				        split: false,
-				        margins: '5 0 0 0',
+				        margins: '0 0 0 0',
 				        collapsible: true,
 				        layout: 'fit',
 				        items: 
@@ -484,13 +486,14 @@
 				        title: '3D View',
 				        region: 'center',
 				        xtype: 'panel',
-				        margins: '5 0 0 0',
+				        margins: '0 0 0 0',
 						html: '<canvas id="renderCanvas" style="width:100%;height:100%;" touch-action="none"></canvas>',
 				        tbar: 
 				    	[
 			        		{
 			        			xtype: 'button',
-			        			text: 'Rendering',
+			        			tooltip: 'Rendering',
+								icon: 'icons/render_modes.png',
 							    menu: 
 							    [
 							    	{
@@ -518,7 +521,8 @@
 								id: 'translateButton',
 				        		enableToggle: true,
 								toggleGroup: 'transformGroup',
-				        		text: 'Translate',
+				        		tooltip: 'Translate',
+								icon: 'icons/translate.png',
 								toggleHandler: function (button, state) 
 								{
 									if(state)
@@ -536,7 +540,8 @@
 				        		xtype: 'button',
 				        		enableToggle: true,
 								toggleGroup: 'transformGroup',
-				        		text: 'Rotate',
+				        		tooltip: 'Rotate',
+								icon: 'icons/rotate.png',
 								id: 'rotateButton',
 								toggleHandler: function (button, state) 
 								{
@@ -555,7 +560,8 @@
 				        		xtype: 'button',
 				        		enableToggle: true,
 								toggleGroup: 'transformGroup',
-				        		text: 'Scale',
+				        		tooltip: 'Scale',
+								icon: 'icons/scale.png',
 								toggleHandler: function (button, state) 
 								{
 									if(state)
@@ -574,7 +580,8 @@
 				        	{
 				        		xtype: 'button',
 				        		enableToggle: true,
-				        		text: 'C-Objects',
+				        		tooltip: 'Enable Compound Objects Mode',
+								icon: 'icons/co.png',
 								id: 'enableCOModeButtonId',
 				        		listeners:
 					        	{
@@ -590,66 +597,26 @@
 				        	{ 
 				        		xtype: 'tbseparator' 
 				        	},
-				        	{
-				        		xtype: 'button',
-				        		enableToggle: true,
-				        		text: 'Selection',
-				        		id: 'selectionMaterialButton',
-				        		listeners:
-					        	{
-					        		click:
-					        		{
-					        			fn: function( menu, item, e, eOpts )
-					        			{
-					        				wireframe = !wireframe;
-					        			}
-					        		}
-					        	}
-				        	},
+							{
+								xtype: 'button',
+								tooltip: 'Delete Selected',
+								icon: 'icons/delete.png',
+								handler: function()
+								{
+									emmiter.emit('DELETE_SELECTED_MESH');
+								}
+							},
+							{
+								xtype: 'button',
+								tooltip: 'Clone Selected Mesh',
+								icon: 'icons/clone.png',
+								handler: function()
+								{
+									emmiter.emit('CLONE_MESH');
+								}
+							},
 				        	{ 
 				        		xtype: 'tbseparator' 
-				        	},
-				        	{
-				        		xtype: 'button',
-				        		enableToggle: true,
-				        		text: 'Vertex Mode',
-				        		id: 'vertexModeSelectionButtonId',
-				        		listeners:
-					        	{
-					        		toggle:
-					        		{
-					        			fn: function( __this, pressed, eOpts )
-					        			{
-					        				if(!pressed)
-					        				{
-					        					selectionMode = objectSelectionMode;
-					        					lastPickedMesh.isPickable = true;
-					        					for(var i = 0; i < lastPickedMesh.data.vertexMeshs.length; i++)
-			        							{
-			        								scene.removeMesh(lastPickedMesh.data.vertexMeshs[i]);
-			        							}
-					        				}
-					        				else
-					        				{
-					        					if(!executeVertexMode())
-					        					{
-					        						__this.toggle(false, true);
-					        						Ext.MessageBox.alert('Vertex Mode', 'Please select an object !');
-					        						if(lastPickedMesh != null)
-					        						{
-					        							lastPickedMesh.isPickable = true;
-					        						}
-					        						selectionMode = objectSelectionMode;
-					        					}
-					        					else
-					        					{
-					        						lastPickedMesh.isPickable = false;
-					        						selectionMode = vertexSelectionMode;
-					        					}
-					        				}
-					        			}
-					        		}
-					        	}
 				        	}
 		        		],
 						dockedItems: 
@@ -774,22 +741,9 @@
 						        }
 						    ]
 		        		},
-						{
-							xtype: 'button',
-							text: 'Delete',
-							handler: function()
-							{
-								emmiter.emit('DELETE_SELECTED_MESH');
-							}
-						},
-						{
-							xtype: 'button',
-							text: 'Clone',
-							handler: function()
-							{
-								emmiter.emit('CLONE_MESH');
-							}
-						}
+						{ 
+				        	xtype: 'tbseparator' 
+				        }
 				    ],
 				    renderTo: Ext.getBody()
 				});

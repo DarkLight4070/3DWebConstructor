@@ -176,6 +176,9 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 	material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	var result = csg.toMesh(this.selectionManager.coFirst.name + "*" + this.selectionManager.coSecond.name + this.getNextUid(), material, this.scene);
 	result.data = {type: 'sceneObject', uid: this.getNextUid()};
+	
+	this.enableEdgeMode(result);
+	
 	emmiter.emit('UI_ADD_MESH_TO_TREE', result);
 	
 	if(deleteObjs)
@@ -243,7 +246,9 @@ SceneManager.prototype.createBox = function(width, height, depth)
 	box.material = new BABYLON.StandardMaterial("boxMat", this.scene);
 	box.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	box.material.backFaceCulling = false;
-	//updateMeshSpacialAttributesFromUi(box);
+	
+	this.enableEdgeMode(box);
+	
 	box.data = {type: 'sceneObject', uid: uid};
 	emmiter.emit('UI_ADD_MESH_TO_TREE', box);
 };
@@ -257,8 +262,9 @@ SceneManager.prototype.createCylinder = function(height, topDiameter, bottomDiam
 	cylinder.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	cylinder.material.backFaceCulling = false;
 	cylinder.data = {type: 'sceneObject', uid: uid};
-	//updateMeshSpacialAttributesFromUi(cylinder);
-
+	
+	this.enableEdgeMode(cylinder);
+	
 	emmiter.emit('UI_ADD_MESH_TO_TREE', cylinder);
 };
 
@@ -271,8 +277,9 @@ SceneManager.prototype.createSphere = function(diameter, segments)
 	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	mesh.material.backFaceCulling = false;
 	mesh.data = {type: 'sceneObject', uid: uid};
-	//updateMeshSpacialAttributesFromUi(mesh);
-
+	
+	this.enableEdgeMode(mesh);
+	
 	emmiter.emit('UI_ADD_MESH_TO_TREE', mesh);
 };
 
@@ -286,15 +293,14 @@ SceneManager.prototype.createPlane = function(width, height, subdivisions)
 		subdivisions: subdivisions,
 		updatable: true
 	};
-
-	//CreatePlane(name, options, scene)
+	
 	var mesh = BABYLON.MeshBuilder.CreateGround("Plane" + uid, options, this.scene);
 	mesh.material = new BABYLON.StandardMaterial("PlaneMat", this.scene);
 	mesh.material.backFaceCulling = false;
 	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	mesh.data = {type: 'sceneObject', uid: uid};
 	
-	//updateMeshSpacialAttributesFromUi(mesh);
+	this.enableEdgeMode(mesh);
 
 	emmiter.emit('UI_ADD_MESH_TO_TREE', mesh);
 };
@@ -323,4 +329,11 @@ SceneManager.prototype.applyTransformationToSelection = function(x, y, z, xr, yr
 	this.selectionManager.lastPickedMesh.rotation.x = xr * (Math.PI / 180);
 	this.selectionManager.lastPickedMesh.rotation.y = yr * (Math.PI / 180);
 	this.selectionManager.lastPickedMesh.rotation.z = zr * (Math.PI / 180);
+}
+
+SceneManager.prototype.enableEdgeMode = function(mesh)
+{
+	mesh.enableEdgesRendering(.9999999999);	
+	mesh.edgesWidth = 1.0;
+	mesh.edgesColor = new BABYLON.Color4(0, 0, 1, 1);
 }
