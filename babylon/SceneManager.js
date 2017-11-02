@@ -17,6 +17,7 @@ function SceneManager()
 	emmiter.on('MESH_CREATE_SPHERE', this.createSphere.bind(this));
 	emmiter.on('MESH_CREATE_PLANE', this.createPlane.bind(this));
 	emmiter.on('MESH_CREATE_LINE', this.createLine.bind(this));
+	emmiter.on('APPLY_TRANSFORMATION_TO_SELECTION', this.applyTransformationToSelection.bind(this));
 }
 
 SceneManager.prototype.instance = function()
@@ -309,8 +310,17 @@ SceneManager.prototype.createLine = function(x1, y1, z1, x2, y2, z2)
 	line.material = new BABYLON.StandardMaterial("boxMat", this.scene);
 	line.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	line.data = {type: 'sceneObject', uid: uid};
-	
-	//updateMeshSpacialAttributesFromUi(line);
 
 	emmiter.emit('UI_ADD_MESH_TO_TREE', line);
+}
+
+SceneManager.prototype.applyTransformationToSelection = function(x, y, z, xr, yr, zr)
+{
+	this.selectionManager.lastPickedMesh.position.x = x;
+	this.selectionManager.lastPickedMesh.position.y = y;
+	this.selectionManager.lastPickedMesh.position.z = z;
+
+	this.selectionManager.lastPickedMesh.rotation.x = xr * (Math.PI / 180);
+	this.selectionManager.lastPickedMesh.rotation.y = yr * (Math.PI / 180);
+	this.selectionManager.lastPickedMesh.rotation.z = zr * (Math.PI / 180);
 }

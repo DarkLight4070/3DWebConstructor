@@ -64,13 +64,7 @@
 
 				}
 
-				__selection.position.x = Ext.getCmp('pXId').getValue();
-				__selection.position.y = Ext.getCmp('pYId').getValue();
-				__selection.position.z = Ext.getCmp('pZId').getValue();
-
-				__selection.rotation.x = Ext.getCmp('pRXId').getValue() * (Math.PI / 180);
-				__selection.rotation.y = Ext.getCmp('pRYId').getValue() * (Math.PI / 180);
-				__selection.rotation.z = Ext.getCmp('pRZId').getValue() * (Math.PI / 180);
+				
 
 			}
 
@@ -232,15 +226,14 @@
 										        text: 'Update',
 										        handler: function()
 										        {
-										        	console.log(' Update Handler called');
-										        	if(selectionMode == objectSelectionMode)
-										        	{
-										        		updateSelectionSpacialAttributes(lastPickedMesh);
-										        	}
-										        	else if(selectionMode == vertexSelectionMode)
-										        	{
-										        		updateSelectionSpacialAttributes(lastPickedVertex);
-										        	}
+													var x = Ext.getCmp('pXId').getValue();
+													var y = Ext.getCmp('pYId').getValue();
+													var z = Ext.getCmp('pZId').getValue();
+
+													var xr = Ext.getCmp('pRXId').getValue();
+													var yr = Ext.getCmp('pRYId').getValue();
+													var zr = Ext.getCmp('pRZId').getValue();
+													emmiter.emit('APPLY_TRANSFORMATION_TO_SELECTION', x, y, z, xr, yr, zr);
 										        }
 										    }
 									    ]
