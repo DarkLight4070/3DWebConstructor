@@ -162,9 +162,11 @@ UiManager.prototype.updateRootTreeUi = function()
 	var sceneDataModel = this.parseScene(this.sceneManager.scene);
 
 	var mainTree = Ext.getCmp('mainTree');
-	var rootNode = {
+	var rootNode = 
+	{
 		name: 'Scene',
 		text: 'Scene',
+		icon: 'icons/scene.png',
 		expanded: true,
 		leaf: false,
 		children: 
@@ -172,8 +174,10 @@ UiManager.prototype.updateRootTreeUi = function()
 		]
 	};
 
-	var meshes = {
+	var meshes = 
+	{
 		text: 'Meshes',
+		icon: 'icons/mesh_node.png',
 		leaf: false,
 		expanded: true,
 		children:
@@ -183,14 +187,17 @@ UiManager.prototype.updateRootTreeUi = function()
 	var cameras = {
 		text: 'Cameras',
 		expanded: true,
+		icon: 'icons/cameras.png',
 		leaf: false,
 		children:
 		[]
 	};
 
-	var lights = {
-		text: 'lights',
+	var lights = 
+	{
+		text: 'Lights',
 		expanded: true,
+		icon: 'icons/lights.png',
 		leaf: false,
 		children:
 		[]
@@ -198,17 +205,17 @@ UiManager.prototype.updateRootTreeUi = function()
 
 	for(var i = 0; i < sceneDataModel.meshes.length; i++)
 	{
-		meshes.children.push({text: sceneDataModel.meshes[i].id, leaf: true, object: sceneDataModel.meshes[i], uid: sceneDataModel.meshes[i].data.uid});
+		meshes.children.push({text: sceneDataModel.meshes[i].id, icon: 'icons/mesh.png', leaf: true, object: sceneDataModel.meshes[i], uid: sceneDataModel.meshes[i].data.uid});
 	}
 
 	for(var i = 0; i < sceneDataModel.cameras.length; i++)
 	{
-		cameras.children.push({text: sceneDataModel.cameras[i].id, leaf: true, object: sceneDataModel.cameras[i]});
+		cameras.children.push({text: sceneDataModel.cameras[i].id, icon: 'icons/camera.png', leaf: true, object: sceneDataModel.cameras[i]});
 	}
 
 	for(var i = 0; i < sceneDataModel.lights.length; i++)
 	{
-		lights.children.push({text: sceneDataModel.lights[i].id, leaf: true, object: sceneDataModel.lights[i]});
+		lights.children.push({text: sceneDataModel.lights[i].id, icon: 'icons/light.png', leaf: true, object: sceneDataModel.lights[i]});
 	}
 
 	mainTree.setRootNode(rootNode);
@@ -223,7 +230,12 @@ UiManager.prototype.addMeshToTree = function(mesh)
 	var mainTree = Ext.getCmp('mainTree');
 	var root = mainTree.getRootNode();
 	var meshesNode = root.findChild('text', 'Meshes');
-	meshesNode.appendChild({text: mesh.name, leaf: true, object: mesh, uid: mesh.data.uid});
+	var icon = 'icons/mesh.png';
+	if(mesh.data.isCo == true)
+	{
+		icon = 'icons/co_mesh.png';
+	}
+	meshesNode.appendChild({text: mesh.name, icon: icon, leaf: true, object: mesh, uid: mesh.data.uid});
 }
 
 UiManager.prototype.removeMeshFromTree = function(meshId)

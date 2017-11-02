@@ -148,6 +148,7 @@ SceneManager.prototype.cloneMesh = function()
 	clone.material.diffuseColor = this.selectionManager.lastPickedMeshMaterial;
 	clone.material.backFaceCulling = false;
 	clone.data = {type: 'sceneObject', uid: uid};
+	this.enableEdgeMode(clone);
 	emmiter.emit('UI_ADD_MESH_TO_TREE', clone);
 };
 
@@ -175,7 +176,7 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 	material.backFaceCulling = false;
 	material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	var result = csg.toMesh(this.selectionManager.coFirst.name + "*" + this.selectionManager.coSecond.name + this.getNextUid(), material, this.scene);
-	result.data = {type: 'sceneObject', uid: this.getNextUid()};
+	result.data = {type: 'sceneObject', uid: this.getNextUid(), isCo: true};
 	
 	this.enableEdgeMode(result);
 	
