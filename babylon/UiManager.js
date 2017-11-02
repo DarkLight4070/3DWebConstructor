@@ -297,6 +297,7 @@ UiManager.prototype.setCoFirst = function(meshName)
 	else
 	{
 		Ext.getCmp('firstObjectId').setValue(meshName);
+		Ext.getCmp('toolsTabPanelId').setActiveTab(Ext.getCmp('coTabId'));
 	}
 };
 
