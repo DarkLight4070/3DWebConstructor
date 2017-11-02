@@ -27,29 +27,6 @@
 			var sceneManager = null;
 
 			const emmiter = new EventEmitter();
-			
-			function updateMeshPropertiesUiFromSelection(__selection)
-			{
-				if(__selection == null)
-				{
-					Ext.getCmp('pXId').reset();
-					Ext.getCmp('pYId').reset();
-					Ext.getCmp('pZId').reset();
-					Ext.getCmp('pRXId').reset();
-					Ext.getCmp('pRYId').reset();
-					Ext.getCmp('pRZId').reset();
-				}
-				else
-				{
-					Ext.getCmp('pXId').setValue(__selection.position.x);
-					Ext.getCmp('pYId').setValue(__selection.position.y);
-					Ext.getCmp('pZId').setValue(__selection.position.z);
-
-					Ext.getCmp('pRXId').setValue(__selection.rotation.x * (180 / Math.PI));
-					Ext.getCmp('pRYId').setValue(__selection.rotation.y * (180 / Math.PI));
-					Ext.getCmp('pRZId').setValue(__selection.rotation.z * (180 / Math.PI));
-				}
-			}
 
 			function updateSelectionSpacialAttributes(__selection)
 			{

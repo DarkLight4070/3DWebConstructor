@@ -87,12 +87,15 @@ SceneManager.prototype.renderFrames = function()
 			this.selectionManager.editControl.setRotSnapValue(3.14 / 18);
 			this.selectionManager.editControl.setScaleSnapValue(.5);
 			this.selectionManager.editControl.setTransSnapValue(.1);
+			
+			this.selectionManager.bindActionListeners();
 		}
 		
 		if(this.selectionManager.transform == '')
 		{
 			if(this.selectionManager.editControl != null)
 			{
+				this.selectionManager.editControl.removeAllActionListeners();
 				this.selectionManager.editControl.detach();
 				this.selectionManager.editControl = null;
 			}
@@ -122,6 +125,7 @@ SceneManager.prototype.removeMesh = function(mesh)
 {
 	if(this.selectionManager.editControl != null)
 	{
+		this.selectionManager.editControl.removeAllActionListeners();
 		this.selectionManager.editControl.detach();
 		this.selectionManager.editControl = null;
 	}

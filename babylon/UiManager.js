@@ -4,6 +4,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_UPDATE_SELECTION', this.updateUiSelection.bind(this));
 	emmiter.on('UI_ADD_MESH_TO_TREE', this.addMeshToTree.bind(this));
 	emmiter.on('UI_REMOVE_MESH_FROM_TREE', this.removeMeshFromTree.bind(this));
+	emmiter.on('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.updateMeshPropertiesUiFromSelection.bind(this));
 }
 
 UiManager.prototype.updateUiSelection = function(uid)
@@ -232,7 +233,7 @@ UiManager.prototype.removeMeshFromTree = function(meshId)
 	{
 		meshesNode.removeChild(toRemove);
 	}
-}
+};
 
 UiManager.prototype.parseScene = function()
 {
@@ -258,4 +259,27 @@ UiManager.prototype.parseScene = function()
 	}
 
 	return sceneStructure;
-}
+};
+
+UiManager.prototype.updateMeshPropertiesUiFromSelection = function(mesh)
+{
+	if(mesh == null)
+	{
+		Ext.getCmp('pXId').reset();
+		Ext.getCmp('pYId').reset();
+		Ext.getCmp('pZId').reset();
+		Ext.getCmp('pRXId').reset();
+		Ext.getCmp('pRYId').reset();
+		Ext.getCmp('pRZId').reset();
+	}
+	else
+	{
+		Ext.getCmp('pXId').setValue(mesh.position.x);
+		Ext.getCmp('pYId').setValue(mesh.position.y);
+		Ext.getCmp('pZId').setValue(mesh.position.z);
+
+		Ext.getCmp('pRXId').setValue(mesh.rotation.x * (180 / Math.PI));
+		Ext.getCmp('pRYId').setValue(mesh.rotation.y * (180 / Math.PI));
+		Ext.getCmp('pRZId').setValue(mesh.rotation.z * (180 / Math.PI));
+	}
+};

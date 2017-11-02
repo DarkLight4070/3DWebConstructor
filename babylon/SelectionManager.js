@@ -43,6 +43,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 {
 	if(pickResult == null)
 	{
+		emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', null);
 		return;
 	}
 	console.log('PICK EVENT');
@@ -66,6 +67,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 				this.lastPickedMesh.material.wireframe = false;
 				if(this.editControl != null)
 				{
+					this.editControl.removeAllActionListeners();
 					this.editControl.detach();
 					this.editControl = null;
 				}
@@ -92,6 +94,8 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 					this.editControl.setScaleSnapValue(.5);
 					//set transalation sna value in meters
 					this.editControl.setTransSnapValue(.1);
+					this.editControl.addActionListener(this.addEditControlActionsOnListener.bind(this));
+					this.editControl.addActionEndListener(this.addEditControlActionsEndListener.bind(this));
 				}
 			}
 			if(this.compoundObjectsMode == true)
@@ -99,6 +103,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 				this.coSecond = this.lastPickedMesh;
 				Ext.getCmp('secondObjectId').setValue(this.coSecond.name);
 			}
+			emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.lastPickedMesh);
 		}
 		else
 		{
@@ -106,9 +111,11 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			this.lastPickedMesh = null;
 			if(this.editControl != null)
 			{
+				this.editControl.removeAllActionListeners();
 				this.editControl.detach();
 				this.editControl = null;
 			}
+			emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', null);
 		}
 	}
 };
@@ -177,11 +184,11 @@ SelectionManager.prototype.initSceneSelection = function(__sceneManager)
 				{
 					pickResult.pickedMesh.material.alpha = 1;
 					this.lastPickedVertex = pickResult.pickedMesh;
-					updateMeshPropertiesUiFromSelection(pickResult.pickedMesh);
+					//updateMeshPropertiesUiFromSelection(pickResult.pickedMesh);
 				}
 				else
 				{
-					updateMeshPropertiesUiFromSelection(null);
+					//updateMeshPropertiesUiFromSelection(null);
 					this.lastPickedVertex = null;
 				}
 			}
@@ -217,6 +224,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 {
 	if(mesh.name == 'Grid')
 	{
+		emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', null);
 		return;
 	}
 	if(!this.compoundObjectsMode)
@@ -229,6 +237,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 			this.lastPickedMesh.material.wireframe = false;
 			if(this.editControl != null)
 			{
+				this.editControl.removeAllActionListeners();
 				this.editControl.detach();
 				this.editControl = null;
 			}
@@ -245,15 +254,13 @@ SelectionManager.prototype.selectMesh = function(mesh)
 			{
 				var EditControl = org.ssatguru.babylonjs.component.EditControl;
 				this.editControl = new EditControl(this.lastPickedMesh, this.sceneManager.camera, this.sceneManager.canvas, 0.75, true);
-				//editControl.setLocal(true);
-				//enable translation controls
 				this.editControl.enableTranslation(3.14/18);
 				this.editControl.enableTranslation(3.14/18);
-				//set rotational snap valie in radians
 				this.editControl.setRotSnapValue(3.14 / 18);
 				this.editControl.setScaleSnapValue(.5);
-				//set transalation sna value in meters
 				this.editControl.setTransSnapValue(.1);
+				this.editControl.addActionListener(this.addEditControlActionsOnListener.bind(this));
+				this.editControl.addActionEndListener(this.addEditControlActionsEndListener.bind(this));
 			}
 		}
 	}
@@ -268,4 +275,21 @@ SelectionManager.prototype.selectMesh = function(mesh)
 			this.coSecond = mesh;
 		}
 	}
+	emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', mesh);
+};
+
+SelectionManager.prototype.addEditControlActionsOnListener = function(action)
+{
+	emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.editControl.mesh);
+};
+
+SelectionManager.prototype.addEditControlActionsEndListener = function(action)
+{
+	emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.editControl.mesh);
+};
+
+SelectionManager.prototype.bindActionListeners = function()
+{
+	this.editControl.addActionListener(this.addEditControlActionsOnListener.bind(this));
+	this.editControl.addActionEndListener(this.addEditControlActionsEndListener.bind(this));
 };
