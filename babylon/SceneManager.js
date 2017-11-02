@@ -88,7 +88,7 @@ SceneManager.prototype.renderFrames = function()
 			this.selectionManager.editControl.setScaleSnapValue(.5);
 			this.selectionManager.editControl.setTransSnapValue(.1);
 			
-			this.selectionManager.bindActionListeners();
+			this.selectionManager.bindEditControlActionListeners();
 		}
 		
 		if(this.selectionManager.transform == '')

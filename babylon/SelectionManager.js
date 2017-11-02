@@ -94,8 +94,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 					this.editControl.setScaleSnapValue(.5);
 					//set transalation sna value in meters
 					this.editControl.setTransSnapValue(.1);
-					this.editControl.addActionListener(this.addEditControlActionsOnListener.bind(this));
-					this.editControl.addActionEndListener(this.addEditControlActionsEndListener.bind(this));
+					this.bindEditControlActionListeners();
 				}
 			}
 			if(this.compoundObjectsMode == true)
@@ -259,8 +258,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 				this.editControl.setRotSnapValue(3.14 / 18);
 				this.editControl.setScaleSnapValue(.5);
 				this.editControl.setTransSnapValue(.1);
-				this.editControl.addActionListener(this.addEditControlActionsOnListener.bind(this));
-				this.editControl.addActionEndListener(this.addEditControlActionsEndListener.bind(this));
+				this.bindEditControlActionListeners();
 			}
 		}
 	}
@@ -288,7 +286,7 @@ SelectionManager.prototype.addEditControlActionsEndListener = function(action)
 	emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.editControl.mesh);
 };
 
-SelectionManager.prototype.bindActionListeners = function()
+SelectionManager.prototype.bindEditControlActionListeners = function()
 {
 	this.editControl.addActionListener(this.addEditControlActionsOnListener.bind(this));
 	this.editControl.addActionEndListener(this.addEditControlActionsEndListener.bind(this));
