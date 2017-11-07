@@ -205,7 +205,7 @@ UiManager.prototype.updateRootTreeUi = function()
 
 	for(var i = 0; i < sceneDataModel.meshes.length; i++)
 	{
-		meshes.children.push({text: sceneDataModel.meshes[i].id, icon: 'icons/mesh.png', leaf: true, object: sceneDataModel.meshes[i], uid: sceneDataModel.meshes[i].data.uid});
+		meshes.children.push({text: sceneDataModel.meshes[i].id, icon: 'icons/mesh.png', leaf: true, object: sceneDataModel.meshes[i], uid: sceneDataModel.meshes[i].data.uid, visible: true});
 	}
 
 	for(var i = 0; i < sceneDataModel.cameras.length; i++)
@@ -235,7 +235,7 @@ UiManager.prototype.addMeshToTree = function(mesh)
 	{
 		icon = 'icons/co_mesh.png';
 	}
-	meshesNode.appendChild({text: mesh.name, icon: icon, leaf: true, object: mesh, uid: mesh.data.uid});
+	meshesNode.appendChild({text: mesh.name, icon: icon, leaf: true, object: mesh, uid: mesh.data.uid, visible: mesh.data.visible});
 }
 
 UiManager.prototype.removeMeshFromTree = function(meshId)

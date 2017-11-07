@@ -17,6 +17,17 @@
 		<script src="babylon/UiManager.js"></script>
 		<script src="babylon/event_emitter.js"></script>
 		
+		<style>
+			.visible-icon
+			{
+				background-image: url('icons/visible.png') !important;
+			}
+			.hidden-icon
+			{
+				background-image: url('icons/hidden.png') !important;
+			}
+		</style>
+		
 	</head>
 	<body>
 		<script type="text/javascript">
@@ -768,6 +779,52 @@
 							width: '100%',
 							height: '100%',
 							rootVisible: true,
+							columns: 
+							[
+								{
+									xtype: 'treecolumn',
+									text: 'Meshs',
+									flex: 2,
+									sortable: true,
+									dataIndex: 'text'
+								},
+								{
+									xtype: 'actioncolumn',
+									width: 50,
+									items: 
+									[
+										{
+											handler: function(grid, rowIndex, colIndex) 
+											{
+												var store = grid.getStore();
+												var rec = store.getAt(rowIndex);
+												rec.raw.visible = !rec.raw.visible;
+												rec.raw.object.data.visible = !rec.raw.object.data.visible;
+												store.removeAt(rowIndex);
+												store.insert(rowIndex, rec);
+												emmiter.emit('MESH_CHANGE_VISIBILITY', rec.raw.object, rec.raw.visible);
+											},
+											getClass: function(value, metadata, record)
+											{
+												if (record.raw.visible == true)
+												{
+													console.log(record.raw.text + ' visible');
+													return 'visible-icon';
+												} 
+												else if(record.raw.visible == false)
+												{
+													console.log(record.raw.text + ' not visible');
+													return 'hidden-icon';
+												}
+												else
+												{
+													return '';
+												}
+											}
+										}
+									]
+								}
+							],
 							viewConfig: 
 							{
 								plugins: 

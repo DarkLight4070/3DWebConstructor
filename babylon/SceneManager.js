@@ -18,6 +18,7 @@ function SceneManager()
 	emmiter.on('MESH_CREATE_PLANE', this.createPlane.bind(this));
 	emmiter.on('MESH_CREATE_LINE', this.createLine.bind(this));
 	emmiter.on('APPLY_TRANSFORMATION_TO_SELECTION', this.applyTransformationToSelection.bind(this));
+	emmiter.on('MESH_CHANGE_VISIBILITY', this.changeMeshVisibility.bind(this));
 }
 
 SceneManager.prototype.instance = function()
@@ -77,7 +78,7 @@ SceneManager.prototype.renderFrames = function()
 	this.engine.resize();
 	this.camera.update();
 	
-	if(this.selectionManager.lastPickedMesh != null)
+	if(this.selectionManager.lastPickedMesh != null && this.selectionManager.lastPickedMesh.data.visible == true)
 	{
 		if(this.selectionManager.editControl == null && this.selectionManager.transform != '')
 		{
@@ -124,12 +125,7 @@ SceneManager.prototype.deleteSelectedMesh = function()
 
 SceneManager.prototype.removeMesh = function(mesh)
 {
-	if(this.selectionManager.editControl != null)
-	{
-		this.selectionManager.editControl.removeAllActionListeners();
-		this.selectionManager.editControl.detach();
-		this.selectionManager.editControl = null;
-	}
+	this.selectionManager.removeEditControl();
 	this.scene.removeMesh(mesh);
 	this.selectionManager.lastPickedMesh = null;
 	emmiter.emit('UI_REMOVE_MESH_FROM_TREE', mesh.name);
@@ -176,7 +172,7 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 	material.backFaceCulling = false;
 	material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	var result = csg.toMesh(this.selectionManager.coFirst.name + "*" + this.selectionManager.coSecond.name + this.getNextUid(), material, this.scene, true);
-	result.data = {type: 'sceneObject', uid: this.getNextUid(), isCo: true};
+	result.data = {type: 'sceneObject', uid: this.getNextUid(), isCo: true, visible: true};
 	result.convertToFlatShadedMesh();
 	
 	this.enableEdgeMode(result);
@@ -251,7 +247,7 @@ SceneManager.prototype.createBox = function(width, height, depth)
 	
 	this.enableEdgeMode(box);
 	
-	box.data = {type: 'sceneObject', uid: uid};
+	box.data = {type: 'sceneObject', uid: uid, visible: true};
 	emmiter.emit('UI_ADD_MESH_TO_TREE', box);
 };
 
@@ -263,7 +259,7 @@ SceneManager.prototype.createCylinder = function(height, topDiameter, bottomDiam
 	cylinder.material = new BABYLON.StandardMaterial("cylinderMat", this.scene);
 	cylinder.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	cylinder.material.backFaceCulling = false;
-	cylinder.data = {type: 'sceneObject', uid: uid};
+	cylinder.data = {type: 'sceneObject', uid: uid, visible: true};
 	
 	this.enableEdgeMode(cylinder);
 	
@@ -278,7 +274,7 @@ SceneManager.prototype.createSphere = function(diameter, segments)
 	mesh.material = new BABYLON.StandardMaterial("SphereMat", this.scene);
 	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	mesh.material.backFaceCulling = false;
-	mesh.data = {type: 'sceneObject', uid: uid};
+	mesh.data = {type: 'sceneObject', uid: uid, visible: true};
 	
 	this.enableEdgeMode(mesh);
 	
@@ -300,7 +296,7 @@ SceneManager.prototype.createPlane = function(width, height, subdivisions)
 	mesh.material = new BABYLON.StandardMaterial("PlaneMat", this.scene);
 	mesh.material.backFaceCulling = false;
 	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-	mesh.data = {type: 'sceneObject', uid: uid};
+	mesh.data = {type: 'sceneObject', uid: uid, visible: true};
 	
 	this.enableEdgeMode(mesh);
 
@@ -317,10 +313,10 @@ SceneManager.prototype.createLine = function(x1, y1, z1, x2, y2, z2)
 	var line = BABYLON.MeshBuilder.CreateLines('Line' + uid, options, this.scene);
 	line.material = new BABYLON.StandardMaterial("boxMat", this.scene);
 	line.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-	line.data = {type: 'sceneObject', uid: uid};
+	line.data = {type: 'sceneObject', uid: uid, visible: true};
 
 	emmiter.emit('UI_ADD_MESH_TO_TREE', line);
-}
+};
 
 SceneManager.prototype.applyTransformationToSelection = function(x, y, z, xr, yr, zr)
 {
@@ -331,11 +327,21 @@ SceneManager.prototype.applyTransformationToSelection = function(x, y, z, xr, yr
 	this.selectionManager.lastPickedMesh.rotation.x = xr * (Math.PI / 180);
 	this.selectionManager.lastPickedMesh.rotation.y = yr * (Math.PI / 180);
 	this.selectionManager.lastPickedMesh.rotation.z = zr * (Math.PI / 180);
-}
+};
 
 SceneManager.prototype.enableEdgeMode = function(mesh)
 {
 	mesh.enableEdgesRendering(.9999999999);	
 	mesh.edgesWidth = 1.0;
 	mesh.edgesColor = new BABYLON.Color4(1, 1, 1, 1);
-}
+};
+
+SceneManager.prototype.changeMeshVisibility = function(mesh, visibility)
+{
+	this.selectionManager.removeEditControl();
+	mesh.visibility = visibility;
+	if(mesh.name != 'Grid')
+	{
+		mesh.isPickable = visibility;
+	}
+};

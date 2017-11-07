@@ -220,7 +220,11 @@ SelectionManager.prototype.selectMesh = function(mesh)
 		return;
 	}
 	
-		
+	if(mesh.data.visible == false)
+	{
+		return;
+	}
+	
 	if(this.lastPickedMesh != null)
 	{
 		this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
@@ -287,4 +291,15 @@ SelectionManager.prototype.bindEditControlActionListeners = function()
 {
 	this.editControl.addActionListener(this.addEditControlActionsOnListener.bind(this));
 	this.editControl.addActionEndListener(this.addEditControlActionsEndListener.bind(this));
+};
+
+SelectionManager.prototype.removeEditControl = function()
+{
+	console.log('SelectionManager.prototype.removeEditControl');
+	if(this.editControl != null)
+	{
+		this.editControl.removeAllActionListeners();
+		this.editControl.detach();
+		this.editControl = null;
+	}
 };
