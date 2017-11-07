@@ -177,6 +177,7 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 	material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	var result = csg.toMesh(this.selectionManager.coFirst.name + "*" + this.selectionManager.coSecond.name + this.getNextUid(), material, this.scene, true);
 	result.data = {type: 'sceneObject', uid: this.getNextUid(), isCo: true};
+	result.convertToFlatShadedMesh();
 	
 	this.enableEdgeMode(result);
 	
@@ -336,5 +337,5 @@ SceneManager.prototype.enableEdgeMode = function(mesh)
 {
 	mesh.enableEdgesRendering(.9999999999);	
 	mesh.edgesWidth = 1.0;
-	mesh.edgesColor = new BABYLON.Color4(0, 0, 1, 1);
+	mesh.edgesColor = new BABYLON.Color4(1, 1, 1, 1);
 }
