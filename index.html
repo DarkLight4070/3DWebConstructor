@@ -26,6 +26,14 @@
 			{
 				background-image: url('icons/hidden.png') !important;
 			}
+			.wireframe-icon
+			{
+				background-image: url('icons/wireframe.png') !important;
+			}
+			.plain-icon
+			{
+				background-image: url('icons/plain.png') !important;
+			}
 		</style>
 		
 	</head>
@@ -790,7 +798,7 @@
 								},
 								{
 									xtype: 'actioncolumn',
-									width: 50,
+									width: 20,
 									items: 
 									[
 										{
@@ -808,18 +816,60 @@
 											{
 												if (record.raw.visible == true)
 												{
-													console.log(record.raw.text + ' visible');
 													return 'visible-icon';
 												} 
 												else if(record.raw.visible == false)
 												{
-													console.log(record.raw.text + ' not visible');
 													return 'hidden-icon';
 												}
 												else
 												{
 													return '';
 												}
+											}
+										}
+									]
+								},
+								{
+									xtype: 'actioncolumn',
+									width: 20,
+									items: 
+									[
+										{
+											handler: function(grid, rowIndex, colIndex) 
+											{
+												var store = grid.getStore();
+												var rec = store.getAt(rowIndex);
+												var mesh = rec.raw.object;
+												//emmiter.emit('MESH_SET_WIREFRAME', mesh, !mesh.material.wireframe);
+												mesh.material.wireframe = !mesh.material.wireframe;
+												if(mesh.material.wireframe == true)
+												{
+													mesh.disableEdgesRendering();
+												}
+												else
+												{
+													sceneManager.enableEdgeMode(mesh);
+												}
+												store.removeAt(rowIndex);
+												store.insert(rowIndex, rec);
+											},
+											getClass: function(value, metadata, record)
+											{
+												var mesh = record.raw.object;
+												if(mesh != null && mesh != undefined && mesh.data != undefined && mesh.data.type == 'sceneObject')
+												{
+													var material = mesh.material;
+													if(material.wireframe == true)
+													{
+														return 'plain-icon';
+													}
+													else
+													{
+														return 'wireframe-icon';
+													}
+												}
+												return '';
 											}
 										}
 									]

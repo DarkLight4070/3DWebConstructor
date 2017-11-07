@@ -19,6 +19,7 @@ function SceneManager()
 	emmiter.on('MESH_CREATE_LINE', this.createLine.bind(this));
 	emmiter.on('APPLY_TRANSFORMATION_TO_SELECTION', this.applyTransformationToSelection.bind(this));
 	emmiter.on('MESH_CHANGE_VISIBILITY', this.changeMeshVisibility.bind(this));
+	emmiter.on('MESH_SET_WIREFRAME', this.setWireframe.bind(this));
 }
 
 SceneManager.prototype.instance = function()
@@ -143,7 +144,7 @@ SceneManager.prototype.cloneMesh = function()
 	clone.material = new BABYLON.StandardMaterial("mat", this.scene);
 	clone.material.diffuseColor = this.selectionManager.lastPickedMeshMaterial;
 	clone.material.backFaceCulling = false;
-	clone.data = {type: 'sceneObject', uid: uid};
+	clone.data = {type: 'sceneObject', uid: uid, visible: true};
 	this.enableEdgeMode(clone);
 	emmiter.emit('UI_ADD_MESH_TO_TREE', clone);
 };
@@ -336,6 +337,11 @@ SceneManager.prototype.enableEdgeMode = function(mesh)
 	mesh.edgesColor = new BABYLON.Color4(1, 1, 1, 1);
 };
 
+SceneManager.prototype.disableEdgeMode = function(mesh)
+{
+	mesh.disableEdgesRendering();
+};
+
 SceneManager.prototype.changeMeshVisibility = function(mesh, visibility)
 {
 	this.selectionManager.removeEditControl();
@@ -344,4 +350,14 @@ SceneManager.prototype.changeMeshVisibility = function(mesh, visibility)
 	{
 		mesh.isPickable = visibility;
 	}
+};
+
+SceneManager.prototype.setWireframe = function(mesh, wireframe)
+{
+	console.log('SceneManager.prototype.setWireframe');
+	if(wireframe == true)
+	{
+		this.disableEdgeMode(mesh);
+	}
+	mesh.material.wireframe = wireframe;
 };

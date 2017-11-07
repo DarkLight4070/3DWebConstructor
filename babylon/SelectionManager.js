@@ -54,7 +54,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 		{
 			this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
 			this.lastPickedMesh.material.alpha = 1;
-			this.lastPickedMesh.material.wireframe = false;
+			//this.lastPickedMesh.material.wireframe = false;
 		}
 
 		if (pickResult.hit) 
@@ -63,7 +63,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			{
 				this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
 				this.lastPickedMesh.material.alpha = 1;
-				this.lastPickedMesh.material.wireframe = false;
+				//this.lastPickedMesh.material.wireframe = false;
 				if(this.editControl != null)
 				{
 					this.editControl.removeAllActionListeners();
@@ -76,7 +76,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			this.lastPickedMeshMaterial = pickResult.pickedMesh.material.diffuseColor;
 			pickResult.pickedMesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
 			pickResult.pickedMesh.material.alpha = .3;
-			pickResult.pickedMesh.material.wireframe = this.wireframe;
+			//pickResult.pickedMesh.material.wireframe = this.wireframe;
 			this.lastPickedMesh = pickResult.pickedMesh;
 			if(this.lastPickedMesh.data != undefined && this.lastPickedMesh.data.type == 'sceneObject' && this.lastPickedMesh.data.gizmo == undefined)
 			{
@@ -229,7 +229,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	{
 		this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
 		this.lastPickedMesh.material.alpha = 1;
-		this.lastPickedMesh.material.wireframe = false;
+		//this.lastPickedMesh.material.wireframe = false;
 		if(this.editControl != null)
 		{
 			this.editControl.removeAllActionListeners();
@@ -241,7 +241,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	this.lastPickedMeshMaterial = mesh.material.diffuseColor;
 	mesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
 	mesh.material.alpha = .3;
-	mesh.material.wireframe = this.wireframe;
+	//mesh.material.wireframe = this.wireframe;
 	this.lastPickedMesh = mesh;
 	if(mesh.data != undefined && mesh.data.type == 'sceneObject' && mesh.data.gizmo == undefined)
 	{
