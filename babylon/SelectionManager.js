@@ -15,6 +15,7 @@ function SelectionManager(__sceneManager)
 	this.compoundObjectsMode = false;
 	this.coFirst = null;
 	this.coSecond = null;
+	this.sectionMode = false;
 	
 	this.sceneManager = __sceneManager;
 	
@@ -22,6 +23,8 @@ function SelectionManager(__sceneManager)
 	emmiter.on('POINTER_DOWN', this.pointerDown.bind(this));
 	emmiter.on('ENABLE_CO_MODE', this.setCompoundObjectsMode.bind(this));
 	emmiter.on('SELECT_MESH', this.selectMesh.bind(this));
+	emmiter.on('SELECT_MESH', this.selectMesh.bind(this));
+	emmiter.on('ENABLE_SECTION_MODE', this.enableSectionMode.bind(this));
 }
 
 SelectionManager.prototype.instance = function()
@@ -279,6 +282,10 @@ SelectionManager.prototype.selectMesh = function(mesh)
 
 SelectionManager.prototype.addEditControlActionsOnListener = function(action)
 {
+	if(this.sectionMode == true)
+	{
+		this.lastPickedMesh.material.setVector3("vLightPosition", new BABYLON.Vector3(this.lastPickedMesh.position.x, this.lastPickedMesh.position.y, this.lastPickedMesh.position.z));
+	}
 	emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.editControl.mesh);
 };
 
@@ -303,3 +310,97 @@ SelectionManager.prototype.removeEditControl = function()
 		this.editControl = null;
 	}
 };
+
+SelectionManager.prototype.enableSectionMode = function(pressed)
+{
+	this.sectionMode = pressed;
+	if(this.sectionMode == true)
+	{
+		
+		BABYLON.Effect.ShadersStore["customVertexShader"]=                "precision highp float;\r\n"+
+
+		"// Attributes\r\n"+
+		"attribute vec3 position;\r\n"+
+		"attribute vec3 normal;\r\n"+
+
+		"// Uniforms\r\n"+
+		"uniform mat4 worldViewProjection;\r\n"+
+
+		"// Varying\r\n"+
+		"varying vec3 vPosition;\r\n"+
+		"varying vec3 vNormal;\r\n"+
+
+		"void main(void) {\r\n"+
+		"    vec4 outPosition = worldViewProjection * vec4(position, 1.0);\r\n"+
+		"    gl_Position = outPosition;\r\n"+
+		"    \r\n"+
+		"    vPosition = position;\r\n"+
+		"    vNormal = normal;\r\n"+
+		"}\r\n";
+
+		BABYLON.Effect.ShadersStore["customFragmentShader"]=                "precision highp float;\r\n"+
+
+		"// Varying\r\n"+
+		"varying vec3 vPosition;\r\n"+
+		"varying vec3 vNormal;\r\n"+
+		"uniform float limit;\r\n"+
+		"uniform vec3 vLightPosition;\r\n"+
+		"// Uniforms\r\n"+
+		"uniform mat4 world;\r\n"+
+
+		"// Refs\r\n"+
+		"uniform vec3 cameraPosition;\r\n"+
+		"uniform vec3 color;\r\n"+
+
+		"void main(void) {\r\n"+
+		"    // World values\r\n"+
+		"    vec3 vPositionW = vec3(world * vec4(vPosition, 1.0));\r\n"+
+		"    vec3 vNormalW = normalize(vec3(world * vec4(vNormal, 0.0)));\r\n"+
+		"    vec3 viewDirectionW = normalize(cameraPosition - vPositionW);\r\n"+
+		"    \r\n"+
+		"    // Light\r\n"+
+		"    vec3 lightVectorW = normalize(vLightPosition - vPositionW);\r\n"+
+		"    \r\n"+
+		"    // diffuse\r\n"+
+		"    float ndl = max(0., dot(vNormalW, lightVectorW));\r\n"+
+		"    \r\n"+
+		"    // Specular\r\n"+
+		"    vec3 angleW = normalize(viewDirectionW + lightVectorW);\r\n"+
+		"    float specComp = max(0., dot(vNormalW, angleW));\r\n"+
+		"    specComp = pow(specComp, max(1., 64.)) * 2.;\r\n"+
+		"    \r\n"+
+		"    if (vPosition.x > limit) {\r\n"+
+		"        discard;\r\n"+
+		"    }\r\n"+
+		"    \r\n"+
+		"    vec3 ambientColor = vec3(.05, .05, .05);\r\n"+
+		"    gl_FragColor = vec4((color * ndl) + ambientColor, 1.);\r\n"+
+		"}\r\n";
+		
+		// Compile
+		var shaderMaterial = new BABYLON.ShaderMaterial("shader", this.sceneManager.scene, {
+			vertex: "custom",
+			fragment: "custom",
+		},
+		{
+			attributes: ["position", "normal", "uv"],
+			uniforms: ["world", "worldView", "worldViewProjection", "view", "projection"]
+		});
+		shaderMaterial.setFloat("limit", 0);
+		shaderMaterial.setVector3("vLightPosition", new BABYLON.Vector3(this.lastPickedMesh.position.x, this.lastPickedMesh.position.y, this.lastPickedMesh.position.z));
+		
+		var dc = this.lastPickedMesh.material.diffuseColor;
+		shaderMaterial.setVector3("color", new BABYLON.Vector3(dc.r, dc.g, dc.b));
+		
+		shaderMaterial.setVector3("cameraPosition", this.sceneManager.scene.cameras[0].position);
+		shaderMaterial.backFaceCulling = false;
+		
+		this.lastPickedMesh.data.originalMaterial = this.lastPickedMesh.material;
+		
+		this.lastPickedMesh.material = shaderMaterial;
+	}
+	else
+	{
+		this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+	}
+}

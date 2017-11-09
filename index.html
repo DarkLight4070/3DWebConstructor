@@ -16,6 +16,7 @@
 		<script src="babylon/SelectionManager.js"></script>
 		<script src="babylon/UiManager.js"></script>
 		<script src="babylon/event_emitter.js"></script>
+		<script src="babylon/ShaderBuilder.js"></script>
 		
 		<style>
 			.visible-icon
@@ -495,7 +496,75 @@
 								]
 						    },							
 						    {
-						        title: 'Others'
+						        title: '3D Section',
+								layout: 'fit',
+								id: 'sectionTabId',
+								disabled: true,
+	        					height: '100%',
+								items: 
+				        		[
+				        			{
+				        				xtype: 'form',
+				        				bodyPadding: 5,
+				        				layout: 'anchor',
+									    defaults: 
+									    {
+									        anchor: '100%'
+									    },
+									    items: 
+									    [
+									    	{
+										    	xtype:'fieldset',
+										    	title: 'Config',
+										    	defaults: 
+										    	{
+										        	anchor: '100%'
+											    },
+											    layout: 'anchor',
+	        									items :
+	        									[
+													{
+	        											xtype: 'sliderfield',
+	        											fieldLabel: 'X',
+	        											id: 'sectionXPositionId',
+														value: 0,
+														increment: 1,
+														minValue: -100,
+														maxValue: 100,
+														listeners:
+														{
+															change:
+															{
+																fn: function(slider, newValue, thumb, eOpts)
+																{
+																	sceneManager.selectionManager.lastPickedMesh.material.setFloat("limit", newValue / 100);
+																}
+															}
+														}
+	        										}
+												]
+											}
+										],
+										buttons: 
+									    [
+										    {
+										        text: 'Reset',
+										        handler: function() 
+										        {
+										        }
+										    }, 
+										    {
+										        text: 'Create',
+										        handler: function()
+										        {
+													var operationType = Ext.getCmp('coTypeId').getValue();
+													var deleteObjs = Ext.getCmp('coDeleteObjectsId').getValue();
+													emmiter.emit('EXECUTE_CO', operationType, deleteObjs);
+										        }
+										    }
+									    ]
+									}
+								]
 						    }
 					    ]
 				    },
@@ -607,6 +676,49 @@
 					        			fn: function( __this, pressed, eOpts )
 					        			{
 											emmiter.emit('ENABLE_CO_MODE', pressed);
+					        			}
+					        		}
+					        	}
+				        	},
+							{ 
+				        		xtype: 'tbseparator' 
+				        	},
+				        	{
+				        		xtype: 'button',
+				        		enableToggle: true,
+				        		tooltip: 'Enable 3D Section Mode',
+								icon: 'icons/section.png',
+								id: 'enableSectionModeButtonId',
+				        		listeners:
+					        	{
+					        		toggle:
+					        		{
+					        			fn: function( __this, pressed, eOpts )
+					        			{
+											if(sceneManager.selectionManager.lastPickedMesh == null)
+											{
+												Ext.MessageBox.alert('3D Section', 'Please select an object !');
+												Ext.getCmp('enableSectionModeButtonId').toggle(false, true);
+												return;
+											}
+											
+											emmiter.emit('ENABLE_SECTION_MODE', pressed);
+											
+											if(pressed == true)
+											{
+												Ext.getCmp('sectionTabId').setDisabled(false);
+												Ext.getCmp('toolsTabPanelId').setActiveTab(Ext.getCmp('sectionTabId'));
+												var vectorsWorld = sceneManager.selectionManager.lastPickedMesh.getBoundingInfo().boundingBox.vectorsWorld; 
+												var width = Number(vectorsWorld[1].x - vectorsWorld[0].x);
+												Ext.getCmp('sectionXPositionId').setMaxValue(width * 100 / 2);
+												Ext.getCmp('sectionXPositionId').setMinValue(-width * 100 / 2);
+												var heigh = Number(vectorsWorld[1].y - vectorsWorld[0].y);
+												var depth = Number(vectorsWorld[1].z - vectorsWorld[0].z);
+											}
+											else
+											{
+												Ext.getCmp('sectionTabId').setDisabled(true);
+											}
 					        			}
 					        		}
 					        	}

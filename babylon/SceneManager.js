@@ -41,7 +41,7 @@ SceneManager.prototype.create3DScene = function()
 			
 	this.scene = new BABYLON.Scene(this.engine);
 	
-	this.camera = new BABYLON.ArcRotateCamera("Camera", 0, .8, 40, new BABYLON.Vector3(0, 0, 0), this.scene);
+	this.camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, new BABYLON.Vector3(0, 0, -10), this.scene);
 	this.camera.inertia = 0;
 	this.camera.setTarget(BABYLON.Vector3.Zero());
 	this.camera.upperBetaLimit = 2 * Math.PI;
@@ -193,14 +193,16 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 
 SceneManager.prototype.setView = function(view)
 {
+	this.camera.radius = -10;
+	this.camera.setPosition(new BABYLON.Vector3(0, 0, 0));
 	if(view == 'FRONT')
 	{
-		this.camera.alpha = this.camera.beta = 0;
+		this.camera.beta = 0;
+		this.camera.alpha = 0;
 	}
 	else if(view == 'BACK')
 	{
 		this.camera.alpha = 0;
-		this.camera.beta = Math.PI;
 	}
 	else if(view == 'LEFT')
 	{
