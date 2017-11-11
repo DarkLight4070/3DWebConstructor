@@ -2,7 +2,6 @@ function SelectionManager(__sceneManager)
 {
 	this.__instance = null;
 	this.lastPickedMesh = null;
-	this.lastPickedMeshMaterial = null;
 	this.lastPickedVertex = null;
 	this.lastClickX = 0;
 	this.lastClickY = 0;
@@ -22,7 +21,6 @@ function SelectionManager(__sceneManager)
 	emmiter.on('POINTER_UP', this.pointerUp.bind(this));
 	emmiter.on('POINTER_DOWN', this.pointerDown.bind(this));
 	emmiter.on('ENABLE_CO_MODE', this.setCompoundObjectsMode.bind(this));
-	emmiter.on('SELECT_MESH', this.selectMesh.bind(this));
 	emmiter.on('SELECT_MESH', this.selectMesh.bind(this));
 	emmiter.on('ENABLE_SECTION_MODE', this.enableSectionMode.bind(this));
 }
@@ -50,23 +48,18 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 		return;
 	}
 	console.log('PICK EVENT');
-	console.log(this.objectSelectionMode);
 	if(this.lastClickX == evt.clientX && this.lastClickY == evt.clientY && this.objectSelectionMode == 1)
 	{
 		if(this.lastPickedMesh != null)
 		{
-			this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
-			this.lastPickedMesh.material.alpha = 1;
-			//this.lastPickedMesh.material.wireframe = false;
+			this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
 		}
 
 		if (pickResult.hit) 
 		{
 			if(this.lastPickedMesh != null)
 			{
-				this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
-				this.lastPickedMesh.material.alpha = 1;
-				//this.lastPickedMesh.material.wireframe = false;
+				this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
 				if(this.editControl != null)
 				{
 					this.editControl.removeAllActionListeners();
@@ -76,10 +69,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			}
 			
 			emmiter.emit('UI_UPDATE_SELECTION', pickResult.pickedMesh.name);
-			this.lastPickedMeshMaterial = pickResult.pickedMesh.material.diffuseColor;
-			pickResult.pickedMesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
-			pickResult.pickedMesh.material.alpha = .3;
-			//pickResult.pickedMesh.material.wireframe = this.wireframe;
+			pickResult.pickedMesh.material = pickResult.pickedMesh.data.selectionMaterial;
 			this.lastPickedMesh = pickResult.pickedMesh;
 			if(this.lastPickedMesh.data != undefined && this.lastPickedMesh.data.type == 'sceneObject' && this.lastPickedMesh.data.gizmo == undefined)
 			{
@@ -230,9 +220,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	
 	if(this.lastPickedMesh != null)
 	{
-		this.lastPickedMesh.material.diffuseColor = this.lastPickedMeshMaterial;
-		this.lastPickedMesh.material.alpha = 1;
-		//this.lastPickedMesh.material.wireframe = false;
+		this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
 		if(this.editControl != null)
 		{
 			this.editControl.removeAllActionListeners();
@@ -241,9 +229,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 		}
 	}
 	
-	this.lastPickedMeshMaterial = mesh.material.diffuseColor;
-	mesh.material.diffuseColor = new BABYLON.Color3(1, 0, 0);
-	mesh.material.alpha = .3;
+	mesh.material = mesh.data.selectionMaterial;
 	//mesh.material.wireframe = this.wireframe;
 	this.lastPickedMesh = mesh;
 	if(mesh.data != undefined && mesh.data.type == 'sceneObject' && mesh.data.gizmo == undefined)
@@ -394,8 +380,6 @@ SelectionManager.prototype.enableSectionMode = function(pressed)
 		
 		shaderMaterial.setVector3("cameraPosition", this.sceneManager.scene.cameras[0].position);
 		shaderMaterial.backFaceCulling = false;
-		
-		this.lastPickedMesh.data.originalMaterial = this.lastPickedMesh.material;
 		
 		this.lastPickedMesh.material = shaderMaterial;
 	}

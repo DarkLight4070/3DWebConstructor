@@ -708,12 +708,14 @@
 											{
 												Ext.getCmp('sectionTabId').setDisabled(false);
 												Ext.getCmp('toolsTabPanelId').setActiveTab(Ext.getCmp('sectionTabId'));
-												var vectorsWorld = sceneManager.selectionManager.lastPickedMesh.getBoundingInfo().boundingBox.vectorsWorld; 
-												var width = Number(vectorsWorld[1].x - vectorsWorld[0].x);
+												var bboxInfo = sceneManager.selectionManager.lastPickedMesh.getBoundingInfo()
+												bboxInfo.update(sceneManager.selectionManager.lastPickedMesh._worldMatrix);
+												var vectors = bboxInfo.boundingBox.vectors; 
+												var width = Number(vectors[1].x - vectors[0].x);
 												Ext.getCmp('sectionXPositionId').setMaxValue(width * 100 / 2);
 												Ext.getCmp('sectionXPositionId').setMinValue(-width * 100 / 2);
-												var heigh = Number(vectorsWorld[1].y - vectorsWorld[0].y);
-												var depth = Number(vectorsWorld[1].z - vectorsWorld[0].z);
+												var heigh = Number(vectors[1].y - vectors[0].y);
+												var depth = Number(vectors[1].z - vectors[0].z);
 											}
 											else
 											{
@@ -952,10 +954,12 @@
 											{
 												var store = grid.getStore();
 												var rec = store.getAt(rowIndex);
-												var mesh = rec.raw.object;
+												var meshName = rec.get('text');
+												var mesh = sceneManager.scene.getMeshByName(meshName);
 												//emmiter.emit('MESH_SET_WIREFRAME', mesh, !mesh.material.wireframe);
-												mesh.material.wireframe = !mesh.material.wireframe;
-												if(mesh.material.wireframe == true)
+												mesh.data.selectionMaterial.wireframe = !mesh.data.selectionMaterial.wireframe;
+												mesh.data.originalMaterial.wireframe = mesh.data.selectionMaterial.wireframe;
+												if(mesh.data.selectionMaterial.wireframe == true)
 												{
 													mesh.disableEdgesRendering();
 												}
@@ -1003,7 +1007,10 @@
 									{
 										if(record.parentNode.data.text == 'Meshes')
 										{
-											emmiter.emit('SELECT_MESH', record.raw.object);
+											var meshName = record.get('text');
+											var mesh = sceneManager.scene.getMeshByName(meshName);
+											console.log(mesh.name);
+											emmiter.emit('SELECT_MESH', mesh);
 										}
 									}
 								}

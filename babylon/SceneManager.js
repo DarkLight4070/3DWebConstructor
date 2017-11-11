@@ -8,6 +8,8 @@ function SceneManager()
 	this.selectionManager = null;
 	this.uid = 0;
 	
+	this.selectionMaterial = null;
+	
 	emmiter.on('DELETE_SELECTED_MESH', this.deleteSelectedMesh.bind(this));
 	emmiter.on('CLONE_MESH', this.cloneMesh.bind(this));
 	emmiter.on('EXECUTE_CO', this.executeCo.bind(this));
@@ -40,6 +42,11 @@ SceneManager.prototype.create3DScene = function()
 	this.engine = new BABYLON.Engine(this.canvas, true);
 			
 	this.scene = new BABYLON.Scene(this.engine);
+	
+	this.selectionMaterial = new BABYLON.StandardMaterial("SelectionMaterial", this.scene);
+	this.selectionMaterial.backFaceCulling = false;
+	this.selectionMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
+	this.selectionMaterial.alpha = .3;
 	
 	this.camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, new BABYLON.Vector3(0, 0, -10), this.scene);
 	this.camera.inertia = 0;
@@ -142,9 +149,8 @@ SceneManager.prototype.cloneMesh = function()
 	}
 	var clone = this.selectionManager.lastPickedMesh.clone('Clone-' + this.selectionManager.lastPickedMesh.name + uid);
 	clone.material = new BABYLON.StandardMaterial("mat", this.scene);
-	clone.material.diffuseColor = this.selectionManager.lastPickedMeshMaterial;
-	clone.material.backFaceCulling = false;
-	clone.data = {type: 'sceneObject', uid: uid, visible: true};
+	clone.material = this.selectionManager.lastPickedMesh.data.originalMaterial.clone('OMaterial');
+	clone.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: clone.material, selectionMaterial: this.selectionMaterial.clone()};
 	this.enableEdgeMode(clone);
 	emmiter.emit('UI_ADD_MESH_TO_TREE', clone);
 };
@@ -250,7 +256,7 @@ SceneManager.prototype.createBox = function(width, height, depth)
 	
 	this.enableEdgeMode(box);
 	
-	box.data = {type: 'sceneObject', uid: uid, visible: true};
+	box.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: box.material, selectionMaterial: this.selectionMaterial.clone()};
 	emmiter.emit('UI_ADD_MESH_TO_TREE', box);
 };
 
@@ -262,7 +268,7 @@ SceneManager.prototype.createCylinder = function(height, topDiameter, bottomDiam
 	cylinder.material = new BABYLON.StandardMaterial("cylinderMat", this.scene);
 	cylinder.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	cylinder.material.backFaceCulling = false;
-	cylinder.data = {type: 'sceneObject', uid: uid, visible: true};
+	cylinder.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: cylinder.material, selectionMaterial: this.selectionMaterial.clone()};
 	
 	this.enableEdgeMode(cylinder);
 	
@@ -277,7 +283,7 @@ SceneManager.prototype.createSphere = function(diameter, segments)
 	mesh.material = new BABYLON.StandardMaterial("SphereMat", this.scene);
 	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	mesh.material.backFaceCulling = false;
-	mesh.data = {type: 'sceneObject', uid: uid, visible: true};
+	mesh.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: mesh.material, selectionMaterial: this.selectionMaterial.clone()};
 	
 	this.enableEdgeMode(mesh);
 	
@@ -299,7 +305,7 @@ SceneManager.prototype.createPlane = function(width, height, subdivisions)
 	mesh.material = new BABYLON.StandardMaterial("PlaneMat", this.scene);
 	mesh.material.backFaceCulling = false;
 	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-	mesh.data = {type: 'sceneObject', uid: uid, visible: true};
+	mesh.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: mesh.material, selectionMaterial: this.selectionMaterial.clone()};
 	
 	this.enableEdgeMode(mesh);
 
@@ -316,7 +322,7 @@ SceneManager.prototype.createLine = function(x1, y1, z1, x2, y2, z2)
 	var line = BABYLON.MeshBuilder.CreateLines('Line' + uid, options, this.scene);
 	line.material = new BABYLON.StandardMaterial("boxMat", this.scene);
 	line.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-	line.data = {type: 'sceneObject', uid: uid, visible: true};
+	line.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: line.material, selectionMaterial: this.selectionMaterial.clone()};
 
 	emmiter.emit('UI_ADD_MESH_TO_TREE', line);
 };
