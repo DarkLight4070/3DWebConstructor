@@ -179,7 +179,7 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 	material.backFaceCulling = false;
 	material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	var result = csg.toMesh(this.selectionManager.coFirst.name + "*" + this.selectionManager.coSecond.name + this.getNextUid(), material, this.scene, true);
-	result.data = {type: 'sceneObject', uid: this.getNextUid(), isCo: true, visible: true};
+	result.data = {type: 'sceneObject', uid: this.getNextUid(), isCo: true, visible: true, selectionMaterial: this.selectionMaterial.clone(), originalMaterial: result.material};
 	result.convertToFlatShadedMesh();
 	
 	this.enableEdgeMode(result);

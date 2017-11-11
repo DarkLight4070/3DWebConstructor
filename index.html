@@ -537,7 +537,45 @@
 															{
 																fn: function(slider, newValue, thumb, eOpts)
 																{
-																	sceneManager.selectionManager.lastPickedMesh.material.setFloat("limit", newValue / 100);
+																	sceneManager.selectionManager.lastPickedMesh.material.setFloat("xlimit", newValue / 100);
+																}
+															}
+														}
+	        										},
+													{
+	        											xtype: 'sliderfield',
+	        											fieldLabel: 'Y',
+	        											id: 'sectionYPositionId',
+														value: 0,
+														increment: 1,
+														minValue: -100,
+														maxValue: 100,
+														listeners:
+														{
+															change:
+															{
+																fn: function(slider, newValue, thumb, eOpts)
+																{
+																	sceneManager.selectionManager.lastPickedMesh.material.setFloat("ylimit", newValue / 100);
+																}
+															}
+														}
+	        										},
+													{
+	        											xtype: 'sliderfield',
+	        											fieldLabel: 'Z',
+	        											id: 'sectionZPositionId',
+														value: 0,
+														increment: 1,
+														minValue: -100,
+														maxValue: 100,
+														listeners:
+														{
+															change:
+															{
+																fn: function(slider, newValue, thumb, eOpts)
+																{
+																	sceneManager.selectionManager.lastPickedMesh.material.setFloat("zlimit", newValue / 100);
 																}
 															}
 														}
@@ -714,8 +752,15 @@
 												var width = Number(vectors[1].x - vectors[0].x);
 												Ext.getCmp('sectionXPositionId').setMaxValue(width * 100 / 2);
 												Ext.getCmp('sectionXPositionId').setMinValue(-width * 100 / 2);
+												Ext.getCmp('sectionXPositionId').setValue(width * 100 / 2);
 												var heigh = Number(vectors[1].y - vectors[0].y);
+												Ext.getCmp('sectionYPositionId').setMaxValue(heigh * 100 / 2);
+												Ext.getCmp('sectionYPositionId').setMinValue(-heigh * 100 / 2);
+												Ext.getCmp('sectionYPositionId').setValue(heigh * 100 / 2);
 												var depth = Number(vectors[1].z - vectors[0].z);
+												Ext.getCmp('sectionZPositionId').setMaxValue(depth * 100 / 2);
+												Ext.getCmp('sectionZPositionId').setMinValue(-depth * 100 / 2);
+												Ext.getCmp('sectionZPositionId').setValue(depth * 100 / 2);
 											}
 											else
 											{
@@ -1003,7 +1048,7 @@
 								itemclick: 
 								{
 
-									fn: function (view, record, item, index, e) 
+									fn: function (view, record, item, index, e)
 									{
 										if(record.parentNode.data.text == 'Meshes')
 										{

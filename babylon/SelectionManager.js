@@ -42,6 +42,11 @@ SelectionManager.prototype.pointerDown = function(evt)
 
 SelectionManager.prototype.pointerUp = function(evt, pickResult)
 {
+	if(this.sectionMode == true)
+	{
+		return;
+	}
+	
 	if(pickResult == null)
 	{
 		emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', null);
@@ -207,6 +212,10 @@ SelectionManager.prototype.setCompoundObjectsMode = function(enable)
 
 SelectionManager.prototype.selectMesh = function(mesh)
 {
+	if(this.sectionMode == true)
+	{
+		return;
+	}
 	if(mesh.name == 'Grid')
 	{
 		emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', null);
@@ -329,7 +338,9 @@ SelectionManager.prototype.enableSectionMode = function(pressed)
 		"// Varying\r\n"+
 		"varying vec3 vPosition;\r\n"+
 		"varying vec3 vNormal;\r\n"+
-		"uniform float limit;\r\n"+
+		"uniform float xlimit;\r\n"+
+		"uniform float ylimit;\r\n"+
+		"uniform float zlimit;\r\n"+
 		"uniform vec3 vLightPosition;\r\n"+
 		"// Uniforms\r\n"+
 		"uniform mat4 world;\r\n"+
@@ -355,7 +366,7 @@ SelectionManager.prototype.enableSectionMode = function(pressed)
 		"    float specComp = max(0., dot(vNormalW, angleW));\r\n"+
 		"    specComp = pow(specComp, max(1., 64.)) * 2.;\r\n"+
 		"    \r\n"+
-		"    if (vPosition.x > limit) {\r\n"+
+		"    if (vPosition.x > xlimit || vPosition.y > ylimit || vPosition.z > zlimit) {\r\n"+
 		"        discard;\r\n"+
 		"    }\r\n"+
 		"    \r\n"+
@@ -372,10 +383,12 @@ SelectionManager.prototype.enableSectionMode = function(pressed)
 			attributes: ["position", "normal", "uv"],
 			uniforms: ["world", "worldView", "worldViewProjection", "view", "projection"]
 		});
-		shaderMaterial.setFloat("limit", 0);
+		shaderMaterial.setFloat("xlimit", 0);
+		shaderMaterial.setFloat("ylimit", 0);
+		shaderMaterial.setFloat("zlimit", 0);
 		shaderMaterial.setVector3("vLightPosition", new BABYLON.Vector3(this.lastPickedMesh.position.x, this.lastPickedMesh.position.y, this.lastPickedMesh.position.z));
 		
-		var dc = this.lastPickedMesh.material.diffuseColor;
+		var dc = this.lastPickedMesh.data.originalMaterial.diffuseColor;
 		shaderMaterial.setVector3("color", new BABYLON.Vector3(dc.r, dc.g, dc.b));
 		
 		shaderMaterial.setVector3("cameraPosition", this.sceneManager.scene.cameras[0].position);
@@ -385,6 +398,6 @@ SelectionManager.prototype.enableSectionMode = function(pressed)
 	}
 	else
 	{
-		this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+		this.lastPickedMesh.material = this.lastPickedMesh.data.selectionMaterial;
 	}
 }
