@@ -88,6 +88,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 					this.editControl.setScaleSnapValue(.5);
 					this.editControl.setTransSnapValue(.1);
 					this.bindEditControlActionListeners();
+					this.editControl.setLocal(false);
 				}
 			}
 			if(this.compoundObjectsMode == true)
@@ -253,6 +254,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 			this.editControl.setScaleSnapValue(.5);
 			this.editControl.setTransSnapValue(.1);
 			this.bindEditControlActionListeners();
+			this.editControl.setLocal(false);
 		}
 	}
 	
@@ -375,7 +377,7 @@ SelectionManager.prototype.enableSectionMode = function(pressed)
 		"}\r\n";
 		
 		// Compile
-		var shaderMaterial = new BABYLON.ShaderMaterial("shader", this.sceneManager.scene, {
+		var shaderMaterial = new BABYLON.ShaderMaterial("shader" + this.lastPickedMesh.name, this.sceneManager.scene, {
 			vertex: "custom",
 			fragment: "custom",
 		},

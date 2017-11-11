@@ -97,7 +97,7 @@ SceneManager.prototype.renderFrames = function()
 			this.selectionManager.editControl.setRotSnapValue(3.14 / 18);
 			this.selectionManager.editControl.setScaleSnapValue(.5);
 			this.selectionManager.editControl.setTransSnapValue(.1);
-			
+			this.selectionManager.editControl.setLocal(false);
 			this.selectionManager.bindEditControlActionListeners();
 		}
 		
