@@ -43,6 +43,7 @@
 			
 			var uiManager = null;
 			var sceneManager = null;
+			var treeStore = null;
 
 			const emmiter = new EventEmitter();
 
@@ -775,6 +776,18 @@
 				        	},
 							{
 								xtype: 'button',
+								tooltip: 'Import',
+								icon: 'icons/import.png',
+								handler: function()
+								{
+									emmiter.emit('MESH_IMPORT');
+								}
+							},
+							{ 
+				        		xtype: 'tbseparator' 
+				        	},
+							{
+								xtype: 'button',
 								tooltip: 'Delete Selected',
 								icon: 'icons/delete.png',
 								handler: function()
@@ -1020,7 +1033,11 @@
 												var mesh = record.raw.object;
 												if(mesh != null && mesh != undefined && mesh.data != undefined && mesh.data.type == 'sceneObject')
 												{
-													var material = mesh.material;
+													var material = mesh.data.originalMaterial;
+													if(material == undefined)
+													{
+														return 'wireframe-icon';
+													}
 													if(material.wireframe == true)
 													{
 														return 'plain-icon';
@@ -1055,6 +1072,12 @@
 											var meshName = record.get('text');
 											var mesh = sceneManager.scene.getMeshByName(meshName);
 											console.log(mesh.name);
+											console.log(mesh.subMeshes[0].getMaterial().name);
+											if(mesh.data.originalMaterial == undefined)
+											{
+												//console.log(mesh.subMeshes[0].getMaterial().name);
+												mesh.data.originalMaterial = mesh.material.clone();
+											}
 											emmiter.emit('SELECT_MESH', mesh);
 										}
 									}

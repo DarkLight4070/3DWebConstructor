@@ -22,6 +22,8 @@ function SceneManager()
 	emmiter.on('APPLY_TRANSFORMATION_TO_SELECTION', this.applyTransformationToSelection.bind(this));
 	emmiter.on('MESH_CHANGE_VISIBILITY', this.changeMeshVisibility.bind(this));
 	emmiter.on('MESH_SET_WIREFRAME', this.setWireframe.bind(this));
+	emmiter.on('MESH_IMPORT', this.importMesh.bind(this));
+	
 }
 
 SceneManager.prototype.instance = function()
@@ -180,7 +182,11 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 	material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	var result = csg.toMesh(this.selectionManager.coFirst.name + "*" + this.selectionManager.coSecond.name + this.getNextUid(), material, this.scene, true);
 	result.data = {type: 'sceneObject', uid: this.getNextUid(), isCo: true, visible: true, selectionMaterial: this.selectionMaterial.clone(), originalMaterial: result.material};
-	result.convertToFlatShadedMesh();
+	var positions = result.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+	var indices = result.getIndices();
+	var normals = result.getVerticesData(BABYLON.VertexBuffer.NormalKind);
+	BABYLON.VertexData.ComputeNormals(positions, indices, normals);
+	result.updateVerticesData(BABYLON.VertexBuffer.NormalKind, normals, true, true);
 	
 	this.enableEdgeMode(result);
 	
@@ -340,7 +346,7 @@ SceneManager.prototype.applyTransformationToSelection = function(x, y, z, xr, yr
 
 SceneManager.prototype.enableEdgeMode = function(mesh)
 {
-	mesh.enableEdgesRendering(.9999999999);	
+	mesh.enableEdgesRendering(.9999999999);
 	mesh.edgesWidth = 1.0;
 	mesh.edgesColor = new BABYLON.Color4(1, 1, 1, 1);
 };
@@ -369,3 +375,49 @@ SceneManager.prototype.setWireframe = function(mesh, wireframe)
 	}
 	mesh.material.wireframe = wireframe;
 };
+
+SceneManager.prototype.importMesh = function()
+{
+	var uid = this.getNextUid();
+	console.log('SceneManager.prototype.importMesh');
+	var assetsManager = new BABYLON.AssetsManager(this.scene);
+	var meshTask = assetsManager.addMeshTask("obj task", "", "assets/", "buggy.obj");
+	
+	var selectionMaterial = this.selectionMaterial;
+	var scene = this.scene;
+	var enableEdgeMode = this.enableEdgeMode;
+	/*
+	var material = new BABYLON.StandardMaterial("mat", this.scene);
+	material.backFaceCulling = false;
+	material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
+	*/
+	var meshes = [];
+	
+	meshTask.onSuccess = function (task)
+	{
+		var root = new BABYLON.AbstractMesh('root', scene);
+		console.log('onSuccess');
+		var loadedMeshes = task.loadedMeshes;
+		for(var i=0; i<loadedMeshes.length; i++)
+		{
+			var mesh = loadedMeshes[i];
+			mesh.computeWorldMatrix(true);
+			mesh.setPivotPoint(mesh.getBoundingInfo().boundingBox.center);
+			enableEdgeMode(mesh);
+			mesh.data = {type: 'sceneObject', uid: uid++, visible: true, originalMaterial: mesh.material, selectionMaterial: selectionMaterial.clone()};
+			mesh.parent = root;
+			meshes.push(mesh);
+		}
+		root.scaling = new BABYLON.Vector3(.1, .1, .1);
+		emmiter.emit('UI_ADD_MESHES_TO_TREE', meshes);
+	}
+	
+	assetsManager.onFinish = function()
+	{	
+		console.log('onFinish');
+		
+		console.log('finished');
+    };
+	assetsManager.load();
+};
+

@@ -3,6 +3,7 @@ function UiManager(__sceneManager)
 	this.sceneManager = __sceneManager;
 	emmiter.on('UI_UPDATE_SELECTION', this.updateUiSelection.bind(this));
 	emmiter.on('UI_ADD_MESH_TO_TREE', this.addMeshToTree.bind(this));
+	emmiter.on('UI_ADD_MESHES_TO_TREE', this.addMeshesToTree.bind(this));
 	emmiter.on('UI_REMOVE_MESH_FROM_TREE', this.removeMeshFromTree.bind(this));
 	emmiter.on('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.updateMeshPropertiesUiFromSelection.bind(this));
 	emmiter.on('UI_CO_SET_FIRST', this.setCoFirst.bind(this));
@@ -227,6 +228,7 @@ UiManager.prototype.updateRootTreeUi = function()
 
 UiManager.prototype.addMeshToTree = function(mesh)
 {
+	console.log('UiManager.prototype.addMeshToTree');
 	var mainTree = Ext.getCmp('mainTree');
 	var root = mainTree.getRootNode();
 	var meshesNode = root.findChild('text', 'Meshes');
@@ -235,7 +237,37 @@ UiManager.prototype.addMeshToTree = function(mesh)
 	{
 		icon = 'icons/co_mesh.png';
 	}
+	console.log(mesh);
+	console.log(mesh.data);
+	console.log(mesh.data.uid);
+	console.log(mesh.data.visible);
 	meshesNode.appendChild({text: mesh.name, icon: icon, leaf: true, object: mesh, uid: mesh.data.uid, visible: mesh.data.visible});
+}
+
+UiManager.prototype.addMeshesToTree = function(meshes)
+{
+	console.log('UiManager.prototype.addMeshesToTree');
+	var mainTree = Ext.getCmp('mainTree');
+	var root = mainTree.getRootNode();
+	var meshesNode = root.findChild('text', 'Meshes');
+	var nodes = [];
+	for(var i=0; i<meshes.length; i++)
+	{
+		var mesh = meshes[i];
+		var icon = 'icons/mesh.png';
+		if(mesh.data.isCo == true)
+		{
+			icon = 'icons/co_mesh.png';
+		}
+		console.log('mesh.name: ' + mesh.name);
+		console.log('icon: ' + icon);
+		console.log('object: ' + mesh);
+		console.log('uid: ' + mesh.data.uid);
+		console.log('mesh.data.visible: ' + mesh.data.visible);
+		nodes.push({text: mesh.name, icon: icon, leaf: true, object: mesh, uid: mesh.data.uid, visible: mesh.data.visible});
+	}
+	console.log(nodes);
+	meshesNode.appendChild(nodes);
 }
 
 UiManager.prototype.removeMeshFromTree = function(meshId)

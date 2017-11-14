@@ -73,6 +73,11 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 				}
 			}
 			
+			if(pickResult.pickedMesh.data.originalMaterial == undefined)
+			{
+				pickResult.pickedMesh.data.originalMaterial = pickResult.pickedMesh.material.clone();
+			}
+			
 			emmiter.emit('UI_UPDATE_SELECTION', pickResult.pickedMesh.name);
 			pickResult.pickedMesh.material = pickResult.pickedMesh.data.selectionMaterial;
 			this.lastPickedMesh = pickResult.pickedMesh;
