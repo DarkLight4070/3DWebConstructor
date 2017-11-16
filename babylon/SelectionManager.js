@@ -76,6 +76,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			if(pickResult.pickedMesh.data.originalMaterial == undefined)
 			{
 				pickResult.pickedMesh.data.originalMaterial = pickResult.pickedMesh.material.clone();
+				pickResult.pickedMesh.data.originalMaterial.backFaceCulling = false;
 			}
 			
 			emmiter.emit('UI_UPDATE_SELECTION', pickResult.pickedMesh.name);
@@ -101,6 +102,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 				this.coSecond = this.lastPickedMesh;
 				emmiter.emit('UI_CO_SET_SECOND', this.coSecond.name);
 			}
+			this.sceneManager.camera.setTarget(this.lastPickedMesh.position.clone());
 			emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.lastPickedMesh);
 		}
 		else
@@ -245,8 +247,8 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	}
 	
 	mesh.material = mesh.data.selectionMaterial;
-	//mesh.material.wireframe = this.wireframe;
 	this.lastPickedMesh = mesh;
+	this.sceneManager.camera.setTarget(this.lastPickedMesh.position.clone());
 	if(mesh.data != undefined && mesh.data.type == 'sceneObject' && mesh.data.gizmo == undefined)
 	{
 		if(this.transform != '')

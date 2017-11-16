@@ -259,14 +259,8 @@ UiManager.prototype.addMeshesToTree = function(meshes)
 		{
 			icon = 'icons/co_mesh.png';
 		}
-		console.log('mesh.name: ' + mesh.name);
-		console.log('icon: ' + icon);
-		console.log('object: ' + mesh);
-		console.log('uid: ' + mesh.data.uid);
-		console.log('mesh.data.visible: ' + mesh.data.visible);
 		nodes.push({text: mesh.name, icon: icon, leaf: true, object: mesh, uid: mesh.data.uid, visible: mesh.data.visible});
 	}
-	console.log(nodes);
 	meshesNode.appendChild(nodes);
 }
 

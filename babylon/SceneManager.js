@@ -50,16 +50,25 @@ SceneManager.prototype.create3DScene = function()
 	this.selectionMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
 	this.selectionMaterial.alpha = .3;
 	
-	this.camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, new BABYLON.Vector3(0, 0, -10), this.scene);
+	this.camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 0, new BABYLON.Vector3(0, 0, 0), this.scene);
+	this.camera.setPosition(new BABYLON.Vector3(0, 50, -50));
 	this.camera.inertia = 0;
 	this.camera.setTarget(BABYLON.Vector3.Zero());
 	this.camera.upperBetaLimit = 2 * Math.PI;
 	this.camera.attachControl(this.canvas, false);
 
-	var lightUp = new BABYLON.HemisphericLight("lightUp", new BABYLON.Vector3(0, -1, 0), this.scene);
-	lightUp.intensity = 0.7;
-	var lightDown = new BABYLON.HemisphericLight("lightDown", new BABYLON.Vector3(0, 1, 0), this.scene);
-	lightDown.intensity = 0.4;
+	var lightUp = new BABYLON.HemisphericLight("Up", new BABYLON.Vector3(0, -100, 0), this.scene);
+	lightUp.intensity = .4;
+	var lightDown = new BABYLON.HemisphericLight("Down", new BABYLON.Vector3(0, 100, 0), this.scene);
+	lightDown.intensity = .4;
+	var left = new BABYLON.HemisphericLight("Left", new BABYLON.Vector3(-100, 0, 0), this.scene);
+	left.intensity = .4;
+	var right = new BABYLON.HemisphericLight("Right", new BABYLON.Vector3(100, 0, 0), this.scene);
+	right.intensity = .4;
+	var front = new BABYLON.HemisphericLight("Front", new BABYLON.Vector3(0, 0, 100), this.scene);
+	front.intensity = .4;
+	var back = new BABYLON.HemisphericLight("Back", new BABYLON.Vector3(0, 0, -100), this.scene);
+	back.intensity = .4;
 
 	// Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
 	var ground = BABYLON.Mesh.CreateGround("Grid", 20, 20, 20, this.scene);
@@ -205,31 +214,26 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 
 SceneManager.prototype.setView = function(view)
 {
-	this.camera.radius = -10;
-	this.camera.setPosition(new BABYLON.Vector3(0, 0, 0));
+	this.camera.setTarget(BABYLON.Vector3.Zero());
 	if(view == 'FRONT')
 	{
-		this.camera.beta = 0;
-		this.camera.alpha = 0;
+		this.camera.setPosition(new BABYLON.Vector3(0, 0, -50));
 	}
 	else if(view == 'BACK')
 	{
-		this.camera.alpha = 0;
+		this.camera.setPosition(new BABYLON.Vector3(0, 0, 50));
 	}
 	else if(view == 'LEFT')
 	{
-		this.camera.alpha = -Math.PI / 2;
-		this.camera.beta = Math.PI / 2;
+		this.camera.setPosition(new BABYLON.Vector3(-50, 0, 0));
 	}
 	else if(view == 'RIGHT')
 	{
-		this.camera.alpha = Math.PI / 2;
-		this.camera.beta = Math.PI / 2;
+		this.camera.setPosition(new BABYLON.Vector3(50, 0, 0));
 	}
 	else if(view == 'TOP')
 	{
-		this.camera.alpha = 0;
-		this.camera.beta = 3 * Math.PI / 2;
+		this.camera.setPosition(new BABYLON.Vector3(0, 50, 0));
 	}
 	else if(view == 'BOTTOM')
 	{
@@ -347,7 +351,23 @@ SceneManager.prototype.applyTransformationToSelection = function(x, y, z, xr, yr
 SceneManager.prototype.enableEdgeMode = function(mesh)
 {
 	mesh.enableEdgesRendering(.9999999999);
-	mesh.edgesWidth = 1.0;
+	var vectors = mesh.getBoundingInfo().boundingBox.vectors; 
+	var width = Number(vectors[1].x - vectors[0].x);
+	var heigh = Number(vectors[1].y - vectors[0].y);
+	var depth = Number(vectors[1].z - vectors[0].z);
+	if((width + heigh + depth) / 3> 10)
+	{
+		mesh.edgesWidth = 5.0;
+	}
+	else if(width > 5)
+	{
+		mesh.edgesWidth = 2.0;
+	}
+	else
+	{
+		mesh.edgesWidth = 0.5;
+	}
+	
 	mesh.edgesColor = new BABYLON.Color4(1, 1, 1, 1);
 };
 
@@ -381,22 +401,19 @@ SceneManager.prototype.importMesh = function()
 	var uid = this.getNextUid();
 	console.log('SceneManager.prototype.importMesh');
 	var assetsManager = new BABYLON.AssetsManager(this.scene);
-	var meshTask = assetsManager.addMeshTask("obj task", "", "assets/", "buggy.obj");
+	var meshTask = assetsManager.addMeshTask("obj task", "", "assets/", "wind_old_windmill.obj");
 	
 	var selectionMaterial = this.selectionMaterial;
 	var scene = this.scene;
 	var enableEdgeMode = this.enableEdgeMode;
-	/*
-	var material = new BABYLON.StandardMaterial("mat", this.scene);
-	material.backFaceCulling = false;
-	material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-	*/
+	var camera = this.camera;
 	var meshes = [];
 	
 	meshTask.onSuccess = function (task)
 	{
 		var root = new BABYLON.AbstractMesh('root', scene);
 		console.log('onSuccess');
+		console.log('Loaded meshes number: ' + task.loadedMeshes.length);
 		var loadedMeshes = task.loadedMeshes;
 		for(var i=0; i<loadedMeshes.length; i++)
 		{
@@ -408,7 +425,45 @@ SceneManager.prototype.importMesh = function()
 			mesh.parent = root;
 			meshes.push(mesh);
 		}
-		root.scaling = new BABYLON.Vector3(.1, .1, .1);
+		
+		var totalBoundingInfo = function(meshes)
+		{
+			var boundingInfo = meshes[0].getBoundingInfo();
+			var min = boundingInfo.minimum.add(meshes[0].position);
+			var max = boundingInfo.maximum.add(meshes[0].position);
+			for(var i=1; i<meshes.length; i++){
+				boundingInfo = meshes[i].getBoundingInfo();
+				min = BABYLON.Vector3.Minimize(min, boundingInfo.minimum.add(meshes[i].position));
+				max = BABYLON.Vector3.Maximize(max, boundingInfo.maximum.add(meshes[i].position));
+			}
+			return new BABYLON.BoundingInfo(min, max);
+		}
+		
+		var bboxInfo = totalBoundingInfo(root.getChildren());
+		bboxInfo.update(root._worldMatrix);
+		var vectors = bboxInfo.boundingBox.vectors; 
+		var width = Number(vectors[1].x - vectors[0].x);
+		var heigh = Number(vectors[1].y - vectors[0].y);
+		var depth = Number(vectors[1].z - vectors[0].z);
+		root.position = new BABYLON.Vector3(0, 0, 0);
+		console.log(root.position);
+		var max = width;
+		if(max > heigh)
+		{
+			max = heigh;
+		}
+		if(depth > max)
+		{
+			max = depth
+		}
+		
+		camera.radius = 2 * max;
+		console.log('Root width: ' + width);
+		console.log('Root heigh: ' + heigh);
+		console.log('Root depth: ' + depth);
+		console.log(bboxInfo.boundingBox.centerWorld);
+		camera.setTarget(new BABYLON.Vector3(bboxInfo.boundingBox.center.x / 2, bboxInfo.boundingBox.center.y / 2, bboxInfo.boundingBox.center.z / 2));
+		
 		emmiter.emit('UI_ADD_MESHES_TO_TREE', meshes);
 	}
 	
