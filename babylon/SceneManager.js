@@ -26,6 +26,7 @@ function SceneManager()
 	emmiter.on('MESH_HIDE_ALL', this.hideAll.bind(this));
 	emmiter.on('MESH_SHOW_ALL', this.showAll.bind(this));
 	emmiter.on('MESH_WIREFRAME_ALL', this.wireframeAll.bind(this));
+	emmiter.on('SCENE_CLEAR', this.clearScene.bind(this));
 }
 
 SceneManager.prototype.instance = function()
@@ -542,4 +543,19 @@ SceneManager.prototype.wireframeAll = function(value)
 		}
 	}
 	emmiter.emit('UI_REFRESH_TREE');
+};
+
+SceneManager.prototype.clearScene = function(value)
+{
+	console.log('SceneManager.prototype.clearScene');
+	var meshes = this.scene.meshes;
+	this.selectionManager.removeEditControl();
+	this.selectionManager.lastPickedMesh = null;
+	for(var i=0; i<meshes.length; i++)
+	{	
+		var mesh = meshes[i];
+		console.log(mesh.name);
+		mesh.dispose();
+		//emmiter.emit('UI_REMOVE_MESH_FROM_TREE', mesh.name);
+	}
 };

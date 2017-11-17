@@ -1070,8 +1070,6 @@
 										{
 											var meshName = record.get('text');
 											var mesh = sceneManager.scene.getMeshByName(meshName);
-											console.log(mesh.name);
-											console.log(mesh.subMeshes[0].getMaterial().name);
 											if(mesh.data.originalMaterial == undefined)
 											{
 												//console.log(mesh.subMeshes[0].getMaterial().name);
@@ -1129,6 +1127,31 @@
 							handler: function () 
 							{
 								emmiter.emit('MESH_WIREFRAME_ALL', false);
+							}
+						},
+						{
+							xtype: 'tbseparator' 
+						},
+						{
+							xtype: 'button',
+							tooltip: 'Clear scene',
+							icon: 'icons/delete.png',
+							handler: function () 
+							{
+								Ext.Msg.show(
+								{
+									title:'Clear Scene',
+									msg: 'This action will clear the scene ! Do you want to continue ?',
+									buttons: Ext.Msg.YESNO,
+									icon: Ext.Msg.QUESTION,
+									fn: function(btn, text)
+									{
+										if(btn == 'yes')
+										{
+											emmiter.emit('SCENE_CLEAR');
+										}
+									}
+								});
 							}
 						}
 					]
