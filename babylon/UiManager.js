@@ -361,7 +361,6 @@ UiManager.prototype.refreshTreeUi = function()
 	mainTree.getView().refresh();
 };
 
-
 UiManager.prototype.createCameraPrefUi = function()
 {
 	Ext.create('Ext.window.Window', 

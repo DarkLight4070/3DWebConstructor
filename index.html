@@ -46,7 +46,12 @@
 			var treeStore = null;
 
 			const emmiter = new EventEmitter();
-
+			
+			function create3DViewContextMenu(e)
+			{
+				console.log(e);
+			}
+			
 			function updateSelectionSpacialAttributes(__selection)
 			{
 
@@ -612,6 +617,7 @@
 							title: '3D View',
 							region: 'center',
 							xtype: 'panel',
+							id: '3dViewId',
 							margins: '0 0 0 0',
 							html: '<canvas id="renderCanvas" style="width:100%;height:100%;" touch-action="none"></canvas>',
 							tbar: 
@@ -764,7 +770,7 @@
 								},
 								{
 									xtype: 'buttongroup',
-									columns: 3,
+									columns: 4,
 									defaults: 
 									{
 										scale: 'small'
@@ -788,6 +794,40 @@
 											{
 												emmiter.emit('CLONE_MESH');
 											}
+										},
+										{
+											xtype: 'button',
+											tooltip: 'Mirror Selected Mesh',
+											icon: 'icons/mirror.png',
+											menu: 
+											[
+												{
+													text: 'XY',
+													handler: function()
+													{
+														if(sceneManager.selectionManager.lastPickedMesh == null)
+														{
+															Ext.MessageBox.alert('3D Section', 'Please select an object !');
+															return;
+														}
+														emmiter.emit('MESH_MIRROR', 'z');
+													}
+												},
+												{
+													text: 'YZ',
+													handler: function()
+													{
+														emmiter.emit('MESH_MIRROR', 'x');
+													}
+												},
+												{
+													text: 'XZ',
+													handler: function()
+													{
+														emmiter.emit('MESH_MIRROR', 'y');
+													}
+												}
+											]
 										},
 										{
 											xtype: 'button',
@@ -1089,6 +1129,34 @@
 				navPanel.setPosition({x: box.x, y: box.y});
 				navPanel.setHeight(box.height);
 				navPanel.collapse();
+				
+				canvas.dom.addEventListener('contextmenu', function(e)
+				{
+					e.preventDefault();
+					console.log(e);
+					var menu = Ext.create('Ext.menu.Menu', 
+					{
+						margin: '0 0 10 0',
+						width: 100,
+						renderTo: Ext.getCmp('3dViewId').getEl(),
+						zIndex: 9999,
+						floating: true,
+						items: 
+						[
+							{
+								text: 'regular item 1'
+							},
+							{
+								text: 'regular item 2'
+							},
+							{
+								text: 'regular item 3'
+							}
+						]
+					});
+					menu.showAt(e.layerX, e.layerY);
+					menu.toFront();
+				});
 				
 				sceneManager = new SceneManager();
 				sceneManager.create3DScene();				

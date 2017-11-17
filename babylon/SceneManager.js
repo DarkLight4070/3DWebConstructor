@@ -28,6 +28,7 @@ function SceneManager()
 	emmiter.on('MESH_SHOW_ALL', this.showAll.bind(this));
 	emmiter.on('MESH_WIREFRAME_ALL', this.wireframeAll.bind(this));
 	emmiter.on('SCENE_CLEAR', this.clearScene.bind(this));
+	emmiter.on('MESH_MIRROR', this.mirrorMesh.bind(this));
 }
 
 SceneManager.prototype.instance = function()
@@ -177,6 +178,8 @@ SceneManager.prototype.cloneMesh = function()
 	clone.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: clone.material, selectionMaterial: this.selectionMaterial.clone()};
 	this.enableEdgeMode(clone);
 	emmiter.emit('UI_ADD_MESH_TO_TREE', clone);
+	
+	return clone;
 };
 
 SceneManager.prototype.executeCo = function(operationType, deleteObjs)
@@ -559,13 +562,51 @@ SceneManager.prototype.clearScene = function(value)
 {
 	console.log('SceneManager.prototype.clearScene');
 	var meshes = this.scene.meshes;
+	console.log(meshes.length + ' to remove !');
 	this.selectionManager.removeEditControl();
 	this.selectionManager.lastPickedMesh = null;
-	for(var i=0; i<meshes.length; i++)
-	{	
+	for(var i=meshes.length - 1; i>=0; i--)
+	{
 		var mesh = meshes[i];
-		console.log(mesh.name);
-		mesh.dispose();
-		//emmiter.emit('UI_REMOVE_MESH_FROM_TREE', mesh.name);
+		if(mesh != undefined)
+		{
+			var children = mesh.getChildren();
+			console.log('Mesh children count: ' + mesh.getChildren().length);
+			for(var j=children.length - 1; j>=0; j--)
+			{
+				if(children[j] != undefined)
+				{
+					emmiter.emit('UI_REMOVE_MESH_FROM_TREE', children[j].name);
+					children[j].dispose();
+				}
+			}
+			if(mesh.name != 'Grid')
+			{
+				console.log('Removing: ' + mesh.name);
+				emmiter.emit('UI_REMOVE_MESH_FROM_TREE', mesh.name);
+				mesh.dispose();
+			}
+		}
 	}
 };
+
+SceneManager.prototype.mirrorMesh = function(axe)
+{
+	console.log('SceneManager.prototype.mirrorMesh');
+	var clone = this.cloneMesh();
+	clone.material.backFaceCulling = false;
+	clone.data.originalMaterial.backFaceCulling = false;
+	if(axe == 'x')
+	{
+		clone.scaling.x = -clone.scaling.x;
+	}
+	if(axe == 'y')
+	{
+		clone.scaling.y = -clone.scaling.y;
+	}
+	if(axe == 'z')
+	{
+		clone.scaling.z = -clone.scaling.z;
+	}
+};
+
