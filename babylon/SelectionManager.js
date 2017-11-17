@@ -52,7 +52,6 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 		emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', null);
 		return;
 	}
-	console.log('PICK EVENT');
 	if(this.lastClickX == evt.clientX && this.lastClickY == evt.clientY && this.objectSelectionMode == 1)
 	{
 		if(this.lastPickedMesh != null)
@@ -102,7 +101,10 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 				this.coSecond = this.lastPickedMesh;
 				emmiter.emit('UI_CO_SET_SECOND', this.coSecond.name);
 			}
-			this.sceneManager.camera.setTarget(this.lastPickedMesh.position.clone());
+			if(this.sceneManager.targetSelection == true)
+			{
+				this.sceneManager.camera.setTarget(this.lastPickedMesh.position.clone());
+			}
 			emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.lastPickedMesh);
 		}
 		else
@@ -253,7 +255,10 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	
 	mesh.material = mesh.data.selectionMaterial;
 	this.lastPickedMesh = mesh;
-	this.sceneManager.camera.setTarget(this.lastPickedMesh.position.clone());
+	if(this.sceneManager.targetSelection == true)
+	{
+		this.sceneManager.camera.setTarget(this.lastPickedMesh.position.clone());
+	}
 	if(mesh.data != undefined && mesh.data.type == 'sceneObject' && mesh.data.gizmo == undefined)
 	{
 		if(this.transform != '')

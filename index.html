@@ -149,727 +149,689 @@
 				    layout: 'border',
 				    items:
 				    [
-				    {
-				        title: 'Tools',
-				        region: 'east',
-				        xtype: 'tabpanel',
-						id: 'toolsTabPanelId',
-				        width: 400,
-				        split: false,
-				        margins: '0 0 0 0',
-				        collapsible: true,
-				        layout: 'fit',
-				        items: 
-				        [
-					        {
-	        					title: 'Properties',
-	        					layout: 'fit',
-	        					height: '100%',
-    							items: 
-				        		[
-				        			{
-				        				xtype: 'form',
-				        				bodyPadding: 5,
-				        				layout: 'anchor',
-									    defaults: 
-									    {
-									        anchor: '100%'
-									    },
-									    items: 
-									    [
-									    	{
-										    	xtype:'fieldset',
-										    	title: 'Position',
-										    	id: 'selectionPropertiesPositionFieldSet',
-										    	defaults: 
-										    	{
-										        	anchor: '100%'
-											    },
-											    defaultType: 'numberfield',
-											    layout: 'anchor',
-	        									items :
-	        									[
-	        										{
-	        											xtype: 'numberfield',
-	        											fieldLabel: 'X',
-	        											value: 0,
-	        											id: 'pXId'
-	        										},
-	        										{
-	        											xtype: 'numberfield',
-	        											fieldLabel: 'Y',
-	        											value: 0,
-	        											id: 'pYId'
-	        										},
-	        										{
-	        											xtype: 'numberfield',
-	        											fieldLabel: 'Z',
-	        											value: 0,
-	        											id: 'pZId'
-	        										}
-											    ]
-											},
+						{
+							title: 'Tools',
+							region: 'east',
+							xtype: 'tabpanel',
+							tabPosition: 'right',
+							id: 'toolsTabPanelId',
+							width: 300,
+							split: false,
+							margins: '0 0 0 0',
+							collapsible: true,
+							layout: 'fit',
+							items: 
+							[
+								{
+									title: 'Properties',
+									layout: 'fit',
+									height: '100%',
+									items: 
+									[
+										{
+											xtype: 'form',
+											bodyPadding: 5,
+											layout: 'anchor',
+											defaults: 
 											{
-										    	xtype:'fieldset',
-										    	title: 'Rotation',
-										    	id: 'selectionPropertiesRotationFieldSet',
-										    	defaults: 
-										    	{
-										        	anchor: '100%'
-											    },
-											    defaultType: 'numberfield',
-											    layout: 'anchor',
-	        									items :
-	        									[
-	        										{
-	        											xtype: 'numberfield',
-	        											fieldLabel: 'X',
-	        											value: 0,
-	        											id: 'pRXId'
-	        										},
-	        										{
-	        											xtype: 'numberfield',
-	        											fieldLabel: 'Y',
-	        											value: 0,
-	        											id: 'pRYId'
-	        										},
-	        										{
-	        											xtype: 'numberfield',
-	        											fieldLabel: 'Z',
-	        											value: 0,
-	        											id: 'pRZId'
-	        										}
-											    ]
-											}
-									    ],
-									    buttons: 
-									    [
-										    {
-										        text: 'Update',
-										        handler: function()
-										        {
-													var x = Ext.getCmp('pXId').getValue();
-													var y = Ext.getCmp('pYId').getValue();
-													var z = Ext.getCmp('pZId').getValue();
+												anchor: '100%'
+											},
+											items: 
+											[
+												{
+													xtype:'fieldset',
+													title: 'Position',
+													id: 'selectionPropertiesPositionFieldSet',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													defaultType: 'numberfield',
+													layout: 'anchor',
+													items :
+													[
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'X',
+															value: 0,
+															id: 'pXId'
+														},
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'Y',
+															value: 0,
+															id: 'pYId'
+														},
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'Z',
+															value: 0,
+															id: 'pZId'
+														}
+													]
+												},
+												{
+													xtype:'fieldset',
+													title: 'Rotation',
+													id: 'selectionPropertiesRotationFieldSet',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													defaultType: 'numberfield',
+													layout: 'anchor',
+													items :
+													[
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'X',
+															value: 0,
+															id: 'pRXId'
+														},
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'Y',
+															value: 0,
+															id: 'pRYId'
+														},
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'Z',
+															value: 0,
+															id: 'pRZId'
+														}
+													]
+												}
+											],
+											buttons: 
+											[
+												{
+													text: 'Update',
+													handler: function()
+													{
+														var x = Ext.getCmp('pXId').getValue();
+														var y = Ext.getCmp('pYId').getValue();
+														var z = Ext.getCmp('pZId').getValue();
 
-													var xr = Ext.getCmp('pRXId').getValue();
-													var yr = Ext.getCmp('pRYId').getValue();
-													var zr = Ext.getCmp('pRZId').getValue();
-													emmiter.emit('APPLY_TRANSFORMATION_TO_SELECTION', x, y, z, xr, yr, zr);
-										        }
-										    }
-									    ]
-									}
-							    ]
-						    }, 
-						    {
-						        title: 'Prefabs Factory',
-						        layout: 'fit',
-	        					height: '100%',
-    							items: 
-				        		[
-				        			{
-				        				xtype: 'form',
-				        				bodyPadding: 5,
-				        				layout: 'anchor',
-									    defaults: 
-									    {
-									        anchor: '100%'
-									    },
-									    items: 
-									    [
-									    	{
-										    	xtype:'fieldset',
-										    	title: 'Prefab Type',
-										    	defaults: 
-										    	{
-										        	anchor: '100%'
-											    },
-											    layout: 'anchor',
-	        									items :
-	        									[
-												    {
-												        xtype: 'combo',
-												        fieldLabel: 'Type',
-												        store: prefabsStore,
-												        queryMode: 'local',
-													    displayField: 'name',
-													    valueField: 'id',
-													    listeners:
-													    {
-															change: 
+														var xr = Ext.getCmp('pRXId').getValue();
+														var yr = Ext.getCmp('pRYId').getValue();
+														var zr = Ext.getCmp('pRZId').getValue();
+														emmiter.emit('APPLY_TRANSFORMATION_TO_SELECTION', x, y, z, xr, yr, zr);
+													}
+												}
+											]
+										}
+									]
+								}, 
+								{
+									title: 'Prefabs Factory',
+									layout: 'fit',
+									height: '100%',
+									items: 
+									[
+										{
+											xtype: 'form',
+											bodyPadding: 5,
+											layout: 'anchor',
+											defaults: 
+											{
+												anchor: '100%'
+											},
+											items: 
+											[
+												{
+													xtype:'fieldset',
+													title: 'Prefab Type',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													layout: 'anchor',
+													items :
+													[
+														{
+															xtype: 'combo',
+															fieldLabel: 'Type',
+															store: prefabsStore,
+															queryMode: 'local',
+															displayField: 'name',
+															valueField: 'id',
+															listeners:
 															{
+																change: 
+																{
 
-																fn: function(_this, newValue, oldValue, eOpts)
-																{
-																	console.log(newValue);
-																	uiManager.buildPrefabEntriesUi(newValue);
+																	fn: function(_this, newValue, oldValue, eOpts)
+																	{
+																		console.log(newValue);
+																		uiManager.buildPrefabEntriesUi(newValue);
+																	}
 																}
 															}
 														}
-												    }
-											    ]
-											},
-											{
-										    	xtype:'fieldset',
-										    	title: 'Position',
-										    	id: 'prefabPositionFieldSet',
-										    	defaults: 
-										    	{
-										        	anchor: '100%'
-											    },
-											    defaultType: 'numberfield',
-											    layout: 'anchor',
-	        									items :
-	        									[
-	        										{
-	        											xtype: 'numberfield',
-	        											fieldLabel: 'X',
-	        											value: 0,
-	        											id: 'xId'
-	        										},
-	        										{
-	        											xtype: 'numberfield',
-	        											fieldLabel: 'Y',
-	        											value: 0,
-	        											id: 'yId'
-	        										},
-	        										{
-	        											xtype: 'numberfield',
-	        											fieldLabel: 'Z',
-	        											value: 0,
-	        											id: 'zId'
-	        										}
-											    ]
-											},
-											{
-										    	xtype:'fieldset',
-										    	title: 'Rotation',
-										    	id: 'prefabRotationFieldSet',
-										    	defaults: 
-										    	{
-										        	anchor: '100%'
-											    },
-											    defaultType: 'numberfield',
-											    layout: 'anchor',
-	        									items :
-	        									[
-	        										{
-	        											xtype: 'numberfield',
-	        											fieldLabel: 'X',
-	        											value: 0,
-	        											id: 'rXId'
-	        										},
-	        										{
-	        											xtype: 'numberfield',
-	        											fieldLabel: 'Y',
-	        											value: 0,
-	        											id: 'rYId'
-	        										},
-	        										{
-	        											xtype: 'numberfield',
-	        											fieldLabel: 'Z',
-	        											value: 0,
-	        											id: 'rZId'
-	        										}
-											    ]
-											},
-									    	{
-										    	xtype:'fieldset',
-										    	title: 'Prefab properties',
-										    	id: 'prefabParamsFieldSet',
-										    	defaults: 
-										    	{
-										        	anchor: '100%'
-											    },
-											    defaultType: 'numberfield',
-											    layout: 'anchor',
-	        									items :
-	        									[
-											    ]
-											}
-									    ],
-									    buttons: 
-									    [
-										    {
-										        text: 'Reset',
-										        handler: function() 
-										        {
-										        }
-										    }, 
-										    {
-										        text: 'Create',
-										        handler: function()
-										        {
-										        	console.log(' Creation Handler handler called');
-										        	prefabCreationFunction();
-										        }
-										    }
-									    ]
-				        			}
-							    ]
-						    },
-						    {
-						        title: 'Compound Objects',
-								layout: 'fit',
-								id: 'coTabId',
-	        					height: '100%',
-    							items: 
-				        		[
-				        			{
-				        				xtype: 'form',
-				        				bodyPadding: 5,
-				        				layout: 'anchor',
-									    defaults: 
-									    {
-									        anchor: '100%'
-									    },
-									    items: 
-									    [
-									    	{
-										    	xtype:'fieldset',
-										    	title: 'Objects',
-										    	defaults: 
-										    	{
-										        	anchor: '100%'
-											    },
-											    layout: 'anchor',
-	        									items :
-	        									[
+													]
+												},
+												{
+													xtype:'fieldset',
+													title: 'Position',
+													id: 'prefabPositionFieldSet',
+													defaults: 
 													{
-	        											xtype: 'textfield',
-	        											fieldLabel: 'First Object',
-	        											id: 'firstObjectId'
-	        										},
-													{
-	        											xtype: 'textfield',
-	        											fieldLabel: 'Second Object',
-	        											id: 'secondObjectId'
-	        										}
-												]
-											},
-											{
-										    	xtype:'fieldset',
-										    	title: 'Options',
-										    	defaults: 
-										    	{
-										        	anchor: '100%'
-											    },
-											    layout: 'anchor',
-	        									items :
-	        									[
-													{
-												        xtype: 'combo',
-												        fieldLabel: 'Type',
-												        store: coStore,
-												        queryMode: 'local',
-													    displayField: 'name',
-													    valueField: 'id',
-														id: 'coTypeId'
-												    },
-													{
-	        											xtype: 'checkboxfield',
-	        											fieldLabel: 'Delete objects',
-	        											id: 'coDeleteObjectsId'
-	        										}
-												]
-											}
-										],
-										buttons: 
-									    [
-										    {
-										        text: 'Reset',
-										        handler: function() 
-										        {
-										        }
-										    }, 
-										    {
-										        text: 'Create',
-										        handler: function()
-										        {
-													var operationType = Ext.getCmp('coTypeId').getValue();
-													var deleteObjs = Ext.getCmp('coDeleteObjectsId').getValue();
-													emmiter.emit('EXECUTE_CO', operationType, deleteObjs);
-										        }
-										    }
-									    ]
-									}
-								]
-						    },							
-						    {
-						        title: '3D Section',
-								layout: 'fit',
-								id: 'sectionTabId',
-								disabled: true,
-	        					height: '100%',
-								items: 
-				        		[
-				        			{
-				        				xtype: 'form',
-				        				bodyPadding: 5,
-				        				layout: 'anchor',
-									    defaults: 
-									    {
-									        anchor: '100%'
-									    },
-									    items: 
-									    [
-									    	{
-										    	xtype:'fieldset',
-										    	title: 'Config',
-										    	defaults: 
-										    	{
-										        	anchor: '100%'
-											    },
-											    layout: 'anchor',
-	        									items :
-	        									[
-													{
-	        											xtype: 'sliderfield',
-	        											fieldLabel: 'X',
-	        											id: 'sectionXPositionId',
-														value: 0,
-														increment: 1,
-														minValue: -100,
-														maxValue: 100,
-														listeners:
+														anchor: '100%'
+													},
+													defaultType: 'numberfield',
+													layout: 'anchor',
+													items :
+													[
 														{
-															change:
-															{
-																fn: function(slider, newValue, thumb, eOpts)
-																{
-																	sceneManager.selectionManager.lastPickedMesh.material.setFloat("xlimit", newValue / 100);
-																}
-															}
-														}
-	        										},
-													{
-	        											xtype: 'sliderfield',
-	        											fieldLabel: 'Y',
-	        											id: 'sectionYPositionId',
-														value: 0,
-														increment: 1,
-														minValue: -100,
-														maxValue: 100,
-														listeners:
+															xtype: 'numberfield',
+															fieldLabel: 'X',
+															value: 0,
+															id: 'xId'
+														},
 														{
-															change:
-															{
-																fn: function(slider, newValue, thumb, eOpts)
-																{
-																	sceneManager.selectionManager.lastPickedMesh.material.setFloat("ylimit", newValue / 100);
-																}
-															}
-														}
-	        										},
-													{
-	        											xtype: 'sliderfield',
-	        											fieldLabel: 'Z',
-	        											id: 'sectionZPositionId',
-														value: 0,
-														increment: 1,
-														minValue: -100,
-														maxValue: 100,
-														listeners:
+															xtype: 'numberfield',
+															fieldLabel: 'Y',
+															value: 0,
+															id: 'yId'
+														},
 														{
-															change:
+															xtype: 'numberfield',
+															fieldLabel: 'Z',
+															value: 0,
+															id: 'zId'
+														}
+													]
+												},
+												{
+													xtype:'fieldset',
+													title: 'Rotation',
+													id: 'prefabRotationFieldSet',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													defaultType: 'numberfield',
+													layout: 'anchor',
+													items :
+													[
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'X',
+															value: 0,
+															id: 'rXId'
+														},
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'Y',
+															value: 0,
+															id: 'rYId'
+														},
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'Z',
+															value: 0,
+															id: 'rZId'
+														}
+													]
+												},
+												{
+													xtype:'fieldset',
+													title: 'Prefab properties',
+													id: 'prefabParamsFieldSet',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													defaultType: 'numberfield',
+													layout: 'anchor',
+													items :
+													[
+													]
+												}
+											],
+											buttons: 
+											[
+												{
+													text: 'Reset',
+													handler: function() 
+													{
+													}
+												}, 
+												{
+													text: 'Create',
+													handler: function()
+													{
+														console.log(' Creation Handler handler called');
+														prefabCreationFunction();
+													}
+												}
+											]
+										}
+									]
+								},
+								{
+									title: 'Compound Objects',
+									layout: 'fit',
+									id: 'coTabId',
+									height: '100%',
+									items: 
+									[
+										{
+											xtype: 'form',
+											bodyPadding: 5,
+											layout: 'anchor',
+											defaults: 
+											{
+												anchor: '100%'
+											},
+											items: 
+											[
+												{
+													xtype:'fieldset',
+													title: 'Objects',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													layout: 'anchor',
+													items :
+													[
+														{
+															xtype: 'textfield',
+															fieldLabel: 'First Object',
+															id: 'firstObjectId'
+														},
+														{
+															xtype: 'textfield',
+															fieldLabel: 'Second Object',
+															id: 'secondObjectId'
+														}
+													]
+												},
+												{
+													xtype:'fieldset',
+													title: 'Options',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													layout: 'anchor',
+													items :
+													[
+														{
+															xtype: 'combo',
+															fieldLabel: 'Type',
+															store: coStore,
+															queryMode: 'local',
+															displayField: 'name',
+															valueField: 'id',
+															id: 'coTypeId'
+														},
+														{
+															xtype: 'checkboxfield',
+															fieldLabel: 'Delete objects',
+															id: 'coDeleteObjectsId'
+														}
+													]
+												}
+											],
+											buttons: 
+											[
+												{
+													text: 'Reset',
+													handler: function() 
+													{
+													}
+												}, 
+												{
+													text: 'Create',
+													handler: function()
+													{
+														var operationType = Ext.getCmp('coTypeId').getValue();
+														var deleteObjs = Ext.getCmp('coDeleteObjectsId').getValue();
+														emmiter.emit('EXECUTE_CO', operationType, deleteObjs);
+													}
+												}
+											]
+										}
+									]
+								},							
+								{
+									title: '3D Section',
+									layout: 'fit',
+									id: 'sectionTabId',
+									disabled: true,
+									height: '100%',
+									items: 
+									[
+										{
+											xtype: 'form',
+											bodyPadding: 5,
+											layout: 'anchor',
+											defaults: 
+											{
+												anchor: '100%'
+											},
+											items: 
+											[
+												{
+													xtype:'fieldset',
+													title: 'Config',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													layout: 'anchor',
+													items :
+													[
+														{
+															xtype: 'sliderfield',
+															fieldLabel: 'X',
+															id: 'sectionXPositionId',
+															value: 0,
+															increment: 1,
+															minValue: -100,
+															maxValue: 100,
+															listeners:
 															{
-																fn: function(slider, newValue, thumb, eOpts)
+																change:
 																{
-																	sceneManager.selectionManager.lastPickedMesh.material.setFloat("zlimit", newValue / 100);
+																	fn: function(slider, newValue, thumb, eOpts)
+																	{
+																		sceneManager.selectionManager.lastPickedMesh.material.setFloat("xlimit", newValue / 100);
+																	}
+																}
+															}
+														},
+														{
+															xtype: 'sliderfield',
+															fieldLabel: 'Y',
+															id: 'sectionYPositionId',
+															value: 0,
+															increment: 1,
+															minValue: -100,
+															maxValue: 100,
+															listeners:
+															{
+																change:
+																{
+																	fn: function(slider, newValue, thumb, eOpts)
+																	{
+																		sceneManager.selectionManager.lastPickedMesh.material.setFloat("ylimit", newValue / 100);
+																	}
+																}
+															}
+														},
+														{
+															xtype: 'sliderfield',
+															fieldLabel: 'Z',
+															id: 'sectionZPositionId',
+															value: 0,
+															increment: 1,
+															minValue: -100,
+															maxValue: 100,
+															listeners:
+															{
+																change:
+																{
+																	fn: function(slider, newValue, thumb, eOpts)
+																	{
+																		sceneManager.selectionManager.lastPickedMesh.material.setFloat("zlimit", newValue / 100);
+																	}
 																}
 															}
 														}
-	        										}
-												]
-											}
-										],
-										buttons: 
-									    [
-										    {
-										        text: 'Reset',
-										        handler: function() 
-										        {
-										        }
-										    }, 
-										    {
-										        text: 'Create',
-										        handler: function()
-										        {
-													var operationType = Ext.getCmp('coTypeId').getValue();
-													var deleteObjs = Ext.getCmp('coDeleteObjectsId').getValue();
-													emmiter.emit('EXECUTE_CO', operationType, deleteObjs);
-										        }
-										    }
-									    ]
-									}
-								]
-						    }
-					    ]
-				    },
-				    {
-				        title: '3D View',
-				        region: 'center',
-				        xtype: 'panel',
-				        margins: '0 0 0 0',
-						html: '<canvas id="renderCanvas" style="width:100%;height:100%;" touch-action="none"></canvas>',
-				        tbar: 
-				    	[
-			        		{
-			        			xtype: 'button',
-			        			tooltip: 'Rendering',
-								icon: 'icons/render_modes.png',
-							    menu: 
-							    [
-							    	{
-							        	text: 'Wireframe'
-							        },
-							        {
-							        	text: 'Solid'
-							        },
-							        {
-							        	text: 'Edges'
-							        },
-							        {
-							        	text: 'XRay'
-							        },
-							        {
-							        	text: 'Points'
-							        }
-							    ]
-			        		},
-			        		{ 
-				        		xtype: 'tbseparator' 
-				        	},
-				        	{
-				        		xtype: 'button',
-								id: 'translateButton',
-				        		enableToggle: true,
-								toggleGroup: 'transformGroup',
-				        		tooltip: 'Translate',
-								icon: 'icons/translate.png',
-								toggleHandler: function (button, state) 
-								{
-									if(state)
-									{
-										sceneManager.selectionManager.transform = 't';
-									}
-									else
-									{
-										sceneManager.selectionManager.transform = '';
-									}
-							
-					        	}
-				        	},
-				        	{
-				        		xtype: 'button',
-				        		enableToggle: true,
-								toggleGroup: 'transformGroup',
-				        		tooltip: 'Rotate',
-								icon: 'icons/rotate.png',
-								id: 'rotateButton',
-								toggleHandler: function (button, state) 
-								{
-									if(state)
-									{
-										sceneManager.selectionManager.transform = 'r';
-										console.log(sceneManager.selectionManager.transform);
-									}
-									else
-									{
-										sceneManager.selectionManager.transform = '';
-									}
+													]
+												}
+											],
+											buttons: 
+											[
+												{
+													text: 'Reset',
+													handler: function() 
+													{
+													}
+												}, 
+												{
+													text: 'Create',
+													handler: function()
+													{
+														var operationType = Ext.getCmp('coTypeId').getValue();
+														var deleteObjs = Ext.getCmp('coDeleteObjectsId').getValue();
+														emmiter.emit('EXECUTE_CO', operationType, deleteObjs);
+													}
+												}
+											]
+										}
+									]
 								}
-				        	},
-				        	{
-				        		xtype: 'button',
-				        		enableToggle: true,
-								toggleGroup: 'transformGroup',
-				        		tooltip: 'Scale',
-								icon: 'icons/scale.png',
-								toggleHandler: function (button, state) 
+							]
+						},
+						{
+							title: '3D View',
+							region: 'center',
+							xtype: 'panel',
+							margins: '0 0 0 0',
+							html: '<canvas id="renderCanvas" style="width:100%;height:100%;" touch-action="none"></canvas>',
+							tbar: 
+							[
 								{
-									if(state)
+									xtype: 'buttongroup',
+									columns: 3,
+									defaults: 
 									{
-										sceneManager.selectionManager.transform = 's';
-									}
-									else
-									{
-										sceneManager.selectionManager.transform = '';
-									}
-								}
-				        	},
-				        	{ 
-				        		xtype: 'tbseparator' 
-				        	},
-				        	{
-				        		xtype: 'button',
-				        		enableToggle: true,
-				        		tooltip: 'Enable Compound Objects Mode',
-								icon: 'icons/co.png',
-								id: 'enableCOModeButtonId',
-				        		listeners:
-					        	{
-					        		toggle:
-					        		{
-					        			fn: function( __this, pressed, eOpts )
-					        			{
-											emmiter.emit('ENABLE_CO_MODE', pressed);
-					        			}
-					        		}
-					        	}
-				        	},
-							{ 
-				        		xtype: 'tbseparator' 
-				        	},
-				        	{
-				        		xtype: 'button',
-				        		enableToggle: true,
-				        		tooltip: 'Enable 3D Section Mode',
-								icon: 'icons/section.png',
-								id: 'enableSectionModeButtonId',
-				        		listeners:
-					        	{
-					        		toggle:
-					        		{
-					        			fn: function( __this, pressed, eOpts )
-					        			{
-											if(sceneManager.selectionManager.lastPickedMesh == null)
+										scale: 'small'
+									},
+									items:
+									[
+										{
+											xtype: 'button',
+											id: 'translateButton',
+											enableToggle: true,
+											toggleGroup: 'transformGroup',
+											tooltip: 'Translate',
+											icon: 'icons/translate.png',
+											toggleHandler: function (button, state) 
 											{
-												Ext.MessageBox.alert('3D Section', 'Please select an object !');
-												Ext.getCmp('enableSectionModeButtonId').toggle(false, true);
-												return;
+												if(state)
+												{
+													sceneManager.selectionManager.transform = 't';
+												}
+												else
+												{
+													sceneManager.selectionManager.transform = '';
+												}
+										
 											}
-											
-											emmiter.emit('ENABLE_SECTION_MODE', pressed);
-											
-											if(pressed == true)
+										},
+										{
+											xtype: 'button',
+											enableToggle: true,
+											toggleGroup: 'transformGroup',
+											tooltip: 'Rotate',
+											icon: 'icons/rotate.png',
+											id: 'rotateButton',
+											toggleHandler: function (button, state) 
 											{
-												Ext.getCmp('sectionTabId').setDisabled(false);
-												Ext.getCmp('toolsTabPanelId').setActiveTab(Ext.getCmp('sectionTabId'));
-												var bboxInfo = sceneManager.selectionManager.lastPickedMesh.getBoundingInfo()
-												bboxInfo.update(sceneManager.selectionManager.lastPickedMesh._worldMatrix);
-												var vectors = bboxInfo.boundingBox.vectors; 
-												var width = Number(vectors[1].x - vectors[0].x);
-												Ext.getCmp('sectionXPositionId').setMaxValue(width * 100 / 2);
-												Ext.getCmp('sectionXPositionId').setMinValue(-width * 100 / 2);
-												Ext.getCmp('sectionXPositionId').setValue(width * 100 / 2);
-												var heigh = Number(vectors[1].y - vectors[0].y);
-												Ext.getCmp('sectionYPositionId').setMaxValue(heigh * 100 / 2);
-												Ext.getCmp('sectionYPositionId').setMinValue(-heigh * 100 / 2);
-												Ext.getCmp('sectionYPositionId').setValue(heigh * 100 / 2);
-												var depth = Number(vectors[1].z - vectors[0].z);
-												Ext.getCmp('sectionZPositionId').setMaxValue(depth * 100 / 2);
-												Ext.getCmp('sectionZPositionId').setMinValue(-depth * 100 / 2);
-												Ext.getCmp('sectionZPositionId').setValue(depth * 100 / 2);
+												if(state)
+												{
+													sceneManager.selectionManager.transform = 'r';
+													console.log(sceneManager.selectionManager.transform);
+												}
+												else
+												{
+													sceneManager.selectionManager.transform = '';
+												}
 											}
-											else
+										},
+										{
+											xtype: 'button',
+											enableToggle: true,
+											toggleGroup: 'transformGroup',
+											tooltip: 'Scale',
+											icon: 'icons/scale.png',
+											toggleHandler: function (button, state) 
 											{
-												Ext.getCmp('sectionTabId').setDisabled(true);
+												if(state)
+												{
+													sceneManager.selectionManager.transform = 's';
+												}
+												else
+												{
+													sceneManager.selectionManager.transform = '';
+												}
 											}
-					        			}
-					        		}
-					        	}
-				        	},
-				        	{ 
-				        		xtype: 'tbseparator' 
-				        	},
-							{
-								xtype: 'button',
-								tooltip: 'Import',
-								icon: 'icons/import.png',
-								handler: function()
+										}
+									]
+								},
 								{
-									emmiter.emit('MESH_IMPORT');
-								}
-							},
-							{ 
-				        		xtype: 'tbseparator' 
-				        	},
-							{
-								xtype: 'button',
-								tooltip: 'Delete Selected',
-								icon: 'icons/delete.png',
-								handler: function()
+									xtype: 'buttongroup',
+									columns: 2,
+									defaults: 
+									{
+										scale: 'small'
+									},
+									items:
+									[
+										{
+											xtype: 'button',
+											enableToggle: true,
+											tooltip: 'Enable Compound Objects Mode',
+											icon: 'icons/co.png',
+											id: 'enableCOModeButtonId',
+											listeners:
+											{
+												toggle:
+												{
+													fn: function( __this, pressed, eOpts )
+													{
+														emmiter.emit('ENABLE_CO_MODE', pressed);
+													}
+												}
+											}
+										},
+										{
+											xtype: 'button',
+											enableToggle: true,
+											tooltip: 'Enable 3D Section Mode',
+											icon: 'icons/section.png',
+											id: 'enableSectionModeButtonId',
+											listeners:
+											{
+												toggle:
+												{
+													fn: function( __this, pressed, eOpts )
+													{
+														if(sceneManager.selectionManager.lastPickedMesh == null)
+														{
+															Ext.MessageBox.alert('3D Section', 'Please select an object !');
+															Ext.getCmp('enableSectionModeButtonId').toggle(false, true);
+															return;
+														}
+														
+														emmiter.emit('ENABLE_SECTION_MODE', pressed);
+														
+														if(pressed == true)
+														{
+															Ext.getCmp('sectionTabId').setDisabled(false);
+															Ext.getCmp('toolsTabPanelId').setActiveTab(Ext.getCmp('sectionTabId'));
+															var bboxInfo = sceneManager.selectionManager.lastPickedMesh.getBoundingInfo()
+															bboxInfo.update(sceneManager.selectionManager.lastPickedMesh._worldMatrix);
+															var vectors = bboxInfo.boundingBox.vectors; 
+															var width = Number(vectors[1].x - vectors[0].x);
+															Ext.getCmp('sectionXPositionId').setMaxValue(width * 100 / 2);
+															Ext.getCmp('sectionXPositionId').setMinValue(-width * 100 / 2);
+															Ext.getCmp('sectionXPositionId').setValue(width * 100 / 2);
+															var heigh = Number(vectors[1].y - vectors[0].y);
+															Ext.getCmp('sectionYPositionId').setMaxValue(heigh * 100 / 2);
+															Ext.getCmp('sectionYPositionId').setMinValue(-heigh * 100 / 2);
+															Ext.getCmp('sectionYPositionId').setValue(heigh * 100 / 2);
+															var depth = Number(vectors[1].z - vectors[0].z);
+															Ext.getCmp('sectionZPositionId').setMaxValue(depth * 100 / 2);
+															Ext.getCmp('sectionZPositionId').setMinValue(-depth * 100 / 2);
+															Ext.getCmp('sectionZPositionId').setValue(depth * 100 / 2);
+														}
+														else
+														{
+															Ext.getCmp('sectionTabId').setDisabled(true);
+														}
+													}
+												}
+											}
+										}
+									]
+								},
 								{
-									emmiter.emit('DELETE_SELECTED_MESH');
-								}
-							},
-							{
-								xtype: 'button',
-								tooltip: 'Clone Selected Mesh',
-								icon: 'icons/clone.png',
-								handler: function()
+									xtype: 'buttongroup',
+									columns: 3,
+									defaults: 
+									{
+										scale: 'small'
+									},
+									items:
+									[
+										{
+											xtype: 'button',
+											tooltip: 'Import',
+											icon: 'icons/import.png',
+											handler: function()
+											{
+												emmiter.emit('MESH_IMPORT');
+											}
+										},
+										{
+											xtype: 'button',
+											tooltip: 'Clone Selected Mesh',
+											icon: 'icons/clone.png',
+											handler: function()
+											{
+												emmiter.emit('CLONE_MESH');
+											}
+										},
+										{
+											xtype: 'button',
+											tooltip: 'Delete Selected',
+											icon: 'icons/delete.png',
+											handler: function()
+											{
+												emmiter.emit('DELETE_SELECTED_MESH');
+											}
+										}
+									]
+								},
 								{
-									emmiter.emit('CLONE_MESH');
+									xtype: 'buttongroup',
+									columns: 2,
+									defaults: 
+									{
+										scale: 'small'
+									},
+									items:
+									[
+										{
+											xtype: 'button',
+											enableToggle: true,
+											tooltip: 'Enable Camera Target',
+											icon: 'icons/camera_target.png',
+											toggleHandler: function (button, state) 
+											{
+												sceneManager.targetSelection = state;	
+											}
+										},
+										{
+											xtype: 'button',
+											tooltip: 'Reset Camera position',
+											icon: 'icons/reset_camera.png',
+											handler: function () 
+											{
+												emmiter.emit('CHANGE_VIEW', 'FRONT');
+											}
+										}
+									]
 								}
-							},
-				        	{ 
-				        		xtype: 'tbseparator' 
-				        	}
-		        		],
-						dockedItems: 
-						[
-							{
-								xtype: 'toolbar',
-								dock: 'bottom',
-								items:
-								[
-									{
-										xtype: 'button',
-										text: 'Front',
-										handler: function()
-										{
-											emmiter.emit('CHANGE_VIEW', 'FRONT');
-										}
-									},
-									{
-										xtype: 'button',
-										text: 'Back',
-										handler: function()
-										{
-											emmiter.emit('CHANGE_VIEW', 'BACK');
-										}
-									},
-									{
-										xtype: 'button',
-										text: 'Left',
-										handler: function()
-										{
-											emmiter.emit('CHANGE_VIEW', 'LEFT');
-										}
-									},
-									{
-										xtype: 'button',
-										text: 'Right',
-										handler: function()
-										{
-											emmiter.emit('CHANGE_VIEW', 'RIGHT');
-										}
-									},
-									{
-										xtype: 'button',
-										text: 'Top',
-										handler: function()
-										{
-											emmiter.emit('CHANGE_VIEW', 'TOP');
-										}
-									},
-									{
-										xtype: 'button',
-										text: 'Bottom',
-										handler: function()
-										{
-											emmiter.emit('CHANGE_VIEW', 'BOTTOM');
-										}
-									},
-									{ 
-										xtype: 'tbseparator' 
-									}
-								]
-							}
-						]
-				    }
+							]
+						}
 			    	],
 			    	tbar: 
 			    	[
@@ -879,60 +841,23 @@
 						    menu: 
 						    [
 						        {
-						        	text: 'New Project'
+						        	text: 'New Project',
+									disabled: true
 						        },
 						        {
-						        	text: 'Load Project'
+						        	text: 'Load Project',
+									disabled: true
 						        },
 						        {
-						        	text: 'Save'
+						        	text: 'Save',
+									disabled: true
 						        },
 						        {
-						        	text: 'Export'
+						        	text: 'Export',
+									disabled: true
 						        }
 						    ]
-		        		},
-				        { 
-				        	xtype: 'tbseparator' 
-				        },
-				        {
-		        			xtype: 'button',
-		        			text: 'View',
-						    menu: 
-						    [
-						        {
-						        	text: 'Select All'
-						        },
-						        {
-						        	text: 'Hide Selected'
-						        },
-						        {
-						        	text: 'Show All'
-						        }
-						    ]
-		        		},
-		        		{ 
-				        	xtype: 'tbseparator' 
-				        },
-		        		{
-		        			xtype: 'button',
-		        			text: 'Preferences',
-						    menu: 
-						    [
-						        {
-						        	text: 'Camera'
-						        },
-						        {
-						        	text: 'Scene'
-						        },
-						        {
-						        	text: 'Rendering'
-						        }
-						    ]
-		        		},
-						{ 
-				        	xtype: 'tbseparator' 
-				        }
+		        		}
 				    ],
 				    renderTo: Ext.getBody()
 				});
@@ -979,7 +904,10 @@
 												var store = grid.getStore();
 												var rec = store.getAt(rowIndex);
 												rec.raw.object.visibility = !rec.raw.object.visibility;
-												rec.raw.object.isPickable = rec.raw.object.visibility;
+												if(rec.raw.object.name != 'Grid')
+												{
+													rec.raw.object.isPickable = rec.raw.object.visibility;
+												}
 												rec.commit();
 											},
 											getClass: function(value, metadata, record)

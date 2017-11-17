@@ -7,6 +7,7 @@ function SceneManager()
 	this.engine = null;
 	this.selectionManager = null;
 	this.uid = 0;
+	this.targetSelection = false;
 	
 	this.selectionMaterial = null;
 	
@@ -100,7 +101,7 @@ SceneManager.prototype.renderFrames = function()
 	this.engine.resize();
 	this.camera.update();
 	
-	if(this.selectionManager.lastPickedMesh != null && this.selectionManager.lastPickedMesh.data.visible == true)
+	if(this.selectionManager.lastPickedMesh != null && this.selectionManager.lastPickedMesh.visibility == true)
 	{
 		if(this.selectionManager.editControl == null && this.selectionManager.transform != '')
 		{
@@ -136,6 +137,15 @@ SceneManager.prototype.renderFrames = function()
 		if(this.selectionManager.transform == 's')
 		{
 			this.selectionManager.editControl.enableScaling();
+		}
+	}
+	else
+	{
+		if(this.selectionManager.editControl != null)
+		{
+			this.selectionManager.editControl.removeAllActionListeners();
+			this.selectionManager.editControl.detach();
+			this.selectionManager.editControl = null;
 		}
 	}
 };

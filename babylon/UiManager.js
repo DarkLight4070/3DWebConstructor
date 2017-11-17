@@ -10,6 +10,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_CO_SET_SECOND', this.setCoSecond.bind(this));
 	emmiter.on('UI_CO_RESET', this.resetCoUi.bind(this));
 	emmiter.on('UI_REFRESH_TREE', this.refreshTreeUi.bind(this));
+	emmiter.on('UI_PREF_CAMERA', this.createCameraPrefUi.bind(this));
 }
 
 UiManager.prototype.updateUiSelection = function(uid)
@@ -358,4 +359,62 @@ UiManager.prototype.refreshTreeUi = function()
 {
 	var mainTree = Ext.getCmp('mainTree');
 	mainTree.getView().refresh();
+};
+
+
+UiManager.prototype.createCameraPrefUi = function()
+{
+	Ext.create('Ext.window.Window', 
+	{
+		title: 'Camera Preferences',
+		closable: false,
+		resizable: false,
+		width: 600,
+		layout: 'anchor',
+		defaults: 
+		{
+			anchor: '100%'
+		},
+		bodyPadding: 5,
+		items: 
+		[
+			{
+				xtype: 'fieldset',
+				title: 'Camera Behavior',
+				items:
+				[
+					{
+						xtype: 'fieldcontainer',
+						fieldLabel: 'Target',
+						defaultType: 'radiofield',
+						layout: 'hbox',
+						items:
+						[
+							{
+								xtype: 'radio',
+								boxLabel: 'Fixed',
+								name: 'cameraTargetGroup',
+								flex: 1
+							},
+							{
+								xtype: 'radio',
+								boxLabel: 'Selection',
+								name: 'cameraTargetGroup',
+								flex: 4
+							}
+						]
+					}
+				]
+			}
+		],
+		buttons: 
+		[
+			{ 
+				text: 'Apply'
+			},
+			{ 
+				text: 'Cancel'
+			}
+		]
+	}).show();
 };
