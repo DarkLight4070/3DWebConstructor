@@ -23,7 +23,9 @@ function SceneManager()
 	emmiter.on('MESH_CHANGE_VISIBILITY', this.changeMeshVisibility.bind(this));
 	emmiter.on('MESH_SET_WIREFRAME', this.setWireframe.bind(this));
 	emmiter.on('MESH_IMPORT', this.importMesh.bind(this));
-	
+	emmiter.on('MESH_HIDE_ALL', this.hideAll.bind(this));
+	emmiter.on('MESH_SHOW_ALL', this.showAll.bind(this));
+	emmiter.on('MESH_WIREFRAME_ALL', this.wireframeAll.bind(this));
 }
 
 SceneManager.prototype.instance = function()
@@ -421,6 +423,7 @@ SceneManager.prototype.importMesh = function()
 			mesh.computeWorldMatrix(true);
 			mesh.setPivotPoint(mesh.getBoundingInfo().boundingBox.center);
 			enableEdgeMode(mesh);
+			mesh.name = mesh.name + uid;
 			mesh.data = {type: 'sceneObject', uid: uid++, visible: true, originalMaterial: mesh.material, selectionMaterial: selectionMaterial.clone()};
 			mesh.parent = root;
 			meshes.push(mesh);
@@ -476,3 +479,67 @@ SceneManager.prototype.importMesh = function()
 	assetsManager.load();
 };
 
+SceneManager.prototype.hideAll = function()
+{
+	console.log('SceneManager.prototype.hideAll');
+	var meshes = this.scene.meshes;
+	for(var i=0; i<meshes.length; i++)
+	{
+		var mesh = meshes[i];
+		mesh.visibility = false;
+		mesh.isPickable = false;
+	}
+	emmiter.emit('UI_REFRESH_TREE');
+};
+
+SceneManager.prototype.showAll = function()
+{
+	console.log('SceneManager.prototype.showAll');
+	var meshes = this.scene.meshes;
+	for(var i=0; i<meshes.length; i++)
+	{
+		var mesh = meshes[i];
+		mesh.visibility = true;
+		if(mesh.name != 'Grid')
+		{
+			mesh.isPickable = true;
+		}
+	}
+	emmiter.emit('UI_REFRESH_TREE');
+};
+
+SceneManager.prototype.wireframeAll = function(value)
+{
+	console.log('SceneManager.prototype.wireframeAll');
+	var meshes = this.scene.meshes;
+	for(var i=0; i<meshes.length; i++)
+	{
+		var mesh = meshes[i];
+		if(mesh.name != 'Grid' && mesh.data != undefined)
+		{
+			if(value == true)
+			{
+				mesh.disableEdgesRendering();
+			}
+			else
+			{
+				this.enableEdgeMode(mesh);
+			}
+			if(mesh.data.originalMaterial == undefined && mesh.material != undefined)	
+			{
+				mesh.data.originalMaterial = mesh.material.clone();
+				mesh.data.originalMaterial.backFaceCulling = false;
+				mesh.material.wireframe = value;
+				mesh.data.originalMaterial.wireframe = value;
+				mesh.data.selectionMaterial.wireframe = value;
+			}
+			else if(mesh.material != undefined)
+			{
+				mesh.material.wireframe = value;
+				mesh.data.originalMaterial.wireframe = value;
+				mesh.data.selectionMaterial.wireframe = value;
+			}
+		}
+	}
+	emmiter.emit('UI_REFRESH_TREE');
+};

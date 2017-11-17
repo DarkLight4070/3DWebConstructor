@@ -220,6 +220,11 @@ SelectionManager.prototype.setCompoundObjectsMode = function(enable)
 
 SelectionManager.prototype.selectMesh = function(mesh)
 {
+	if(mesh == null)
+	{
+		this.lastPickedMesh = null;
+		return;
+	}
 	if(this.sectionMode == true)
 	{
 		return;

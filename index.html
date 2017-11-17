@@ -978,25 +978,24 @@
 											{
 												var store = grid.getStore();
 												var rec = store.getAt(rowIndex);
-												rec.raw.visible = !rec.raw.visible;
-												rec.raw.object.data.visible = !rec.raw.object.data.visible;
-												store.removeAt(rowIndex);
-												store.insert(rowIndex, rec);
-												emmiter.emit('MESH_CHANGE_VISIBILITY', rec.raw.object, rec.raw.visible);
+												rec.raw.object.visibility = !rec.raw.object.visibility;
+												rec.raw.object.isPickable = rec.raw.object.visibility;
+												rec.commit();
 											},
 											getClass: function(value, metadata, record)
 											{
-												if (record.raw.visible == true)
+												if(record.raw.object == undefined)
+												{
+													return '';
+												}
+												
+												if (record.raw.object.visibility == true)
 												{
 													return 'visible-icon';
 												} 
-												else if(record.raw.visible == false)
+												else if(record.raw.object.visibility == false)
 												{
 													return 'hidden-icon';
-												}
-												else
-												{
-													return '';
 												}
 											}
 										}
@@ -1013,11 +1012,11 @@
 												var store = grid.getStore();
 												var rec = store.getAt(rowIndex);
 												var meshName = rec.get('text');
-												var mesh = sceneManager.scene.getMeshByName(meshName);
-												//emmiter.emit('MESH_SET_WIREFRAME', mesh, !mesh.material.wireframe);
-												mesh.data.selectionMaterial.wireframe = !mesh.data.selectionMaterial.wireframe;
-												mesh.data.originalMaterial.wireframe = mesh.data.selectionMaterial.wireframe;
-												if(mesh.data.selectionMaterial.wireframe == true)
+												var mesh = rec.raw.object;
+												mesh.material.wireframe = !mesh.material.wireframe;
+												mesh.data.originalMaterial.wireframe = mesh.material.wireframe;
+												mesh.data.selectionMaterial.wireframe = mesh.material.wireframe;
+												if(mesh.material.wireframe == true)
 												{
 													mesh.disableEdgesRendering();
 												}
@@ -1025,8 +1024,7 @@
 												{
 													sceneManager.enableEdgeMode(mesh);
 												}
-												store.removeAt(rowIndex);
-												store.insert(rowIndex, rec);
+												rec.commit();
 											},
 											getClass: function(value, metadata, record)
 											{
@@ -1038,6 +1036,7 @@
 													{
 														return 'wireframe-icon';
 													}
+													
 													if(material.wireframe == true)
 													{
 														return 'plain-icon';
@@ -1082,6 +1081,54 @@
 										}
 									}
 								}
+							}
+						}
+					],
+					tbar: 
+					[
+						{
+							xtype: 'button',
+							tooltip: 'Hide all',
+							icon: 'icons/hidden.png',
+							handler: function () 
+							{
+								emmiter.emit('MESH_HIDE_ALL');
+							}
+						},
+						{
+							xtype: 'tbseparator' 
+						},
+						{
+							xtype: 'button',
+							tooltip: 'Show all',
+							icon: 'icons/visible.png',
+							handler: function () 
+							{
+								emmiter.emit('MESH_SHOW_ALL');
+							}
+						},
+						{
+							xtype: 'tbseparator' 
+						},
+						{
+							xtype: 'button',
+							tooltip: 'Wireframe all',
+							icon: 'icons/wireframe.png',
+							handler: function () 
+							{
+								emmiter.emit('MESH_WIREFRAME_ALL', true);
+							}
+						},
+						{
+							xtype: 'tbseparator' 
+						},
+						{
+							xtype: 'button',
+							tooltip: 'Default material for all',
+							icon: 'icons/plain.png',
+							handler: function () 
+							{
+								emmiter.emit('MESH_WIREFRAME_ALL', false);
 							}
 						}
 					]

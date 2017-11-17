@@ -9,6 +9,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_CO_SET_FIRST', this.setCoFirst.bind(this));
 	emmiter.on('UI_CO_SET_SECOND', this.setCoSecond.bind(this));
 	emmiter.on('UI_CO_RESET', this.resetCoUi.bind(this));
+	emmiter.on('UI_REFRESH_TREE', this.refreshTreeUi.bind(this));
 }
 
 UiManager.prototype.updateUiSelection = function(uid)
@@ -351,4 +352,10 @@ UiManager.prototype.resetCoUi = function()
 	Ext.getCmp('coTypeId').reset();
 	Ext.getCmp('coDeleteObjectsId').reset();
 	Ext.getCmp('enableCOModeButtonId').toggle(false, true);
+};
+
+UiManager.prototype.refreshTreeUi = function()
+{
+	var mainTree = Ext.getCmp('mainTree');
+	mainTree.getView().refresh();
 };
