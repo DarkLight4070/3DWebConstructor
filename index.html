@@ -1141,16 +1141,42 @@
 						renderTo: Ext.getCmp('3dViewId').getEl(),
 						zIndex: 9999,
 						floating: true,
+						shadow: false,
 						items: 
 						[
 							{
-								text: 'regular item 1'
+								text: 'Hide selected',
+								disabled: sceneManager.selectionManager.lastPickedMesh == null,
+								handler: function()
+								{
+									var mesh = sceneManager.selectionManager.lastPickedMesh;
+									mesh.visibility = false;
+									if(mesh.name != 'Grid')
+									{
+										mesh.isPickable = mesh.visibility;
+									}
+									var mainTree = Ext.getCmp('mainTree');
+									mainTree.getView().refresh();
+									sceneManager.selectionManager.lastPickedMesh.material = sceneManager.selectionManager.lastPickedMesh.data.originalMaterial;
+									sceneManager.selectionManager.lastPickedMesh = null;
+									emmiter.emit('UI_UPDATE_SELECTION', null);
+								}
 							},
 							{
-								text: 'regular item 2'
+								text: 'Hide unselected',
+								disabled: sceneManager.selectionManager.lastPickedMesh == null,
+								handler: function()
+								{
+									emmiter.emit('MESH_HIDE_UNSELECTED');
+								}
+
 							},
 							{
-								text: 'regular item 3'
+								text: 'Show all',
+								handler: function()
+								{
+									emmiter.emit('MESH_SHOW_ALL');
+								}
 							}
 						]
 					});

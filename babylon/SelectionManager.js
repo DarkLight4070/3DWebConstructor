@@ -42,6 +42,10 @@ SelectionManager.prototype.pointerDown = function(evt)
 
 SelectionManager.prototype.pointerUp = function(evt, pickResult)
 {
+	if(evt.button != 0)
+	{
+		return;
+	}
 	if(this.sectionMode == true)
 	{
 		return;

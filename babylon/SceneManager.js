@@ -29,6 +29,7 @@ function SceneManager()
 	emmiter.on('MESH_WIREFRAME_ALL', this.wireframeAll.bind(this));
 	emmiter.on('SCENE_CLEAR', this.clearScene.bind(this));
 	emmiter.on('MESH_MIRROR', this.mirrorMesh.bind(this));
+	emmiter.on('MESH_HIDE_UNSELECTED', this.hideUnselected.bind(this));
 }
 
 SceneManager.prototype.instance = function()
@@ -500,8 +501,11 @@ SceneManager.prototype.hideAll = function()
 	for(var i=0; i<meshes.length; i++)
 	{
 		var mesh = meshes[i];
-		mesh.visibility = false;
-		mesh.isPickable = false;
+		if(mesh.name != 'Grid')
+		{
+			mesh.visibility = false;
+			mesh.isPickable = false;
+		}
 	}
 	emmiter.emit('UI_REFRESH_TREE');
 };
@@ -519,6 +523,15 @@ SceneManager.prototype.showAll = function()
 			mesh.isPickable = true;
 		}
 	}
+	emmiter.emit('UI_REFRESH_TREE');
+};
+
+SceneManager.prototype.hideUnselected = function()
+{
+	console.log('SceneManager.prototype.hideUnselected');
+	this.hideAll();
+	this.selectionManager.lastPickedMesh.visibility = true;
+	this.selectionManager.lastPickedMesh.isPickable = true;
 	emmiter.emit('UI_REFRESH_TREE');
 };
 
