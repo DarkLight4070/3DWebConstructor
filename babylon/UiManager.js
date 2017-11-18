@@ -34,16 +34,20 @@ UiManager.prototype.createBoxPrefabUi = function(__container)
 	var widthField = UI_CreateNumberField('Width', 'widthId', 1);
 	var heightField = UI_CreateNumberField('Height', 'heightId', 1);
 	var depthField = UI_CreateNumberField('Depth', 'depthId', 1);
-
+	
 	__container.add(widthField);
 	__container.add(heightField);
 	__container.add(depthField);
+	var getPrefabPositionValue = this.getPrefabPositionValue;
+	var getPrefabRotationValue = this.getPrefabRotationValue;
 	prefabCreationFunction = function()
 	{
 		var width = widthField.getValue();
 		var height = heightField.getValue();
 		var depth = depthField.getValue();
-		emmiter.emit('MESH_CREATE_BOX', width, height, depth);
+		var position = getPrefabPositionValue();
+		var rotation = getPrefabRotationValue();
+		emmiter.emit('MESH_CREATE_BOX', width, height, depth, position, rotation);
 	};
 };
 
@@ -58,13 +62,20 @@ UiManager.prototype.createCylinderPrefabUi = function(__container)
 	__container.add(topDiameterField);
 	__container.add(bottomDiameterField);
 	__container.add(tesselationField);
+	
+	var getPrefabPositionValue = this.getPrefabPositionValue;
+	var getPrefabRotationValue = this.getPrefabRotationValue;
 	prefabCreationFunction = function()
 	{
 		var height = heightField.getValue();
 		var topDiameter = topDiameterField.getValue();
 		var bottomDiameter = bottomDiameterField.getValue();
 		var tesselation = tesselationField.getValue();
-		emmiter.emit('MESH_CREATE_CYLINDER', height, topDiameter, bottomDiameter, tesselation);
+		
+		var position = getPrefabPositionValue();
+		var rotation = getPrefabRotationValue();
+		
+		emmiter.emit('MESH_CREATE_CYLINDER', height, topDiameter, bottomDiameter, tesselation, position, rotation);
 	};
 };
 
@@ -75,12 +86,19 @@ UiManager.prototype.createSpherePrefabUi = function(__container)
 
 	__container.add(diameterField);
 	__container.add(segmentsField);
-
+	
+	var getPrefabPositionValue = this.getPrefabPositionValue;
+	var getPrefabRotationValue = this.getPrefabRotationValue;
+	
 	prefabCreationFunction = function()
 	{
 		var diameter = diameterField.getValue();
 		var segments = segmentsField.getValue();
-		emmiter.emit('MESH_CREATE_SPHERE', diameter, segments);
+		
+		var position = getPrefabPositionValue();
+		var rotation = getPrefabRotationValue();
+		
+		emmiter.emit('MESH_CREATE_SPHERE', diameter, segments, position, rotation);
 		
 	};
 }
@@ -94,13 +112,20 @@ UiManager.prototype.createPlanePrefabUi = function(__container)
 	__container.add(widthField);
 	__container.add(heightField);
 	__container.add(subdivisionsField);
-
+	
+	var getPrefabPositionValue = this.getPrefabPositionValue;
+	var getPrefabRotationValue = this.getPrefabRotationValue;
+	
 	prefabCreationFunction = function()
 	{
 		var width = widthField.getValue();
 		var height = heightField.getValue();
 		var subdivisions = subdivisionsField.getValue();
-		emmiter.emit('MESH_CREATE_PLANE', width, height, subdivisions);
+		
+		var position = getPrefabPositionValue();
+		var rotation = getPrefabRotationValue();
+		
+		emmiter.emit('MESH_CREATE_PLANE', width, height, subdivisions, position, rotation);
 	};
 };
 
@@ -121,6 +146,10 @@ UiManager.prototype.createLinePrefabUi = function(__container)
 	__container.add(x2Field);
 	__container.add(y2Field);
 	__container.add(z2Field);
+	
+	var getPrefabPositionValue = this.getPrefabPositionValue;
+	var getPrefabRotationValue = this.getPrefabRotationValue;
+	
 	prefabCreationFunction = function()
 	{
 		var x1 = x1Field.getValue();
@@ -130,7 +159,11 @@ UiManager.prototype.createLinePrefabUi = function(__container)
 		var x2 = x2Field.getValue();
 		var y2 = y2Field.getValue();
 		var z2 = z2Field.getValue();
-		emmiter.emit('MESH_CREATE_LINE', x1, y1, z1, x2, y2, z2);
+		
+		var position = getPrefabPositionValue();
+		var rotation = getPrefabRotationValue();
+		
+		emmiter.emit('MESH_CREATE_LINE', x1, y1, z1, x2, y2, z2, position, rotation);
 	};
 };
 
@@ -239,10 +272,7 @@ UiManager.prototype.addMeshToTree = function(mesh)
 	{
 		icon = 'icons/co_mesh.png';
 	}
-	console.log(mesh);
-	console.log(mesh.data);
-	console.log(mesh.data.uid);
-	console.log(mesh.data.visible);
+	
 	meshesNode.appendChild({text: mesh.name, icon: icon, leaf: true, object: mesh, uid: mesh.data.uid, visible: mesh.data.visible});
 }
 
@@ -416,4 +446,17 @@ UiManager.prototype.createCameraPrefUi = function()
 			}
 		]
 	}).show();
+};
+
+UiManager.prototype.getPrefabPositionValue = function()
+{
+	console.log('UiManager.prototype.getPrefabPositionValue');
+	var position = new BABYLON.Vector3(Ext.getCmp('prefabPxId').getValue(), Ext.getCmp('prefabPyId').getValue(), Ext.getCmp('prefabPzId').getValue());
+	return position;
+};
+
+UiManager.prototype.getPrefabRotationValue = function()
+{
+	var rotation = new BABYLON.Vector3(Ext.getCmp('prefabRxId').getValue() * (Math.PI / 180) , Ext.getCmp('prefabRyId').getValue() * (Math.PI / 180), Ext.getCmp('prefabRzId').getValue() * (Math.PI / 180));
+	return rotation; 
 };

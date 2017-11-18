@@ -212,7 +212,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 		return;
 	}
 	
-	if(mesh.visible == false)
+	if(mesh.visibility == false)
 	{
 		return;
 	}
