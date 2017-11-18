@@ -107,48 +107,33 @@ SceneManager.prototype.renderFrames = function()
 	{
 		if(this.selectionManager.editControl == null && this.selectionManager.transform != '')
 		{
-			var EditControl = org.ssatguru.babylonjs.component.EditControl;
-			this.selectionManager.editControl = new EditControl(this.selectionManager.lastPickedMesh, this.camera, this.canvas, 0.75, true);
-			this.selectionManager.editControl.enableTranslation(3.14/18);
-			this.selectionManager.editControl.enableTranslation(3.14/18);
-			this.selectionManager.editControl.setRotSnapValue(3.14 / 18);
-			this.selectionManager.editControl.setScaleSnapValue(.5);
-			this.selectionManager.editControl.setTransSnapValue(.1);
-			this.selectionManager.editControl.setLocal(false);
-			this.selectionManager.bindEditControlActionListeners();
+			this.selectionManager.createEditControl();
 		}
 		
 		if(this.selectionManager.transform == '')
 		{
-			if(this.selectionManager.editControl != null)
-			{
-				this.selectionManager.editControl.removeAllActionListeners();
-				this.selectionManager.editControl.detach();
-				this.selectionManager.editControl = null;
-			}
+			this.selectionManager.removeEditControl();
 		}
 		
 		if(this.selectionManager.transform == 't')
 		{
 			this.selectionManager.editControl.enableTranslation();
+			this.selectionManager.editControl.setLocal(false);
 		}
 		if(this.selectionManager.transform == 'r')
 		{
 			this.selectionManager.editControl.enableRotation();
+			this.selectionManager.editControl.setLocal(false);
 		}
 		if(this.selectionManager.transform == 's')
 		{
 			this.selectionManager.editControl.enableScaling();
+			this.selectionManager.editControl.setLocal(true);
 		}
 	}
 	else
 	{
-		if(this.selectionManager.editControl != null)
-		{
-			this.selectionManager.editControl.removeAllActionListeners();
-			this.selectionManager.editControl.detach();
-			this.selectionManager.editControl = null;
-		}
+		this.selectionManager.removeEditControl();
 	}
 };
 
