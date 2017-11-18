@@ -1020,13 +1020,6 @@
 									]
 								}
 							],
-							viewConfig: 
-							{
-								plugins: 
-								{ 
-									ptype: 'treeviewdragdrop' 
-								}
-							},
 							listeners: 
 							{
 								itemclick: 
@@ -1040,10 +1033,8 @@
 											var mesh = sceneManager.scene.getMeshByName(meshName);
 											if(mesh.data.originalMaterial == undefined)
 											{
-												//console.log(mesh.subMeshes[0].getMaterial().name);
 												mesh.data.originalMaterial = mesh.material.clone();
 											}
-											emmiter.emit('SELECT_MESH', mesh);
 										}
 									}
 								}

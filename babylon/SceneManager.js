@@ -497,6 +497,7 @@ SceneManager.prototype.importMesh = function()
 SceneManager.prototype.hideAll = function()
 {
 	console.log('SceneManager.prototype.hideAll');
+	this.selectionManager.removeEditControl();
 	var meshes = this.scene.meshes;
 	for(var i=0; i<meshes.length; i++)
 	{
@@ -513,6 +514,7 @@ SceneManager.prototype.hideAll = function()
 SceneManager.prototype.showAll = function()
 {
 	console.log('SceneManager.prototype.showAll');
+	this.selectionManager.removeEditControl();
 	var meshes = this.scene.meshes;
 	for(var i=0; i<meshes.length; i++)
 	{
@@ -622,4 +624,3 @@ SceneManager.prototype.mirrorMesh = function(axe)
 		clone.scaling.z = -clone.scaling.z;
 	}
 };
-
