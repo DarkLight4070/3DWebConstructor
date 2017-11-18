@@ -12,6 +12,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_ENABLE_CO_MODE', this.enableCoModeUi.bind(this));
 	emmiter.on('UI_REFRESH_TREE', this.refreshTreeUi.bind(this));
 	emmiter.on('UI_PREF_CAMERA', this.createCameraPrefUi.bind(this));
+	emmiter.on('UI_ENABLE_SECTION_MODE', this.enableSectionModeUi.bind(this));
 }
 
 UiManager.prototype.updateUiSelection = function(uid)
@@ -483,4 +484,42 @@ UiManager.prototype.getPrefabRotationValue = function()
 {
 	var rotation = new BABYLON.Vector3(Ext.getCmp('prefabRxId').getValue() * (Math.PI / 180) , Ext.getCmp('prefabRyId').getValue() * (Math.PI / 180), Ext.getCmp('prefabRzId').getValue() * (Math.PI / 180));
 	return rotation; 
+};
+
+UiManager.prototype.enableSectionModeUi = function(pressed)
+{
+	var mesh = this.sceneManager.selectionManager.lastPickedMesh;
+	if(mesh == null)
+	{
+		Ext.MessageBox.alert('3D Section', 'Please select an object !');
+		Ext.getCmp('enableSectionModeButtonId').toggle(false, true);
+		return;
+	}
+	
+	emmiter.emit('ENABLE_SECTION_MODE', pressed);
+	
+	if(pressed == true)
+	{
+		Ext.getCmp('sectionTabId').setDisabled(false);
+		Ext.getCmp('toolsTabPanelId').setActiveTab(Ext.getCmp('sectionTabId'));
+		var bboxInfo = mesh.getBoundingInfo()
+		bboxInfo.update(mesh._worldMatrix);
+		var vectors = bboxInfo.boundingBox.vectors; 
+		var width = Number(vectors[1].x - vectors[0].x);
+		Ext.getCmp('sectionXPositionId').setMaxValue(width * 100 / 2);
+		Ext.getCmp('sectionXPositionId').setMinValue(-width * 100 / 2);
+		Ext.getCmp('sectionXPositionId').setValue(width * 100 / 2);
+		var heigh = Number(vectors[1].y - vectors[0].y);
+		Ext.getCmp('sectionYPositionId').setMaxValue(heigh * 100 / 2);
+		Ext.getCmp('sectionYPositionId').setMinValue(-heigh * 100 / 2);
+		Ext.getCmp('sectionYPositionId').setValue(heigh * 100 / 2);
+		var depth = Number(vectors[1].z - vectors[0].z);
+		Ext.getCmp('sectionZPositionId').setMaxValue(depth * 100 / 2);
+		Ext.getCmp('sectionZPositionId').setMinValue(-depth * 100 / 2);
+		Ext.getCmp('sectionZPositionId').setValue(depth * 100 / 2);
+	}
+	else
+	{
+		Ext.getCmp('sectionTabId').setDisabled(true);
+	}
 };

@@ -766,39 +766,7 @@
 												{
 													fn: function( __this, pressed, eOpts )
 													{
-														if(sceneManager.selectionManager.lastPickedMesh == null)
-														{
-															Ext.MessageBox.alert('3D Section', 'Please select an object !');
-															Ext.getCmp('enableSectionModeButtonId').toggle(false, true);
-															return;
-														}
-														
-														emmiter.emit('ENABLE_SECTION_MODE', pressed);
-														
-														if(pressed == true)
-														{
-															Ext.getCmp('sectionTabId').setDisabled(false);
-															Ext.getCmp('toolsTabPanelId').setActiveTab(Ext.getCmp('sectionTabId'));
-															var bboxInfo = sceneManager.selectionManager.lastPickedMesh.getBoundingInfo()
-															bboxInfo.update(sceneManager.selectionManager.lastPickedMesh._worldMatrix);
-															var vectors = bboxInfo.boundingBox.vectors; 
-															var width = Number(vectors[1].x - vectors[0].x);
-															Ext.getCmp('sectionXPositionId').setMaxValue(width * 100 / 2);
-															Ext.getCmp('sectionXPositionId').setMinValue(-width * 100 / 2);
-															Ext.getCmp('sectionXPositionId').setValue(width * 100 / 2);
-															var heigh = Number(vectors[1].y - vectors[0].y);
-															Ext.getCmp('sectionYPositionId').setMaxValue(heigh * 100 / 2);
-															Ext.getCmp('sectionYPositionId').setMinValue(-heigh * 100 / 2);
-															Ext.getCmp('sectionYPositionId').setValue(heigh * 100 / 2);
-															var depth = Number(vectors[1].z - vectors[0].z);
-															Ext.getCmp('sectionZPositionId').setMaxValue(depth * 100 / 2);
-															Ext.getCmp('sectionZPositionId').setMinValue(-depth * 100 / 2);
-															Ext.getCmp('sectionZPositionId').setValue(depth * 100 / 2);
-														}
-														else
-														{
-															Ext.getCmp('sectionTabId').setDisabled(true);
-														}
+														emmiter.emit('UI_ENABLE_SECTION_MODE', pressed);
 													}
 												}
 											}
