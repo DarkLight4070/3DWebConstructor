@@ -38,7 +38,7 @@
 		</style>
 		
 	</head>
-	<body>
+	<body body oncontextmenu="return false;">
 		<script type="text/javascript">
 			
 			var uiManager = null;
@@ -1109,6 +1109,7 @@
 						}
 					]
 				}).show();
+				
 				var canvas = Ext.get('renderCanvas');
 				var box = canvas.getBox();
 				navPanel.setPosition({x: box.x, y: box.y});
@@ -1118,55 +1119,7 @@
 				canvas.dom.addEventListener('contextmenu', function(e)
 				{
 					e.preventDefault();
-					console.log(e);
-					var menu = Ext.create('Ext.menu.Menu', 
-					{
-						margin: '0 0 10 0',
-						width: 100,
-						renderTo: Ext.getCmp('3dViewId').getEl(),
-						zIndex: 9999,
-						floating: true,
-						shadow: false,
-						items: 
-						[
-							{
-								text: 'Hide selected',
-								disabled: sceneManager.selectionManager.lastPickedMesh == null,
-								handler: function()
-								{
-									var mesh = sceneManager.selectionManager.lastPickedMesh;
-									mesh.visibility = false;
-									if(mesh.name != 'Grid')
-									{
-										mesh.isPickable = mesh.visibility;
-									}
-									var mainTree = Ext.getCmp('mainTree');
-									mainTree.getView().refresh();
-									sceneManager.selectionManager.lastPickedMesh.material = sceneManager.selectionManager.lastPickedMesh.data.originalMaterial;
-									sceneManager.selectionManager.lastPickedMesh = null;
-									emmiter.emit('UI_UPDATE_SELECTION', null);
-								}
-							},
-							{
-								text: 'Hide unselected',
-								disabled: sceneManager.selectionManager.lastPickedMesh == null,
-								handler: function()
-								{
-									emmiter.emit('MESH_HIDE_UNSELECTED');
-								}
-
-							},
-							{
-								text: 'Show all',
-								handler: function()
-								{
-									emmiter.emit('MESH_SHOW_ALL');
-								}
-							}
-						]
-					});
-					menu.showAt(e.layerX, e.layerY);
-					menu.toFront();
+					emmiter.emit('CREATE_SCENE_CONTEXT_MENU', e.layerX, e.layerY);
 				});
 				
 				sceneManager = new SceneManager();

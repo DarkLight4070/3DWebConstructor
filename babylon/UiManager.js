@@ -15,7 +15,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_ENABLE_SECTION_MODE', this.enableSectionModeUi.bind(this));
 	emmiter.on('UI_MIRROR_MESH', this.mirrorMesh.bind(this));
 	emmiter.on('UI_CLEAR_SCENE', this.clearScene.bind(this));
-	
+	emmiter.on('CREATE_SCENE_CONTEXT_MENU', this.createSceneContextMenu.bind(this));
 }
 
 UiManager.prototype.updateUiSelection = function(uid)
@@ -485,12 +485,14 @@ UiManager.prototype.getPrefabPositionValue = function()
 
 UiManager.prototype.getPrefabRotationValue = function()
 {
+	console.log('UiManager.prototype.getPrefabRotationValue');
 	var rotation = new BABYLON.Vector3(Ext.getCmp('prefabRxId').getValue() * (Math.PI / 180) , Ext.getCmp('prefabRyId').getValue() * (Math.PI / 180), Ext.getCmp('prefabRzId').getValue() * (Math.PI / 180));
 	return rotation; 
 };
 
 UiManager.prototype.enableSectionModeUi = function(pressed)
 {
+	console.log('UiManager.prototype.enableSectionModeUi');
 	var mesh = this.sceneManager.selectionManager.lastPickedMesh;
 	if(mesh == null)
 	{
@@ -529,6 +531,7 @@ UiManager.prototype.enableSectionModeUi = function(pressed)
 
 UiManager.prototype.mirrorMesh = function(axes)
 {
+	console.log('UiManager.prototype.mirrorMesh');
 	if(sceneManager.selectionManager.lastPickedMesh == null)
 	{
 		Ext.MessageBox.alert('3D Section', 'Please select an object !');
@@ -539,6 +542,7 @@ UiManager.prototype.mirrorMesh = function(axes)
 
 UiManager.prototype.clearScene = function()
 {
+	console.log('UiManager.prototype.clearScene');
 	Ext.Msg.show(
 	{
 		title:'Clear Scene',
@@ -557,4 +561,57 @@ UiManager.prototype.clearScene = function()
 			}
 		}
 	});
+};
+
+UiManager.prototype.createSceneContextMenu = function(x, y)
+{
+	console.log('UiManager.prototype.createSceneContextMenu');
+	var menu = Ext.create('Ext.menu.Menu', 
+	{
+		margin: '0 0 10 0',
+		width: 100,
+		renderTo: Ext.getCmp('3dViewId').getEl(),
+		zIndex: 9999,
+		floating: true,
+		shadow: false,
+		items: 
+		[
+			{
+				text: 'Hide selected',
+				disabled: sceneManager.selectionManager.lastPickedMesh == null,
+				handler: function()
+				{
+					var mesh = sceneManager.selectionManager.lastPickedMesh;
+					mesh.visibility = false;
+					if(mesh.name != 'Grid')
+					{
+						mesh.isPickable = mesh.visibility;
+					}
+					var mainTree = Ext.getCmp('mainTree');
+					mainTree.getView().refresh();
+					sceneManager.selectionManager.lastPickedMesh.material = sceneManager.selectionManager.lastPickedMesh.data.originalMaterial;
+					sceneManager.selectionManager.lastPickedMesh = null;
+					emmiter.emit('UI_UPDATE_SELECTION', null);
+				}
+			},
+			{
+				text: 'Hide unselected',
+				disabled: sceneManager.selectionManager.lastPickedMesh == null,
+				handler: function()
+				{
+					emmiter.emit('MESH_HIDE_UNSELECTED');
+				}
+
+			},
+			{
+				text: 'Show all',
+				handler: function()
+				{
+					emmiter.emit('MESH_SHOW_ALL');
+				}
+			}
+		]
+	});
+	menu.showAt(x, y);
+	menu.toFront();
 };
