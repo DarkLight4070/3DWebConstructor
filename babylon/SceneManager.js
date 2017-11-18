@@ -579,7 +579,6 @@ SceneManager.prototype.clearScene = function(value)
 {
 	console.log('SceneManager.prototype.clearScene');
 	var meshes = this.scene.meshes;
-	console.log(meshes.length + ' to remove !');
 	this.selectionManager.removeEditControl();
 	this.selectionManager.lastPickedMesh = null;
 	for(var i=meshes.length - 1; i>=0; i--)
