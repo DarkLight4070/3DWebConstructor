@@ -14,6 +14,8 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_PREF_CAMERA', this.createCameraPrefUi.bind(this));
 	emmiter.on('UI_ENABLE_SECTION_MODE', this.enableSectionModeUi.bind(this));
 	emmiter.on('UI_MIRROR_MESH', this.mirrorMesh.bind(this));
+	emmiter.on('UI_CLEAR_SCENE', this.clearScene.bind(this));
+	
 }
 
 UiManager.prototype.updateUiSelection = function(uid)
@@ -533,4 +535,26 @@ UiManager.prototype.mirrorMesh = function(axes)
 		return;
 	}
 	emmiter.emit('MESH_MIRROR', axes);
+};
+
+UiManager.prototype.clearScene = function()
+{
+	Ext.Msg.show(
+	{
+		title:'Clear Scene',
+		msg: 'This action will clear the scene ! Do you want to continue ?',
+		buttons: Ext.Msg.YESNO,
+		icon: Ext.Msg.QUESTION,
+		fn: function(btn, text)
+		{
+			if(btn == 'yes')
+			{
+				emmiter.emit('UI_ENABLE_CO_MODE', false);
+				emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', null);
+				emmiter.emit('CHANGE_VIEW', 'FRONT');
+				emmiter.emit('SCENE_CLEAR');
+				
+			}
+		}
+	});
 };
