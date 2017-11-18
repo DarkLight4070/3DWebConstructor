@@ -609,6 +609,25 @@ UiManager.prototype.createSceneContextMenu = function(x, y)
 				{
 					emmiter.emit('MESH_SHOW_ALL');
 				}
+			},
+			{
+				xtype: 'menuseparator'
+			},
+			{
+				text: 'Enable Edges',
+				disabled: sceneManager.selectionManager.lastPickedMesh == null || (sceneManager.selectionManager.lastPickedMesh != null && sceneManager.selectionManager.lastPickedMesh.edgesWidth > 0),
+				handler: function()
+				{
+					emmiter.emit('MESH_ENABLE_EDGES', sceneManager.selectionManager.lastPickedMesh);
+				}
+			},
+			{
+				text: 'Disable Edges',
+				disabled: sceneManager.selectionManager.lastPickedMesh == null || (sceneManager.selectionManager.lastPickedMesh != null && sceneManager.selectionManager.lastPickedMesh.edgesWidth == 0),
+				handler: function()
+				{
+					emmiter.emit('MESH_DISABLE_EDGES', sceneManager.selectionManager.lastPickedMesh);
+				}
 			}
 		]
 	});

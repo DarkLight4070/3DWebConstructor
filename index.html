@@ -985,19 +985,8 @@
 											{
 												var store = grid.getStore();
 												var rec = store.getAt(rowIndex);
-												var meshName = rec.get('text');
 												var mesh = rec.raw.object;
-												mesh.material.wireframe = !mesh.material.wireframe;
-												mesh.data.originalMaterial.wireframe = mesh.material.wireframe;
-												mesh.data.selectionMaterial.wireframe = mesh.material.wireframe;
-												if(mesh.material.wireframe == true)
-												{
-													mesh.disableEdgesRendering();
-												}
-												else
-												{
-													sceneManager.enableEdgeMode(mesh);
-												}
+												emmiter.emit('MESH_SET_WIREFRAME', mesh, !mesh.material.wireframe);
 												rec.commit();
 											},
 											getClass: function(value, metadata, record)
