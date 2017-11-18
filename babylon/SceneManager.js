@@ -208,10 +208,7 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 		this.removeMesh(this.selectionManager.coFirst);
 		this.removeMesh(this.selectionManager.coSecond);
 	}
-	this.selectionManager.coFirst = null;
-	this.selectionManager.coSecond = null;
-	this.selectionManager.compoundObjectsMode = false;
-	emmiter.emit('UI_CO_RESET');
+	emmiter.emit('UI_ENABLE_CO_MODE', false);
 };
 
 SceneManager.prototype.setView = function(view)

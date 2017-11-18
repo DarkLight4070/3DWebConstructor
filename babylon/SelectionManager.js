@@ -177,21 +177,14 @@ SelectionManager.prototype.setCompoundObjectsMode = function(enable)
 {
 	if(enable && !this.compoundObjectsMode)
 	{
-		if(this.lastPickedMesh == null)
-		{
-			emmiter.emit('UI_CO_SET_FIRST', null);
-		}
-		else
-		{
-			this.compoundObjectsMode = true;
-			this.coFirst = this.lastPickedMesh;
-			emmiter.emit('UI_CO_SET_FIRST', this.coFirst.name);
-		}
+		this.compoundObjectsMode = true;
+		this.coFirst = this.lastPickedMesh;
 	}
 	else
 	{
 		this.compoundObjectsMode = false;
-		emmiter.emit('UI_CO_RESET');
+		this.coFirst = null;
+		this.coSecond = null;
 	}
 };
 

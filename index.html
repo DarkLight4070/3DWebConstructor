@@ -455,6 +455,7 @@
 									title: 'Compound Objects',
 									layout: 'fit',
 									id: 'coTabId',
+									disabled: true,
 									height: '100%',
 									items: 
 									[
@@ -748,7 +749,7 @@
 												{
 													fn: function( __this, pressed, eOpts )
 													{
-														emmiter.emit('ENABLE_CO_MODE', pressed);
+														emmiter.emit('UI_ENABLE_CO_MODE', pressed);	
 													}
 												}
 											}

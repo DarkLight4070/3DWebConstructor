@@ -9,6 +9,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_CO_SET_FIRST', this.setCoFirst.bind(this));
 	emmiter.on('UI_CO_SET_SECOND', this.setCoSecond.bind(this));
 	emmiter.on('UI_CO_RESET', this.resetCoUi.bind(this));
+	emmiter.on('UI_ENABLE_CO_MODE', this.enableCoModeUi.bind(this));
 	emmiter.on('UI_REFRESH_TREE', this.refreshTreeUi.bind(this));
 	emmiter.on('UI_PREF_CAMERA', this.createCameraPrefUi.bind(this));
 }
@@ -364,18 +365,34 @@ UiManager.prototype.updateMeshPropertiesUiFromSelection = function(mesh)
 	}
 };
 
-UiManager.prototype.setCoFirst = function(meshName)
+UiManager.prototype.enableCoModeUi = function(pressed)
 {
-	if(meshName == null)
+	if(pressed == true)
 	{
-		Ext.MessageBox.alert('Compound Objects', 'Please select an object !');
-		Ext.getCmp('enableCOModeButtonId').toggle(false, true);
+		var mesh = this.sceneManager.selectionManager.lastPickedMesh;
+		if(mesh == null)
+		{
+			Ext.MessageBox.alert('Compound Objects', 'Please select an object !');
+			Ext.getCmp('enableCOModeButtonId').toggle(false, true);
+		}
+		else
+		{
+			this.setCoFirst(mesh.name);
+			Ext.getCmp('coTabId').setDisabled(false);
+			Ext.getCmp('toolsTabPanelId').setActiveTab(Ext.getCmp('coTabId'));
+			emmiter.emit('ENABLE_CO_MODE', pressed);
+		}
 	}
 	else
 	{
-		Ext.getCmp('firstObjectId').setValue(meshName);
-		Ext.getCmp('toolsTabPanelId').setActiveTab(Ext.getCmp('coTabId'));
+		this.resetCoUi();
+		Ext.getCmp('coTabId').setDisabled(true);
 	}
+};
+
+UiManager.prototype.setCoFirst = function(meshName)
+{	
+	Ext.getCmp('firstObjectId').setValue(meshName);
 };
 
 UiManager.prototype.setCoSecond = function(meshName)
