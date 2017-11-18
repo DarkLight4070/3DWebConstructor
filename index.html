@@ -810,26 +810,21 @@
 													text: 'XY',
 													handler: function()
 													{
-														if(sceneManager.selectionManager.lastPickedMesh == null)
-														{
-															Ext.MessageBox.alert('3D Section', 'Please select an object !');
-															return;
-														}
-														emmiter.emit('MESH_MIRROR', 'z');
+														emmiter.emit('UI_MIRROR_MESH', 'z');
 													}
 												},
 												{
 													text: 'YZ',
 													handler: function()
 													{
-														emmiter.emit('MESH_MIRROR', 'x');
+														emmiter.emit('UI_MIRROR_MESH', 'x');
 													}
 												},
 												{
 													text: 'XZ',
 													handler: function()
 													{
-														emmiter.emit('MESH_MIRROR', 'y');
+														emmiter.emit('UI_MIRROR_MESH', 'y');
 													}
 												}
 											]

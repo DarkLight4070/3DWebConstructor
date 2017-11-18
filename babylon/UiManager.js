@@ -13,6 +13,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_REFRESH_TREE', this.refreshTreeUi.bind(this));
 	emmiter.on('UI_PREF_CAMERA', this.createCameraPrefUi.bind(this));
 	emmiter.on('UI_ENABLE_SECTION_MODE', this.enableSectionModeUi.bind(this));
+	emmiter.on('UI_MIRROR_MESH', this.mirrorMesh.bind(this));
 }
 
 UiManager.prototype.updateUiSelection = function(uid)
@@ -522,4 +523,14 @@ UiManager.prototype.enableSectionModeUi = function(pressed)
 	{
 		Ext.getCmp('sectionTabId').setDisabled(true);
 	}
+};
+
+UiManager.prototype.mirrorMesh = function(axes)
+{
+	if(sceneManager.selectionManager.lastPickedMesh == null)
+	{
+		Ext.MessageBox.alert('3D Section', 'Please select an object !');
+		return;
+	}
+	emmiter.emit('MESH_MIRROR', axes);
 };
