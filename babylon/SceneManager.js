@@ -355,7 +355,7 @@ SceneManager.prototype.createLine = function(x1, y1, z1, x2, y2, z2, position, r
 	emmiter.emit('UI_ADD_MESH_TO_TREE', line);
 };
 
-SceneManager.prototype.applyTransformationToSelection = function(x, y, z, xr, yr, zr)
+SceneManager.prototype.applyTransformationToSelection = function(x, y, z, xr, yr, zr, sx, sy, sz)
 {
 	this.selectionManager.lastPickedMesh.position.x = x;
 	this.selectionManager.lastPickedMesh.position.y = y;
@@ -364,6 +364,10 @@ SceneManager.prototype.applyTransformationToSelection = function(x, y, z, xr, yr
 	this.selectionManager.lastPickedMesh.rotation.x = xr * (Math.PI / 180);
 	this.selectionManager.lastPickedMesh.rotation.y = yr * (Math.PI / 180);
 	this.selectionManager.lastPickedMesh.rotation.z = zr * (Math.PI / 180);
+	
+	this.selectionManager.lastPickedMesh.scaling.x = sx;
+	this.selectionManager.lastPickedMesh.scaling.y = sy;
+	this.selectionManager.lastPickedMesh.scaling.z = sz;
 };
 
 SceneManager.prototype.enableEdgeMode = function(mesh)

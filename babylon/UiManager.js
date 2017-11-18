@@ -344,6 +344,9 @@ UiManager.prototype.updateMeshPropertiesUiFromSelection = function(mesh)
 		Ext.getCmp('pRXId').reset();
 		Ext.getCmp('pRYId').reset();
 		Ext.getCmp('pRZId').reset();
+		Ext.getCmp('pSXId').reset();
+		Ext.getCmp('pSYId').reset();
+		Ext.getCmp('pSZId').reset();
 	}
 	else
 	{
@@ -354,6 +357,10 @@ UiManager.prototype.updateMeshPropertiesUiFromSelection = function(mesh)
 		Ext.getCmp('pRXId').setValue(mesh.rotation.x * (180 / Math.PI));
 		Ext.getCmp('pRYId').setValue(mesh.rotation.y * (180 / Math.PI));
 		Ext.getCmp('pRZId').setValue(mesh.rotation.z * (180 / Math.PI));
+		
+		Ext.getCmp('pSXId').setValue(mesh.scaling.x);
+		Ext.getCmp('pSYId').setValue(mesh.scaling.y);
+		Ext.getCmp('pSZId').setValue(mesh.scaling.z);
 	}
 };
 

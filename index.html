@@ -246,6 +246,38 @@
 															id: 'pRZId'
 														}
 													]
+												},
+												{
+													xtype:'fieldset',
+													title: 'Scale',
+													id: 'selectionPropertiesScaleFieldSet',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													defaultType: 'numberfield',
+													layout: 'anchor',
+													items :
+													[
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'X',
+															value: 0,
+															id: 'pSXId'
+														},
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'Y',
+															value: 0,
+															id: 'pSYId'
+														},
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'Z',
+															value: 0,
+															id: 'pSZId'
+														}
+													]
 												}
 											],
 											buttons: 
@@ -261,7 +293,11 @@
 														var xr = Ext.getCmp('pRXId').getValue();
 														var yr = Ext.getCmp('pRYId').getValue();
 														var zr = Ext.getCmp('pRZId').getValue();
-														emmiter.emit('APPLY_TRANSFORMATION_TO_SELECTION', x, y, z, xr, yr, zr);
+														
+														var sx = Ext.getCmp('pSXId').getValue();
+														var sy = Ext.getCmp('pSYId').getValue();
+														var sz = Ext.getCmp('pSZId').getValue();
+														emmiter.emit('APPLY_TRANSFORMATION_TO_SELECTION', x, y, z, xr, yr, zr, sx, sy, sz);
 													}
 												}
 											]
