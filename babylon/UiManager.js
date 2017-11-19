@@ -391,6 +391,7 @@ UiManager.prototype.enableCoModeUi = function(pressed)
 	{
 		this.resetCoUi();
 		Ext.getCmp('coTabId').setDisabled(true);
+		emmiter.emit('ENABLE_CO_MODE', pressed);
 	}
 };
 
