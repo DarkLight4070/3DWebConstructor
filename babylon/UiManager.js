@@ -16,6 +16,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_MIRROR_MESH', this.mirrorMesh.bind(this));
 	emmiter.on('UI_CLEAR_SCENE', this.clearScene.bind(this));
 	emmiter.on('CREATE_SCENE_CONTEXT_MENU', this.createSceneContextMenu.bind(this));
+	emmiter.on('UI_DELETE_SELECTED_MESH', this.deleteSelectedMesh.bind(this));
 }
 
 UiManager.prototype.updateUiSelection = function(uid)
@@ -562,6 +563,17 @@ UiManager.prototype.clearScene = function()
 			}
 		}
 	});
+};
+
+UiManager.prototype.deleteSelectedMesh = function()
+{
+	if(this.sceneManager.selectionManager.lastPickedMesh == null)
+	{
+		Ext.MessageBox.alert('Delete Mesh', 'Please select an object !');
+		return;
+	}
+	this.updateMeshPropertiesUiFromSelection(null);
+	emmiter.emit('DELETE_SELECTED_MESH');
 };
 
 UiManager.prototype.createSceneContextMenu = function(x, y)

@@ -835,13 +835,7 @@
 											icon: 'icons/delete.png',
 											handler: function()
 											{
-												if(sceneManager.selectionManager.lastPickedMesh == null)
-												{
-													Ext.MessageBox.alert('Delete Mesh', 'Please select an object !');
-													Ext.getCmp('enableSectionModeButtonId').toggle(false, true);
-													return;
-												}
-												emmiter.emit('DELETE_SELECTED_MESH');
+												emmiter.emit('UI_DELETE_SELECTED_MESH');
 											}
 										}
 									]
