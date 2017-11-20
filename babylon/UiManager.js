@@ -487,6 +487,7 @@ UiManager.prototype.createPrefPageUi = function()
 			grid,
 			{
 				xtype: 'form',
+				html: 'Under construction',
 				flex: 2
 			}
 		],
