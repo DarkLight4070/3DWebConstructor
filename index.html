@@ -897,6 +897,20 @@
 									disabled: true
 						        }
 						    ]
+		        		},
+						{
+		        			xtype: 'button',
+		        			text: 'Preferences',
+						    menu: 
+						    [
+						        {
+						        	text: 'General',
+									handler: function()
+									{
+										emmiter.emit('UI_PREF_PAGE');
+									}
+						        }
+						    ]
 		        		}
 				    ],
 				    renderTo: Ext.getBody()

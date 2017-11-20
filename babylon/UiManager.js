@@ -11,7 +11,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_CO_RESET', this.resetCoUi.bind(this));
 	emmiter.on('UI_ENABLE_CO_MODE', this.enableCoModeUi.bind(this));
 	emmiter.on('UI_REFRESH_TREE', this.refreshTreeUi.bind(this));
-	emmiter.on('UI_PREF_CAMERA', this.createCameraPrefUi.bind(this));
+	emmiter.on('UI_PREF_PAGE', this.createPrefPageUi.bind(this));
 	emmiter.on('UI_ENABLE_SECTION_MODE', this.enableSectionModeUi.bind(this));
 	emmiter.on('UI_MIRROR_MESH', this.mirrorMesh.bind(this));
 	emmiter.on('UI_CLEAR_SCENE', this.clearScene.bind(this));
@@ -421,49 +421,73 @@ UiManager.prototype.refreshTreeUi = function()
 	mainTree.getView().refresh();
 };
 
-UiManager.prototype.createCameraPrefUi = function()
+UiManager.prototype.createPrefPageUi = function()
 {
-	Ext.create('Ext.window.Window', 
+	console.log('UiManager.prototype.createPrefPageUi');
+	
+	var store = Ext.create('Ext.data.Store', {
+		storeId:'prefStoreId',
+		fields:['name'],
+		data:
+		{
+			'items':
+			[
+				{'name': '3D view'},
+				{'name': 'Camera'},
+				{'name': 'Selection'},
+				{'name': 'Mesh creation'},
+				{'name': 'Trasformation Editor'}
+			]
+		},
+		proxy: 
+		{
+			type: 'memory',
+			reader: 
+			{
+				type: 'json',
+				root: 'items'
+			}
+		}
+	});
+	
+	store.load();
+	
+	var grid = Ext.create('Ext.grid.Panel', 
 	{
-		title: 'Camera Preferences',
-		closable: false,
+		width: 200,
+		store: store,
+		layout: 'fit',
+		hideHeaders: true,
+		flex: 1,
+		columns: 
+		[
+			{
+				header: 'Name',  
+				dataIndex: 'name',
+				width: 200
+			}
+		]
+	});
+	
+	Ext.create('Ext.window.Window',
+	{
+		title: 'Preferences',
+		closable: true,
 		resizable: false,
 		width: 600,
-		layout: 'anchor',
-		defaults: 
+		height: 400,
+		layout: 
 		{
-			anchor: '100%'
+			type: 'hbox',
+			align: 'stretch'
 		},
 		bodyPadding: 5,
 		items: 
 		[
+			grid,
 			{
-				xtype: 'fieldset',
-				title: 'Camera Behavior',
-				items:
-				[
-					{
-						xtype: 'fieldcontainer',
-						fieldLabel: 'Target',
-						defaultType: 'radiofield',
-						layout: 'hbox',
-						items:
-						[
-							{
-								xtype: 'radio',
-								boxLabel: 'Fixed',
-								name: 'cameraTargetGroup',
-								flex: 1
-							},
-							{
-								xtype: 'radio',
-								boxLabel: 'Selection',
-								name: 'cameraTargetGroup',
-								flex: 4
-							}
-						]
-					}
-				]
+				xtype: 'form',
+				flex: 2
 			}
 		],
 		buttons: 
@@ -641,6 +665,31 @@ UiManager.prototype.createSceneContextMenu = function(x, y)
 				{
 					emmiter.emit('MESH_DISABLE_EDGES', sceneManager.selectionManager.lastPickedMesh);
 				}
+			},
+			{
+				xtype: 'menuseparator'
+			},
+			{
+				text: 'Wireframe',
+				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.material.wireframe == true,
+				handler: function()
+				{
+					var mesh = sceneManager.selectionManager.lastPickedMesh;
+					emmiter.emit('MESH_SET_WIREFRAME', mesh, !mesh.material.wireframe);
+					emmiter.emit('UI_REFRESH_TREE');
+				}
+
+			},
+			{
+				text: 'Default Material',
+				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.material.wireframe == false,
+				handler: function()
+				{
+					var mesh = sceneManager.selectionManager.lastPickedMesh;
+					emmiter.emit('MESH_SET_WIREFRAME', mesh, !mesh.material.wireframe);
+					emmiter.emit('UI_REFRESH_TREE');
+				}
+
 			}
 		]
 	});
