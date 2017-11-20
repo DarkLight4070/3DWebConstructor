@@ -255,19 +255,28 @@ SelectionManager.prototype.addEditControlActionsOnListener = function(action)
 	{
 		this.lastPickedMesh.material.setVector3("vLightPosition", new BABYLON.Vector3(this.lastPickedMesh.position.x, this.lastPickedMesh.position.y, this.lastPickedMesh.position.z));
 	}
-	emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.editControl.mesh);
+	if(this.editControl.mesh != null)
+	{
+		emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.editControl.mesh);
+	}
 };
 
 SelectionManager.prototype.addEditControlActionsEndListener = function(action)
 {
-	emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.editControl.mesh);
+	if(this.editControl.mesh != null)
+	{
+		emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.editControl.mesh);
+	}
 };
 
 SelectionManager.prototype.bindEditControlActionListeners = function()
 {
 	console.log('SelectionManager.prototype.bindEditControlActionListeners');
-	this.editControl.addActionListener(this.addEditControlActionsOnListener.bind(this));
-	this.editControl.addActionEndListener(this.addEditControlActionsEndListener.bind(this));
+	if(this.editControl != null)
+	{
+		this.editControl.addActionListener(this.addEditControlActionsOnListener.bind(this));
+		this.editControl.addActionEndListener(this.addEditControlActionsEndListener.bind(this));
+	}
 };
 
 SelectionManager.prototype.removeEditControl = function()

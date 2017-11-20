@@ -234,12 +234,15 @@ SceneManager.prototype.setView = function(view)
 	}
 	else if(view == 'TOP')
 	{
-		this.camera.setPosition(new BABYLON.Vector3(0, 50, 0));
+		this.camera.alpha = 0;
+		this.camera.beta = -Math.PI;
+		this.camera.radius = 50;
 	}
 	else if(view == 'BOTTOM')
 	{
-		this.camera.alpha = 0;
-		this.camera.beta = Math.PI / 2;
+		this.camera.alpha = -0;
+		this.camera.beta = Math.PI;
+		this.camera.radius = 50;
 	}
 };
 
@@ -569,7 +572,7 @@ SceneManager.prototype.wireframeAll = function(value)
 	for(var i=0; i<meshes.length; i++)
 	{
 		var mesh = meshes[i];
-		this.setWireframe(mesh);
+		this.setWireframe(mesh, value);
 	}
 	emmiter.emit('UI_REFRESH_TREE');
 };

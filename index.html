@@ -807,21 +807,21 @@
 											menu: 
 											[
 												{
-													text: 'XY',
-													handler: function()
-													{
-														emmiter.emit('UI_MIRROR_MESH', 'z');
-													}
-												},
-												{
-													text: 'YZ',
+													text: '-X (YZ)',
 													handler: function()
 													{
 														emmiter.emit('UI_MIRROR_MESH', 'x');
 													}
 												},
 												{
-													text: 'XZ',
+													text: '-Z (XY)',
+													handler: function()
+													{
+														emmiter.emit('UI_MIRROR_MESH', 'z');
+													}
+												},
+												{
+													text: '-Y (XZ)',
 													handler: function()
 													{
 														emmiter.emit('UI_MIRROR_MESH', 'y');
@@ -863,10 +863,51 @@
 											xtype: 'button',
 											tooltip: 'Reset Camera position',
 											icon: 'icons/reset_camera.png',
-											handler: function () 
-											{
-												emmiter.emit('CHANGE_VIEW', 'FRONT');
-											}
+											menu: 
+											[
+												{
+													text: 'Front',
+													handler: function()
+													{
+														emmiter.emit('CHANGE_VIEW', 'FRONT');
+													}
+												},
+												{
+													text: 'Back',
+													handler: function()
+													{
+														emmiter.emit('CHANGE_VIEW', 'BACK');
+													}
+												},
+												{
+													text: 'Left',
+													handler: function()
+													{
+														emmiter.emit('CHANGE_VIEW', 'LEFT');
+													}
+												},
+												{
+													text: 'Right',
+													handler: function()
+													{
+														emmiter.emit('CHANGE_VIEW', 'RIGHT');
+													}
+												},
+												{
+													text: 'Top',
+													handler: function()
+													{
+														emmiter.emit('CHANGE_VIEW', 'TOP');
+													}
+												},
+												{
+													text: 'Bottom',
+													handler: function()
+													{
+														emmiter.emit('CHANGE_VIEW', 'BOTTOM');
+													}
+												}
+											]
 										}
 									]
 								}
