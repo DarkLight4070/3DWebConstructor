@@ -19,6 +19,15 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_DELETE_SELECTED_MESH', this.deleteSelectedMesh.bind(this));
 }
 
+UiManager.prototype.UI_CreateNumberField = function(__label, __id, __defaultValue)
+{
+	return Ext.create('Ext.form.field.Number', {
+		fieldLabel: __label,
+		id: __id,
+		value: __defaultValue
+	});
+}
+
 UiManager.prototype.updateUiSelection = function(uid)
 {
 	var mainTree = Ext.getCmp('mainTree');
@@ -37,9 +46,9 @@ UiManager.prototype.updateUiSelection = function(uid)
 
 UiManager.prototype.createBoxPrefabUi = function(__container)
 {
-	var widthField = UI_CreateNumberField('Width', 'widthId', 1);
-	var heightField = UI_CreateNumberField('Height', 'heightId', 1);
-	var depthField = UI_CreateNumberField('Depth', 'depthId', 1);
+	var widthField = this.UI_CreateNumberField('Width', 'widthId', 1);
+	var heightField = this.UI_CreateNumberField('Height', 'heightId', 1);
+	var depthField = this.UI_CreateNumberField('Depth', 'depthId', 1);
 	
 	__container.add(widthField);
 	__container.add(heightField);
@@ -59,10 +68,10 @@ UiManager.prototype.createBoxPrefabUi = function(__container)
 
 UiManager.prototype.createCylinderPrefabUi = function(__container)
 {
-	var heightField = UI_CreateNumberField('Height', 'heightId', 1);
-	var topDiameterField = UI_CreateNumberField('Top Diameter', 'topDiameterId', 1);
-	var bottomDiameterField = UI_CreateNumberField('Bottom Diameter', 'bottomDiameterId', 1);
-	var tesselationField = UI_CreateNumberField('Tesselation', 'tesselationId', 10);
+	var heightField = this.UI_CreateNumberField('Height', 'heightId', 1);
+	var topDiameterField = this.UI_CreateNumberField('Top Diameter', 'topDiameterId', 1);
+	var bottomDiameterField = this.UI_CreateNumberField('Bottom Diameter', 'bottomDiameterId', 1);
+	var tesselationField = this.UI_CreateNumberField('Tesselation', 'tesselationId', 10);
 
 	__container.add(heightField);
 	__container.add(topDiameterField);
@@ -87,8 +96,8 @@ UiManager.prototype.createCylinderPrefabUi = function(__container)
 
 UiManager.prototype.createSpherePrefabUi = function(__container)
 {
-	var diameterField = UI_CreateNumberField('Diameter', 'diameterId', 1);
-	var segmentsField = UI_CreateNumberField('Segments', 'segmentsId', 10);
+	var diameterField = this.UI_CreateNumberField('Diameter', 'diameterId', 1);
+	var segmentsField = this.UI_CreateNumberField('Segments', 'segmentsId', 10);
 
 	__container.add(diameterField);
 	__container.add(segmentsField);
@@ -111,9 +120,9 @@ UiManager.prototype.createSpherePrefabUi = function(__container)
 
 UiManager.prototype.createPlanePrefabUi = function(__container)
 {
-	var widthField = UI_CreateNumberField('Width', 'widthId', 1);
-	var heightField = UI_CreateNumberField('Height', 'heightId', 1);
-	var subdivisionsField = UI_CreateNumberField('Subdivisions', 'subdivisionsId', 2);
+	var widthField = this.UI_CreateNumberField('Width', 'widthId', 1);
+	var heightField = this.UI_CreateNumberField('Height', 'heightId', 1);
+	var subdivisionsField = this.UI_CreateNumberField('Subdivisions', 'subdivisionsId', 2);
 
 	__container.add(widthField);
 	__container.add(heightField);
@@ -137,13 +146,13 @@ UiManager.prototype.createPlanePrefabUi = function(__container)
 
 UiManager.prototype.createLinePrefabUi = function(__container)
 {
-	var x1Field = UI_CreateNumberField('X1', 'x1Id', 1);
-	var y1Field = UI_CreateNumberField('Y1', 'y1Id', 1);
-	var z1Field = UI_CreateNumberField('Z1', 'z1Id', 1);
+	var x1Field = this.UI_CreateNumberField('X1', 'x1Id', 1);
+	var y1Field = this.UI_CreateNumberField('Y1', 'y1Id', 1);
+	var z1Field = this.UI_CreateNumberField('Z1', 'z1Id', 1);
 
-	var x2Field = UI_CreateNumberField('X2', 'x2Id', 2);
-	var y2Field = UI_CreateNumberField('Y2', 'y2Id', 2);
-	var z2Field = UI_CreateNumberField('Z2', 'z2Id', 2);
+	var x2Field = this.UI_CreateNumberField('X2', 'x2Id', 2);
+	var y2Field = this.UI_CreateNumberField('Y2', 'y2Id', 2);
+	var z2Field = this.UI_CreateNumberField('Z2', 'z2Id', 2);
 
 	__container.add(x1Field);
 	__container.add(y1Field);
