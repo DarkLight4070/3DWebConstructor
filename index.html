@@ -372,14 +372,15 @@
 													text: 'Reset',
 													handler: function() 
 													{
+														emmiter.emit('UI_RESET_PREFAB_UI');
 													}
 												}, 
 												{
 													text: 'Create',
 													handler: function()
 													{
-														console.log(' Creation Handler handler called');
 														prefabCreationFunction();
+														emmiter.emit('UI_RESET_PREFAB_UI');
 													}
 												}
 											]

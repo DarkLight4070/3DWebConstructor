@@ -359,17 +359,21 @@ SceneManager.prototype.createLine = function(x1, y1, z1, x2, y2, z2, position, r
 
 SceneManager.prototype.applyTransformationToSelection = function(x, y, z, xr, yr, zr, sx, sy, sz)
 {
-	this.selectionManager.lastPickedMesh.position.x = x;
-	this.selectionManager.lastPickedMesh.position.y = y;
-	this.selectionManager.lastPickedMesh.position.z = z;
+	console.log('SceneManager.prototype.applyTransformationToSelection');
+	if(this.selectionManager.lastPickedMesh != null)
+	{
+		this.selectionManager.lastPickedMesh.position.x = x;
+		this.selectionManager.lastPickedMesh.position.y = y;
+		this.selectionManager.lastPickedMesh.position.z = z;
 
-	this.selectionManager.lastPickedMesh.rotation.x = xr * (Math.PI / 180);
-	this.selectionManager.lastPickedMesh.rotation.y = yr * (Math.PI / 180);
-	this.selectionManager.lastPickedMesh.rotation.z = zr * (Math.PI / 180);
-	
-	this.selectionManager.lastPickedMesh.scaling.x = sx;
-	this.selectionManager.lastPickedMesh.scaling.y = sy;
-	this.selectionManager.lastPickedMesh.scaling.z = sz;
+		this.selectionManager.lastPickedMesh.rotation.x = xr * (Math.PI / 180);
+		this.selectionManager.lastPickedMesh.rotation.y = yr * (Math.PI / 180);
+		this.selectionManager.lastPickedMesh.rotation.z = zr * (Math.PI / 180);
+		
+		this.selectionManager.lastPickedMesh.scaling.x = sx;
+		this.selectionManager.lastPickedMesh.scaling.y = sy;
+		this.selectionManager.lastPickedMesh.scaling.z = sz;
+	}
 };
 
 SceneManager.prototype.enableEdgeMode = function(mesh)

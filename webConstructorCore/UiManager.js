@@ -17,6 +17,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_CLEAR_SCENE', this.clearScene.bind(this));
 	emmiter.on('CREATE_SCENE_CONTEXT_MENU', this.createSceneContextMenu.bind(this));
 	emmiter.on('UI_DELETE_SELECTED_MESH', this.deleteSelectedMesh.bind(this));
+	emmiter.on('UI_RESET_PREFAB_UI', this.resetPrefabUi.bind(this));
 }
 
 UiManager.prototype.UI_CreateNumberField = function(__label, __id, __defaultValue)
@@ -705,4 +706,24 @@ UiManager.prototype.createSceneContextMenu = function(x, y)
 	});
 	menu.showAt(x, y);
 	menu.toFront();
+};
+
+UiManager.prototype.resetPrefabUi = function()
+{
+	console.log('UiManager.prototype.resetPrefabUi');
+	Ext.getCmp('prefabPxId').reset();
+	Ext.getCmp('prefabPyId').reset();
+	Ext.getCmp('prefabPzId').reset();
+	
+	Ext.getCmp('prefabRxId').reset();
+	Ext.getCmp('prefabRyId').reset();
+	Ext.getCmp('prefabRzId').reset();
+	
+	var components = Ext.getCmp('prefabParamsFieldSet').query('numberfield');
+	for(var i=0; i<components.length; i++)
+	{
+		var field = components[i];
+		field.reset();
+	}
+	
 };
