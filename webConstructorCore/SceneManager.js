@@ -162,8 +162,17 @@ SceneManager.prototype.deleteSelectedMesh = function()
 SceneManager.prototype.removeMesh = function(mesh)
 {
 	this.selectionManager.removeEditControl();
-	this.scene.removeMesh(mesh);
 	this.selectionManager.lastPickedMesh = null;
+	if(mesh.data.type == 'rootNode')
+	{
+		var children = mesh.getChildren();
+		for(var i=0; i<children.length; i++)
+		{
+			var child = children[i];
+			this.scene.removeMesh(child);
+		}
+	}
+	this.scene.removeMesh(mesh);
 	emmiter.emit('UI_REMOVE_MESH_FROM_TREE', mesh.name);
 	
 };
