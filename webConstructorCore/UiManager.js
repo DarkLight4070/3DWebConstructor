@@ -18,6 +18,8 @@ function UiManager(__sceneManager)
 	emmiter.on('CREATE_SCENE_CONTEXT_MENU', this.createSceneContextMenu.bind(this));
 	emmiter.on('UI_DELETE_SELECTED_MESH', this.deleteSelectedMesh.bind(this));
 	emmiter.on('UI_RESET_PREFAB_UI', this.resetPrefabUi.bind(this));
+	emmiter.on('UI_RESET_PREFAB_POS_UI', this.resetPrefabPositionUi.bind(this));
+	emmiter.on('UI_INIT_PREFAB_POS_UI_FROM_SELECTION', this.initPrefabPositionUiFromSelection.bind(this));
 }
 
 UiManager.prototype.UI_CreateNumberField = function(__label, __id, __defaultValue)
@@ -726,4 +728,23 @@ UiManager.prototype.resetPrefabUi = function()
 		field.reset();
 	}
 	
+};
+
+UiManager.prototype.resetPrefabPositionUi = function()
+{
+	console.log('UiManager.prototype.resetPrefabPositionUi');
+	Ext.getCmp('prefabPxId').reset();
+	Ext.getCmp('prefabPyId').reset();
+	Ext.getCmp('prefabPzId').reset();
+};
+
+UiManager.prototype.initPrefabPositionUiFromSelection = function()
+{
+	console.log('UiManager.prototype.initPrefabPositionUiFromSelection');
+	if(this.sceneManager.selectionManager.lastPickedMesh != null)
+	{
+		Ext.getCmp('prefabPxId').setValue(this.sceneManager.selectionManager.lastPickedMesh.position.x);
+		Ext.getCmp('prefabPyId').setValue(this.sceneManager.selectionManager.lastPickedMesh.position.y);
+		Ext.getCmp('prefabPzId').setValue(this.sceneManager.selectionManager.lastPickedMesh.position.z);
+	}		
 };

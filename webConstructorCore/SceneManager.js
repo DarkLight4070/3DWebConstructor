@@ -10,6 +10,7 @@ function SceneManager()
 	this.targetSelection = false;
 	
 	this.selectionMaterial = null;
+	var filesInput = null;
 	
 	emmiter.on('DELETE_SELECTED_MESH', this.deleteSelectedMesh.bind(this));
 	emmiter.on('CLONE_MESH', this.cloneMesh.bind(this));
@@ -23,7 +24,7 @@ function SceneManager()
 	emmiter.on('APPLY_TRANSFORMATION_TO_SELECTION', this.applyTransformationToSelection.bind(this));
 	emmiter.on('MESH_CHANGE_VISIBILITY', this.changeMeshVisibility.bind(this));
 	emmiter.on('MESH_SET_WIREFRAME', this.setWireframe.bind(this));
-	emmiter.on('MESH_IMPORT', this.importMesh.bind(this));
+	emmiter.on('MESH_IMPORT', this.loadMeshFile.bind(this));
 	emmiter.on('MESH_HIDE_ALL', this.hideAll.bind(this));
 	emmiter.on('MESH_SHOW_ALL', this.showAll.bind(this));
 	emmiter.on('MESH_WIREFRAME_ALL', this.wireframeAll.bind(this));
@@ -63,20 +64,9 @@ SceneManager.prototype.create3DScene = function()
 	this.camera.inertia = 0;
 	this.camera.setTarget(BABYLON.Vector3.Zero());
 	this.camera.upperBetaLimit = 2 * Math.PI;
+	this.camera.useFramingBehavior = true;
 	this.camera.attachControl(this.canvas, false);
-
-	var lightUp = new BABYLON.HemisphericLight("Up", new BABYLON.Vector3(0, -100, 0), this.scene);
-	lightUp.intensity = .4;
-	var lightDown = new BABYLON.HemisphericLight("Down", new BABYLON.Vector3(0, 100, 0), this.scene);
-	lightDown.intensity = .4;
-	var left = new BABYLON.HemisphericLight("Left", new BABYLON.Vector3(-100, 0, 0), this.scene);
-	left.intensity = .4;
-	var right = new BABYLON.HemisphericLight("Right", new BABYLON.Vector3(100, 0, 0), this.scene);
-	right.intensity = .4;
-	var front = new BABYLON.HemisphericLight("Front", new BABYLON.Vector3(0, 0, 100), this.scene);
-	front.intensity = .4;
-	var back = new BABYLON.HemisphericLight("Back", new BABYLON.Vector3(0, 0, -100), this.scene);
-	back.intensity = .4;
+	this.scene.createDefaultCameraOrLight(true);
 
 	// Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
 	var ground = BABYLON.Mesh.CreateGround("Grid", 20, 20, 20, this.scene);
@@ -92,7 +82,29 @@ SceneManager.prototype.create3DScene = function()
 	
 	this.engine.runRenderLoop(this.renderFrames.bind(this));
 	
-	
+	var sceneError = function (sceneFile, babylonScene, message) {
+		console.log(message);
+	};
+				
+	this.filesInput = new BABYLON.FilesInput(this.engine, this.scene, null, null, null, null, function () { BABYLON.Tools.ClearLogCache() }, null, sceneError);
+	BABYLON.FilesInput.prototype.reload = function()
+	{
+		var onSuccess = function(currentScene)
+		{
+			this.importMeshes(currentScene.meshes);
+			console.log('Load success');
+		};
+		var onProgress = function()
+		{
+			console.log('onProgress');
+		};
+		var onError = function()
+		{
+			console.log('onError');
+		};
+		BABYLON.SceneLoader.Append("file:", this.filesInput._sceneFileToLoad, this.scene, onSuccess.bind(this), onProgress, onError);
+		
+	}.bind(this);
 	
 	return this.scene;
 };
@@ -445,12 +457,80 @@ SceneManager.prototype.setWireframe = function(mesh, value)
 	}
 };
 
-SceneManager.prototype.importMesh = function()
+
+SceneManager.prototype.importMeshes = function(loadedMeshes)
+{
+	console.log('SceneManager.prototype.importMeshes');
+	var uid = this.getNextUid();
+	
+	var selectionMaterial = this.selectionMaterial;
+	var scene = this.scene;
+	var enableEdgeMode = this.enableEdgeMode;
+	var camera = this.camera;
+	var meshes = [];
+	
+	var root = new BABYLON.AbstractMesh('root', scene);
+	root.data = {type: 'rootNode'};
+	for(var i=0; i<loadedMeshes.length; i++)
+	{
+		var mesh = loadedMeshes[i];
+		if(mesh.data != undefined)
+		{
+			continue;
+		}
+		console.log(mesh.name);
+		mesh.computeWorldMatrix(true);
+		mesh.setPivotPoint(mesh.getBoundingInfo().boundingBox.center);
+		enableEdgeMode(mesh);
+		mesh.name = mesh.name + uid;
+		mesh.data = {type: 'sceneObject', uid: uid++, visible: true, originalMaterial: mesh.material, selectionMaterial: selectionMaterial.clone()};
+		mesh.parent = root;
+		meshes.push(mesh);
+	}
+	
+	var totalBoundingInfo = function(meshes)
+	{
+		var boundingInfo = meshes[0].getBoundingInfo();
+		var min = boundingInfo.minimum.add(meshes[0].position);
+		var max = boundingInfo.maximum.add(meshes[0].position);
+		for(var i=1; i<meshes.length; i++){
+			boundingInfo = meshes[i].getBoundingInfo();
+			min = BABYLON.Vector3.Minimize(min, boundingInfo.minimum.add(meshes[i].position));
+			max = BABYLON.Vector3.Maximize(max, boundingInfo.maximum.add(meshes[i].position));
+		}
+		return new BABYLON.BoundingInfo(min, max);
+	}
+	
+	var bboxInfo = totalBoundingInfo(root.getChildren());
+	bboxInfo.update(root._worldMatrix);
+	var vectors = bboxInfo.boundingBox.vectors; 
+	var width = Number(vectors[1].x - vectors[0].x);
+	var heigh = Number(vectors[1].y - vectors[0].y);
+	var depth = Number(vectors[1].z - vectors[0].z);
+	root.position = new BABYLON.Vector3(0, 0, 0);
+	console.log(root.position);
+	var max = width;
+	if(max > heigh)
+	{
+		max = heigh;
+	}
+	if(depth > max)
+	{
+		max = depth
+	}
+	
+	camera.radius = 2 * max;
+	camera.setTarget(new BABYLON.Vector3(bboxInfo.boundingBox.center.x / 2, bboxInfo.boundingBox.center.y / 2, bboxInfo.boundingBox.center.z / 2));
+	
+	emmiter.emit('UI_ADD_MESHES_TO_TREE', meshes);
+};
+
+SceneManager.prototype.loadMeshFile = function(path, objFileName)
 {
 	var uid = this.getNextUid();
 	console.log('SceneManager.prototype.importMesh');
 	var assetsManager = new BABYLON.AssetsManager(this.scene);
-	var meshTask = assetsManager.addMeshTask("obj task", "", "assets/", "wind_old_windmill.obj");
+	var meshTask = assetsManager.addMeshTask("obj task", "", path, objFileName);
 	
 	var selectionMaterial = this.selectionMaterial;
 	var scene = this.scene;
@@ -517,12 +597,21 @@ SceneManager.prototype.importMesh = function()
 		emmiter.emit('UI_ADD_MESHES_TO_TREE', meshes);
 	}
 	
+	meshTask.onError = function (task, message, exception) 
+	{
+		console.log(message, exception);
+	}
+	
 	assetsManager.onFinish = function()
 	{	
-		console.log('onFinish');
-		
 		console.log('finished');
     };
+	
+	assetsManager.onTaskError = function()
+	{
+		console.log('Task Error');
+	}
+	
 	assetsManager.load();
 };
 
