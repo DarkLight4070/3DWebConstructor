@@ -179,17 +179,44 @@ SceneManager.prototype.removeMesh = function(mesh)
 
 SceneManager.prototype.cloneMesh = function()
 {
-	var uid = this.getNextUid();
-	if(this.selectionManager.lastPickedMesh == null)
+	var mesh = this.selectionManager.lastPickedMesh;
+	if(mesh == null)
 	{
 		Ext.MessageBox.alert('Clone Operation', 'Please select an object !');
 	}
-	var clone = this.selectionManager.lastPickedMesh.clone('Clone-' + this.selectionManager.lastPickedMesh.name + uid);
-	clone.material = new BABYLON.StandardMaterial("mat", this.scene);
-	clone.material = this.selectionManager.lastPickedMesh.data.originalMaterial.clone('OMaterial');
-	clone.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: clone.material, selectionMaterial: this.selectionMaterial.clone()};
-	this.enableEdgeMode(clone);
-	emmiter.emit('UI_ADD_MESH_TO_TREE', clone);
+	if(mesh.data.type == 'rootNode')
+	{
+		var meshes = mesh.getChildren();
+		var uid = this.getNextUid();
+		var root = new BABYLON.AbstractMesh('Clone-Prefab', this.scene);
+		root.data = {type: 'rootNode', uid: uid};
+		for(var i=0; i<meshes.length; i++)
+		{
+			uid = this.getNextUid();
+			var child = meshes[i];
+			var clone = child.clone('Clone-' + child.name + uid);
+			//clone.material = new BABYLON.StandardMaterial("mat", this.scene);
+			if(child.data.originalMaterial != undefined)
+			{
+				clone.material = child.data.originalMaterial.clone('OMaterial');
+			}
+			clone.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: child.material, selectionMaterial: this.selectionMaterial.clone()};
+			this.enableEdgeMode(clone);
+			clone.parent = root;
+		}
+		emmiter.emit('UI_ADD_NODE', root);
+		return root;
+	}
+	else if(mesh.data.type == 'sceneObject')
+	{
+		var uid = this.getNextUid();
+		var clone = mesh.clone('Clone-' + mesh.name + uid);
+		clone.material = new BABYLON.StandardMaterial("mat", this.scene);
+		clone.material = mesh.data.originalMaterial.clone('OMaterial');
+		clone.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: clone.material, selectionMaterial: this.selectionMaterial.clone()};
+		this.enableEdgeMode(clone);
+		emmiter.emit('UI_ADD_MESH_TO_TREE', clone);
+	}
 	
 	return clone;
 };
