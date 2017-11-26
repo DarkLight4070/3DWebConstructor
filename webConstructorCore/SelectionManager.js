@@ -58,7 +58,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 	}
 	if(this.lastClickX == evt.clientX && this.lastClickY == evt.clientY && this.objectSelectionMode == 1)
 	{
-		if(this.lastPickedMesh != null)
+		if(this.lastPickedMesh != null && this.lastPickedMesh.data.type == 'sceneObject')
 		{
 			this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
 		}
@@ -67,7 +67,10 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 		{
 			if(this.lastPickedMesh != null)
 			{
-				this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+				if(this.lastPickedMesh.data.type == 'sceneObject')
+				{
+					this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+				}
 				this.removeEditControl();
 			}
 			
@@ -80,14 +83,14 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			emmiter.emit('UI_UPDATE_SELECTION', pickResult.pickedMesh.name);
 			pickResult.pickedMesh.material = pickResult.pickedMesh.data.selectionMaterial;
 			this.lastPickedMesh = pickResult.pickedMesh;
-			if(this.lastPickedMesh.data != undefined && this.lastPickedMesh.data.type == 'sceneObject' && this.lastPickedMesh.data.gizmo == undefined)
+			if(this.lastPickedMesh.data != undefined && this.lastPickedMesh.data.type == 'sceneObject')
 			{
 				if(this.transform != '')
 				{
 					this.createEditControl();
 				}
 			}
-			if(this.compoundObjectsMode == true)
+			if(this.compoundObjectsMode == true && this.lastPickedMesh.data.type == 'sceneObject')
 			{
 				this.coSecond = this.lastPickedMesh;
 				emmiter.emit('UI_CO_SET_SECOND', this.coSecond.name);
@@ -150,26 +153,6 @@ SelectionManager.prototype.initSceneSelection = function(__sceneManager)
 	__sceneManager.scene.onPointerUp = function (evt, pickResult) 
 	{	
 		emmiter.emit('POINTER_UP', evt, pickResult);
-		if(this.lastClickX == evt.clientX && this.lastClickY == evt.clientY && this.selectionMode == this.vertexSelectionMode)
-		{
-			if(this.lastPickedVertex != null)
-			{
-				this.lastPickedVertex.material.alpha = .3;
-			}
-
-			if (pickResult.hit && pickResult.pickedMesh.data != undefined) 
-			{
-				if(pickResult.pickedMesh.data.type == 'VERTEX_OBJECT')
-				{
-					pickResult.pickedMesh.material.alpha = 1;
-					this.lastPickedVertex = pickResult.pickedMesh;
-				}
-				else
-				{
-					this.lastPickedVertex = null;
-				}
-			}
-		}
 	};
 };
 
@@ -212,17 +195,25 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	
 	if(this.lastPickedMesh != null)
 	{
-		this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+		if(this.lastPickedMesh.data.type == 'sceneObject')
+		{
+			this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+		}
 		this.removeEditControl();
 	}
 	
-	mesh.material = mesh.data.selectionMaterial;
+	if(mesh.data.type == 'sceneObject')
+	{
+		mesh.material = mesh.data.selectionMaterial;
+	}
+	
 	this.lastPickedMesh = mesh;
+	
 	if(this.sceneManager.targetSelection == true)
 	{
-		this.sceneManager.camera.setTarget(this.lastPickedMesh.position.clone());
+		this.sceneManager.camera.setTarget(mesh.position.clone());
 	}
-	if(mesh.data != undefined && mesh.data.type == 'sceneObject')
+	if(mesh.data != undefined && (mesh.data.type == 'sceneObject' || mesh.data.type == 'rooNode'))
 	{
 		if(this.transform != '')
 		{
@@ -230,7 +221,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 		}
 	}
 	
-	if(this.compoundObjectsMode)
+	if(this.compoundObjectsMode && mesh.data.type == 'sceneObject')
 	{
 		if(this.coFirst == null)
 		{

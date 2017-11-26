@@ -1107,30 +1107,22 @@
 
 									fn: function (view, record, item, index, e)
 									{
-										var isMeshObject = record.raw.object != undefined;
-										if(record.raw.object.data.type == 'rootNode')
+										var mesh = record.raw.object;
+										var hasMesh = mesh != undefined;
+										if(hasMesh)
 										{
-											var meshName = record.get('text');
-											var mesh = sceneManager.scene.getMeshByName(meshName);
-											console.log('Root Node selected: ' + mesh.name);
-											return;
-										}
-										
-										var isParentRootNode = false;
-										if(record.parentNode.raw.object != undefined)
-										{
-											isParentRootNode = record.parentNode.raw.object.data.type == 'rootNode';
-										}
-										
-										if(record.parentNode.data.text == 'Meshes' || isParentRootNode)
-										{
-											var meshName = record.get('text');
-											var mesh = sceneManager.scene.getMeshByName(meshName);
-											if(mesh.data.originalMaterial == undefined)
+											var meshHasData = mesh.data != undefined;
+											if(meshHasData)
 											{
-												mesh.data.originalMaterial = mesh.material.clone();
+												if(mesh.data.type == 'sceneObject')
+												{
+													if(mesh.data.originalMaterial == undefined)
+													{
+														mesh.data.originalMaterial = mesh.material.clone();
+													}
+												}
+												emmiter.emit('SELECT_MESH', mesh);
 											}
-											emmiter.emit('SELECT_MESH', mesh);
 										}
 									}
 								}
