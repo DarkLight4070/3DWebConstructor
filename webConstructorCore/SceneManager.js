@@ -33,6 +33,7 @@ function SceneManager()
 	emmiter.on('MESH_HIDE_UNSELECTED', this.hideUnselected.bind(this));
 	emmiter.on('MESH_ENABLE_EDGES', this.enableEdgeMode.bind(this));
 	emmiter.on('MESH_DISABLE_EDGES', this.disableEdgeMode.bind(this));
+	emmiter.on('MESH_IMPORT_FILES', this.importMeshFiles.bind(this));
 }
 
 SceneManager.prototype.instance = function()
@@ -719,4 +720,10 @@ SceneManager.prototype.mirrorMesh = function(axe)
 	{
 		clone.scaling.z = -clone.scaling.z;
 	}
+};
+
+SceneManager.prototype.importMeshFiles = function(event)
+{
+	console.log('SceneManager.prototype.importMeshFiles');
+	this.filesInput.loadFiles(event);
 };

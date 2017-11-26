@@ -55,7 +55,6 @@
 			function dragover_handler(ev) 
 			{
 				console.log("dragOver");
-				// Prevent default select and drag behavior
 				ev.preventDefault();
 			}
 			
@@ -66,7 +65,42 @@
 			    'Ext.data.*',
 			    'Ext.tip.*'
 			]);
-
+			
+			Ext.define('Ext.ux.form.MultiFile', 
+			{
+				extend: 'Ext.form.field.File',
+				alias: 'widget.multifilefield',
+				initComponent: function () 
+				{
+					var me = this;
+					me.on('render', function () {
+						me.fileInputEl.set({ multiple: 'multiple' });
+					});
+			 
+					me.callParent(arguments);
+				},
+				onFileChange: function (button, e, value) 
+				{
+					var me = this,
+					upload = me.fileInputEl.dom,
+					files = upload.files,
+					names = [];
+			 
+					if (files) 
+					{
+						for (var i = 0; i < files.length; i++)
+						{
+							names.push(files[i].name);
+						}
+						value = names.join(', ');
+					}
+			 
+					me.callParent(arguments);
+					emmiter.emit('MESH_IMPORT_FILES', e);
+					Ext.getCmp('importDialogId').close();
+				}
+			});
+			
 			Ext.onReady(function()
 			{
 				
@@ -756,7 +790,27 @@
 											icon: 'icons/import.png',
 											handler: function()
 											{
-												emmiter.emit('MESH_IMPORT', "assets/", "wind_old_windmill.obj");
+												Ext.create('Ext.window.Window', 
+												{
+													title: 'Select a .obj with .mtl files',
+													width: 400,
+													bodyPadding: 10,
+													layout: 'anchor',
+													id: 'importDialogId',
+													frame: true,
+													items: 
+													[
+														Ext.create('Ext.ux.form.MultiFile', 
+														{
+															fieldLabel: 'Mesh',
+															labelWidth: 50,
+															msgTarget: 'side',
+															allowBlank: false,
+															anchor: '100%',
+															buttonText: 'Select Files...'
+														})
+													]
+												}).show();
 											}
 										},
 										{
@@ -1131,66 +1185,8 @@
 				sceneManager = new SceneManager();
 				sceneManager.create3DScene();
 				uiManager = new UiManager(sceneManager);
-				uiManager.updateRootTreeUi();
-				
-				var sceneLoaded = function (sceneFile, babylonScene) 
-				{
-					alert('sceneLoaded');
-					sceneManager = new SceneManager();
-					sceneManager.create3DScene();
-					var currentScene = sceneManager.scene;
-					
-					var newMeshes = babylonScene.meshes;
-					for(var i=0; i<newMeshes.length; i++)
-					{
-						currentScene.addMesh(newMeshes[i]);
-					}
-					
-					document.title = sceneFile.name;
-					
-					currentScene.activeCamera.useFramingBehavior = true;
-
-					var framingBehavior = currentScene.activeCamera.getBehaviorByName("Framing");
-					framingBehavior.framingTime = 0;
-					framingBehavior.elevationReturnTime = -1;
-		
-					if (currentScene.meshes.length) {
-						var worldExtends = currentScene.getWorldExtends();
-						currentScene.activeCamera.lowerRadiusLimit = null;
-						framingBehavior.zoomOnBoundingInfo(worldExtends.min, worldExtends.max);
-					}
-
-					currentScene.activeCamera.pinchPrecision = 200 / currentScene.activeCamera.radius;
-					currentScene.activeCamera.upperRadiusLimit = 5 * currentScene.activeCamera.radius;
-
-					currentScene.activeCamera.wheelDeltaPercentage = 0.01;
-					currentScene.activeCamera.pinchDeltaPercentage = 0.01;
-
-					
-					currentScene.activeCamera.attachControl(document.getElementById('renderCanvas')); 
-
-					// In case of error during loading, meshes will be empty and clearColor is set to red
-					if (currentScene.meshes.length === 0 && currentScene.clearColor.r === 1 && currentScene.clearColor.g === 0 && currentScene.clearColor.b === 0) {
-						document.getElementById('renderCanvas').style.opacity = 0;
-					}
-					else 
-					{
-						document.getElementById('renderCanvas').style.opacity = 1;
-						if (currentScene.activeCamera.keysUp) {
-							currentScene.activeCamera.keysUp.push(90); // Z
-							currentScene.activeCamera.keysUp.push(87); // W
-							currentScene.activeCamera.keysDown.push(83); // S
-							currentScene.activeCamera.keysLeft.push(65); // A
-							currentScene.activeCamera.keysLeft.push(81); // Q
-							currentScene.activeCamera.keysRight.push(69); // E
-							currentScene.activeCamera.keysRight.push(68); // D
-						}
-					}
-
-				};
-				
+				uiManager.updateRootTreeUi();	
 			});
 		</script>
-
 	</body>
 </html>
