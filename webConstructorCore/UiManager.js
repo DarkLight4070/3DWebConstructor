@@ -21,6 +21,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_RESET_PREFAB_POS_UI', this.resetPrefabPositionUi.bind(this));
 	emmiter.on('UI_INIT_PREFAB_POS_UI_FROM_SELECTION', this.initPrefabPositionUiFromSelection.bind(this));
 	emmiter.on('UI_ADD_NODE', this.addNodeToTree.bind(this));
+	emmiter.on('UI_SET_MESH_VISIBILITY', this.uiSetMeshVibility.bind(this));
 }
 
 UiManager.prototype.UI_CreateNumberField = function(__label, __id, __defaultValue)
@@ -768,4 +769,14 @@ UiManager.prototype.initPrefabPositionUiFromSelection = function()
 		Ext.getCmp('prefabPyId').setValue(this.sceneManager.selectionManager.lastPickedMesh.position.y);
 		Ext.getCmp('prefabPzId').setValue(this.sceneManager.selectionManager.lastPickedMesh.position.z);
 	}		
+};
+
+UiManager.prototype.uiSetMeshVibility = function(mesh, value)
+{
+	console.log('UiManager.prototype.uiSetMeshVibility');
+	var callback = function()
+	{
+		this.refreshTreeUi();
+	}.bind(this);
+	emmiter.emit('MESH_SET_VISIBILITY', mesh, value, callback);
 };

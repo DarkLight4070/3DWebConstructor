@@ -1020,18 +1020,32 @@
 											{
 												var store = grid.getStore();
 												var rec = store.getAt(rowIndex);
-												rec.raw.object.visibility = !rec.raw.object.visibility;
-												if(rec.raw.object.name != 'Grid')
-												{
-													rec.raw.object.isPickable = rec.raw.object.visibility;
-												}
-												rec.commit();
+												var mesh = rec.raw.object;
+												emmiter.emit('UI_SET_MESH_VISIBILITY', mesh, !mesh.visibility);
 											},
 											getClass: function(value, metadata, record)
 											{
-												if(record.raw.object == undefined)
+												if(record.raw.object == undefined || record.raw.object.data == undefined)
 												{
 													return '';
+												}
+												
+												if(record.raw.object.data.type == 'rootNode')
+												{
+													var rootMesh = record.raw.object;
+													var childs = rootMesh.getChildren();
+													var visible = false;
+													for(var i=0; i<childs.length; i++)
+													{
+														var child = childs[i];
+														if(child.visibility == true)
+														{
+															console.log('visible-icon');
+															return 'visible-icon';
+														}
+													}
+													console.log('hidden-icon');
+													return 'hidden-icon';
 												}
 												
 												if (record.raw.object.visibility == true)

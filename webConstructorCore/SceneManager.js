@@ -34,6 +34,7 @@ function SceneManager()
 	emmiter.on('MESH_ENABLE_EDGES', this.enableEdgeMode.bind(this));
 	emmiter.on('MESH_DISABLE_EDGES', this.disableEdgeMode.bind(this));
 	emmiter.on('MESH_IMPORT_FILES', this.importMeshFiles.bind(this));
+	emmiter.on('MESH_SET_VISIBILITY', this.meshSetVisibility.bind(this));
 }
 
 SceneManager.prototype.instance = function()
@@ -76,7 +77,7 @@ SceneManager.prototype.create3DScene = function()
 	ground.material.backFaceCulling = false;
 	ground.material.diffuseColor = new BABYLON.Color3(1, 1, 1);
 	ground.isPickable = false;
-	ground.data = {uid: -1};
+	ground.data = {uid: -1, type: 'staticSceneObject'};
 	this.selectionManager = new SelectionManager(this);
 	this.selectionManager.initSceneSelection(this);
 	
@@ -615,6 +616,37 @@ SceneManager.prototype.loadMeshFile = function(path, objFileName)
 	}
 	
 	assetsManager.load();
+};
+
+SceneManager.prototype.meshSetVisibility = function(mesh, value, callback)
+{
+	console.log('SceneManager.prototype.hideMesh');
+	this.selectionManager.removeEditControl();
+	
+	if(mesh.data.type == 'rootNode')
+	{
+		var children = mesh.getChildren();
+		for(var i=0; i<children.length; i++)
+		{
+			var child = children[i];
+			child.visibility = value;
+			if(child.data.type != 'staticSceneObject')
+			{
+				child.isPickable = value;
+			}
+		}
+	}
+	
+	mesh.visibility = value;
+	if(mesh.data.type != 'staticSceneObject')
+	{
+		mesh.isPickable = value;
+	}
+	
+	if(callback != undefined)
+	{
+		callback();
+	}
 };
 
 SceneManager.prototype.hideAll = function()
