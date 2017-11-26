@@ -1093,7 +1093,21 @@
 
 									fn: function (view, record, item, index, e)
 									{
-										var isParentRootNode = record.parentNode.raw.object.data.type == 'rootNode';
+										var isMeshObject = record.raw.object != undefined;
+										if(record.raw.object.data.type == 'rootNode')
+										{
+											var meshName = record.get('text');
+											var mesh = sceneManager.scene.getMeshByName(meshName);
+											console.log('Root Node selected: ' + mesh.name);
+											return;
+										}
+										
+										var isParentRootNode = false;
+										if(record.parentNode.raw.object != undefined)
+										{
+											isParentRootNode = record.parentNode.raw.object.data.type == 'rootNode';
+										}
+										
 										if(record.parentNode.data.text == 'Meshes' || isParentRootNode)
 										{
 											var meshName = record.get('text');

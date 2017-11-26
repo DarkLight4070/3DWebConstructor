@@ -222,7 +222,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	{
 		this.sceneManager.camera.setTarget(this.lastPickedMesh.position.clone());
 	}
-	if(mesh.data != undefined && mesh.data.type == 'sceneObject' && mesh.data.gizmo == undefined)
+	if(mesh.data != undefined && mesh.data.type == 'sceneObject')
 	{
 		if(this.transform != '')
 		{
