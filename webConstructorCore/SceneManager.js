@@ -65,10 +65,10 @@ SceneManager.prototype.create3DScene = function()
 	this.camera.inertia = 0;
 	this.camera.setTarget(BABYLON.Vector3.Zero());
 	this.camera.upperBetaLimit = 2 * Math.PI;
-	this.camera.useFramingBehavior = true;
 	this.camera.attachControl(this.canvas, false);
 	this.scene.createDefaultCameraOrLight(true);
-
+	this.camera.useFramingBehavior = true;
+	
 	// Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
 	var ground = BABYLON.Mesh.CreateGround("Grid", 20, 20, 20, this.scene);
 	ground.material = new BABYLON.StandardMaterial("GridMaterial", this.scene);
@@ -83,7 +83,8 @@ SceneManager.prototype.create3DScene = function()
 	
 	this.engine.runRenderLoop(this.renderFrames.bind(this));
 	
-	var sceneError = function (sceneFile, babylonScene, message) {
+	var sceneError = function (sceneFile, babylonScene, message) 
+	{
 		console.log(message);
 	};
 				
@@ -470,7 +471,7 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 	var camera = this.camera;
 	var meshes = [];
 	
-	var root = new BABYLON.AbstractMesh('root', scene);
+	var root = new BABYLON.AbstractMesh('Prefab', scene);
 	root.data = {type: 'rootNode'};
 	for(var i=0; i<loadedMeshes.length; i++)
 	{
@@ -522,8 +523,8 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 	
 	camera.radius = 2 * max;
 	camera.setTarget(new BABYLON.Vector3(bboxInfo.boundingBox.center.x / 2, bboxInfo.boundingBox.center.y / 2, bboxInfo.boundingBox.center.z / 2));
-	
-	emmiter.emit('UI_ADD_MESHES_TO_TREE', meshes);
+	emmiter.emit('UI_ADD_NODE', root);
+	//emmiter.emit('UI_ADD_MESHES_TO_TREE', meshes);
 };
 
 SceneManager.prototype.loadMeshFile = function(path, objFileName)
@@ -541,7 +542,7 @@ SceneManager.prototype.loadMeshFile = function(path, objFileName)
 	
 	meshTask.onSuccess = function (task)
 	{
-		var root = new BABYLON.AbstractMesh('root', scene);
+		var root = new BABYLON.AbstractMesh('Prefab', scene);
 		console.log('onSuccess');
 		console.log('Loaded meshes number: ' + task.loadedMeshes.length);
 		var loadedMeshes = task.loadedMeshes;

@@ -1093,7 +1093,8 @@
 
 									fn: function (view, record, item, index, e)
 									{
-										if(record.parentNode.data.text == 'Meshes')
+										var isParentRootNode = record.parentNode.raw.object.data.type == 'rootNode';
+										if(record.parentNode.data.text == 'Meshes' || isParentRootNode)
 										{
 											var meshName = record.get('text');
 											var mesh = sceneManager.scene.getMeshByName(meshName);

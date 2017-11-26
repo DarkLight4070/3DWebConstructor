@@ -20,6 +20,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_RESET_PREFAB_UI', this.resetPrefabUi.bind(this));
 	emmiter.on('UI_RESET_PREFAB_POS_UI', this.resetPrefabPositionUi.bind(this));
 	emmiter.on('UI_INIT_PREFAB_POS_UI_FROM_SELECTION', this.initPrefabPositionUiFromSelection.bind(this));
+	emmiter.on('UI_ADD_NODE', this.addNodeToTree.bind(this));
 }
 
 UiManager.prototype.UI_CreateNumberField = function(__label, __id, __defaultValue)
@@ -312,6 +313,26 @@ UiManager.prototype.addMeshesToTree = function(meshes)
 		nodes.push({text: mesh.name, icon: icon, leaf: true, object: mesh, uid: mesh.data.uid, visible: mesh.data.visible});
 	}
 	meshesNode.appendChild(nodes);
+}
+
+UiManager.prototype.addNodeToTree = function(node)
+{
+	console.log('UiManager.prototype.addMeshesToTree');
+	var mainTree = Ext.getCmp('mainTree');
+	var root = mainTree.getRootNode();
+	var meshesNode = root.findChild('text', 'Meshes');
+	var uiNode = meshesNode.appendChild({text: node.name, icon: 'icons/co_mesh.png', leaf: false, object: node, uid: node.data.uid});
+	
+	var nodes = [];
+	var meshes = node.getChildren();
+	for(var i=0; i<meshes.length; i++)
+	{
+		var mesh = meshes[i];
+		var icon = 'icons/mesh.png';
+		nodes.push({text: mesh.name, icon: icon, leaf: true, object: mesh, uid: mesh.data.uid, visible: mesh.data.visible});
+	}
+	
+	uiNode.appendChild(nodes);
 }
 
 UiManager.prototype.removeMeshFromTree = function(meshId)
