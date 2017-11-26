@@ -432,7 +432,7 @@ SceneManager.prototype.changeMeshVisibility = function(mesh, visibility)
 SceneManager.prototype.setWireframe = function(mesh, value)
 {
 	console.log('SceneManager.prototype.setWireframe');
-	if(mesh.name != 'Grid' && mesh.data != undefined)
+	if(mesh.name != 'Grid' && mesh.data != undefined && mesh.data.type != 'rootNode')
 	{
 		if(value == true)
 		{
@@ -667,6 +667,7 @@ SceneManager.prototype.wireframeAll = function(value)
 	for(var i=0; i<meshes.length; i++)
 	{
 		var mesh = meshes[i];
+		console.log(mesh.name);
 		this.setWireframe(mesh, value);
 	}
 	emmiter.emit('UI_REFRESH_TREE');
