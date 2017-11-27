@@ -725,6 +725,29 @@ UiManager.prototype.createSceneContextMenu = function(x, y)
 					emmiter.emit('UI_REFRESH_TREE');
 				}
 
+			},
+			{
+				xtype: 'menuseparator'
+			},
+			{
+				text: 'Show BBOX',
+				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.showBoundingBox == true,
+				handler: function()
+				{
+					var mesh = sceneManager.selectionManager.lastPickedMesh;
+					mesh.showBoundingBox = true;
+				}
+
+			},
+			{
+				text: 'Hide BBOX',
+				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.showBoundingBox == false,
+				handler: function()
+				{
+					var mesh = sceneManager.selectionManager.lastPickedMesh;
+					mesh.showBoundingBox = false;
+				}
+
 			}
 		]
 	});

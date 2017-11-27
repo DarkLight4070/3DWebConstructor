@@ -540,13 +540,15 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 	}
 	
 	var bboxInfo = totalBoundingInfo(root.getChildren());
-	bboxInfo.update(root._worldMatrix);
+	//bboxInfo.update(root._worldMatrix);
 	var vectors = bboxInfo.boundingBox.vectors; 
 	var width = Number(vectors[1].x - vectors[0].x);
 	var heigh = Number(vectors[1].y - vectors[0].y);
 	var depth = Number(vectors[1].z - vectors[0].z);
 	root.position = new BABYLON.Vector3(0, 0, 0);
-	console.log(root.position);
+	root.setBoundingInfo(bboxInfo);
+	//root.setPivotPoint(new BABYLON.Vector3(bboxInfo.boundingBox.centerWorld.x / 2 , bboxInfo.boundingBox.centerWorld.y / 2, bboxInfo.boundingBox.centerWorld.z / 2));
+	root.showBoundingBox = true;
 	var max = width;
 	if(max > heigh)
 	{
@@ -560,7 +562,6 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 	camera.radius = 2 * max;
 	camera.setTarget(new BABYLON.Vector3(bboxInfo.boundingBox.center.x / 2, bboxInfo.boundingBox.center.y / 2, bboxInfo.boundingBox.center.z / 2));
 	emmiter.emit('UI_ADD_NODE', root);
-	//emmiter.emit('UI_ADD_MESHES_TO_TREE', meshes);
 };
 
 SceneManager.prototype.loadMeshFile = function(path, objFileName)
