@@ -97,14 +97,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			}
 			if(this.sceneManager.targetSelection == true)
 			{
-				var parentPosition = new BABYLON.Vector3(0, 0, 0);
-				if(this.lastPickedMesh.parent != null)
-				{
-					parentPosition = this.lastPickedMesh.parent.position.clone();
-				}
-				var position = new BABYLON.Vector3(this.lastPickedMesh.position.x + parentPosition.x, this.lastPickedMesh.position.y + parentPosition.y, this.lastPickedMesh.position.z + parentPosition.z);
-				console.log('Target position: ' + position);
-				this.sceneManager.camera.setTarget(position);
+				this.sceneManager.camera.setTarget(this.lastPickedMesh.getBoundingInfo().boundingBox.centerWorld.clone());
 			}
 			emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.lastPickedMesh);
 		}
@@ -218,14 +211,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	
 	if(this.sceneManager.targetSelection == true)
 	{
-		var parentPosition = new BABYLON.Vector3(0, 0, 0);
-		if(this.lastPickedMesh.parent != null)
-		{
-			parentPosition = this.lastPickedMesh.parent.position.clone();
-		}
-		var position = new BABYLON.Vector3(this.lastPickedMesh.position.x + parentPosition.x, this.lastPickedMesh.position.y + parentPosition.y, this.lastPickedMesh.position.z + parentPosition.z);
-		console.log('Target position: ' + position);
-		this.sceneManager.camera.setTarget(position);
+		this.sceneManager.camera.setTarget(this.lastPickedMesh.getBoundingInfo().boundingBox.centerWorld.clone());
 	}
 	if(mesh.data != undefined && (mesh.data.type == 'sceneObject' || mesh.data.type == 'rooNode'))
 	{

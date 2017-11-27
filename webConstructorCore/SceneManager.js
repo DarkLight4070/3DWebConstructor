@@ -195,7 +195,6 @@ SceneManager.prototype.cloneMesh = function()
 			uid = this.getNextUid();
 			var child = meshes[i];
 			var clone = child.clone('Clone-' + child.name + uid);
-			//clone.material = new BABYLON.StandardMaterial("mat", this.scene);
 			if(child.data.originalMaterial != undefined)
 			{
 				clone.material = child.data.originalMaterial.clone('OMaterial');
