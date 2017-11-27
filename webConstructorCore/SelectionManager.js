@@ -58,9 +58,16 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 	}
 	if(this.lastClickX == evt.clientX && this.lastClickY == evt.clientY && this.objectSelectionMode == 1)
 	{
-		if(this.lastPickedMesh != null && this.lastPickedMesh.data.type == 'sceneObject')
+		if(this.lastPickedMesh != null)
 		{
-			this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+			if(this.lastPickedMesh.data.type == 'sceneObject')
+			{
+				this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+			}
+			else
+			{
+				this.lastPickedMesh.showBoundingBox = false;
+			}
 		}
 
 		if (pickResult.hit) 
@@ -70,6 +77,10 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 				if(this.lastPickedMesh.data.type == 'sceneObject')
 				{
 					this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+				}
+				else
+				{
+					this.lastPickedMesh.showBoundingBox = false;
 				}
 				this.removeEditControl();
 			}
@@ -81,8 +92,16 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			}
 			
 			emmiter.emit('UI_UPDATE_SELECTION', pickResult.pickedMesh.name);
-			pickResult.pickedMesh.material = pickResult.pickedMesh.data.selectionMaterial;
 			this.lastPickedMesh = pickResult.pickedMesh;
+			if(this.lastPickedMesh.data.type == 'sceneObject')
+			{
+				pickResult.pickedMesh.material = pickResult.pickedMesh.data.selectionMaterial;
+			}
+			else
+			{
+				this.lastPickedMesh.showBoundingBox = true;
+			}
+			
 			if(this.lastPickedMesh.data != undefined && this.lastPickedMesh.data.type == 'sceneObject')
 			{
 				if(this.transform != '')
@@ -199,15 +218,23 @@ SelectionManager.prototype.selectMesh = function(mesh)
 		{
 			this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
 		}
+		else
+		{
+			this.lastPickedMesh.showBoundingBox = false;
+		}
 		this.removeEditControl();
 	}
+	
+	this.lastPickedMesh = mesh;
 	
 	if(mesh.data.type == 'sceneObject')
 	{
 		mesh.material = mesh.data.selectionMaterial;
 	}
-	
-	this.lastPickedMesh = mesh;
+	else
+	{
+		mesh.showBoundingBox = true;
+	}
 	
 	if(this.sceneManager.targetSelection == true)
 	{
