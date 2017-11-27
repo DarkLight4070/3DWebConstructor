@@ -546,7 +546,6 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 	var heigh = Number(vectors[1].y - vectors[0].y);
 	var depth = Number(vectors[1].z - vectors[0].z);
 	root.position = new BABYLON.Vector3(0, 0, 0);
-	root.setBoundingInfo(bboxInfo);
 	//root.setPivotPoint(new BABYLON.Vector3(bboxInfo.boundingBox.centerWorld.x / 2 , bboxInfo.boundingBox.centerWorld.y / 2, bboxInfo.boundingBox.centerWorld.z / 2));
 	root.showBoundingBox = true;
 	var max = width;
