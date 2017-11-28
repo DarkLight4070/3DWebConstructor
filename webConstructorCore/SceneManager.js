@@ -190,17 +190,25 @@ SceneManager.prototype.cloneMesh = function()
 		var uid = this.getNextUid();
 		var root = new BABYLON.AbstractMesh('Clone-Prefab', this.scene);
 		root.data = {type: 'rootNode', uid: uid};
+		root.scaling = mesh.scaling.clone();
+		root.rotation = mesh.rotation.clone();
+		var bboxInfo = new BABYLON.BoundingInfo(mesh.getBoundingInfo().minimum.clone(), mesh.getBoundingInfo().maximum.clone());
+		root.setBoundingInfo(bboxInfo);
+		root.setPivotPoint(new BABYLON.Vector3(bboxInfo.boundingBox.center.x / 2 , bboxInfo.boundingBox.center.y / 2, bboxInfo.boundingBox.center.z / 2));
+		root.position = mesh.position.clone();
 		for(var i=0; i<meshes.length; i++)
 		{
 			uid = this.getNextUid();
 			var child = meshes[i];
 			var clone = child.clone('Clone-' + child.name + uid);
+			clone.computeWorldMatrix(true);
+			clone.setPivotPoint(clone.getBoundingInfo().boundingBox.center);
+			clone.position = child.position.clone();
 			if(child.data.originalMaterial != undefined)
 			{
 				clone.material = child.data.originalMaterial.clone('OMaterial');
 			}
-			clone.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: child.material, selectionMaterial: this.selectionMaterial.clone()};
-			//this.enableEdgeMode(clone);
+			clone.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: clone.material, selectionMaterial: this.selectionMaterial.clone()};
 			clone.parent = root;
 		}
 		emmiter.emit('UI_ADD_NODE', root);
@@ -609,12 +617,12 @@ SceneManager.prototype.loadMeshFile = function(path, objFileName)
 		var totalBoundingInfo = function(meshes)
 		{
 			var boundingInfo = meshes[0].getBoundingInfo();
-			var min = boundingInfo.minimum.add(meshes[0].position);
-			var max = boundingInfo.maximum.add(meshes[0].position);
+			var min = boundingInfo.minimum;
+			var max = boundingInfo.maximum;
 			for(var i=1; i<meshes.length; i++){
 				boundingInfo = meshes[i].getBoundingInfo();
-				min = BABYLON.Vector3.Minimize(min, boundingInfo.minimum.add(meshes[i].position));
-				max = BABYLON.Vector3.Maximize(max, boundingInfo.maximum.add(meshes[i].position));
+				min = BABYLON.Vector3.Minimize(min, boundingInfo.minimum);
+				max = BABYLON.Vector3.Maximize(max, boundingInfo.maximum);
 			}
 			return new BABYLON.BoundingInfo(min, max);
 		}

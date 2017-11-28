@@ -42,6 +42,7 @@ SelectionManager.prototype.pointerDown = function(evt)
 
 SelectionManager.prototype.pointerUp = function(evt, pickResult)
 {
+	console.log('SelectionManager.prototype.pointerUp');
 	if(evt.button != 0)
 	{
 		return;
@@ -192,6 +193,14 @@ SelectionManager.prototype.setCompoundObjectsMode = function(enable)
 
 SelectionManager.prototype.selectMesh = function(mesh)
 {
+	if(mesh != null)
+	{
+		console.log('Selected mesh name: ' + mesh.name);
+	}
+	if(this.lastPickedMesh != null)
+	{
+		console.log('Last picked name: ' + this.lastPickedMesh.name);
+	}
 	if(mesh == null)
 	{
 		this.lastPickedMesh = null;
@@ -225,8 +234,6 @@ SelectionManager.prototype.selectMesh = function(mesh)
 		this.removeEditControl();
 	}
 	
-	this.lastPickedMesh = mesh;
-	
 	if(mesh.data.type == 'sceneObject')
 	{
 		mesh.material = mesh.data.selectionMaterial;
@@ -238,7 +245,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	
 	if(this.sceneManager.targetSelection == true)
 	{
-		this.sceneManager.camera.setTarget(this.lastPickedMesh.getBoundingInfo().boundingBox.centerWorld.clone());
+		this.sceneManager.camera.setTarget(mesh.getBoundingInfo().boundingBox.centerWorld.clone());
 	}
 	if(mesh.data != undefined && (mesh.data.type == 'sceneObject' || mesh.data.type == 'rooNode'))
 	{
@@ -247,6 +254,8 @@ SelectionManager.prototype.selectMesh = function(mesh)
 			this.createEditControl();
 		}
 	}
+	
+	this.lastPickedMesh = mesh;
 	
 	if(this.compoundObjectsMode && mesh.data.type == 'sceneObject')
 	{
