@@ -715,7 +715,7 @@ UiManager.prototype.createSceneContextMenu = function(x, y)
 			},
 			{
 				text: 'Enable Edges',
-				disabled: sceneManager.selectionManager.lastPickedMesh == null || (sceneManager.selectionManager.lastPickedMesh != null && sceneManager.selectionManager.lastPickedMesh.edgesWidth > 0),
+				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.edgesWidth > 0 || sceneManager.selectionManager.lastPickedMesh.data.type == 'rootNode',
 				handler: function()
 				{
 					emmiter.emit('MESH_ENABLE_EDGES', sceneManager.selectionManager.lastPickedMesh);
@@ -723,7 +723,7 @@ UiManager.prototype.createSceneContextMenu = function(x, y)
 			},
 			{
 				text: 'Disable Edges',
-				disabled: sceneManager.selectionManager.lastPickedMesh == null || (sceneManager.selectionManager.lastPickedMesh != null && sceneManager.selectionManager.lastPickedMesh.edgesWidth == 0),
+				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.edgesWidth == 0 || sceneManager.selectionManager.lastPickedMesh.data.type == 'rootNode',
 				handler: function()
 				{
 					emmiter.emit('MESH_DISABLE_EDGES', sceneManager.selectionManager.lastPickedMesh);
@@ -734,7 +734,7 @@ UiManager.prototype.createSceneContextMenu = function(x, y)
 			},
 			{
 				text: 'Wireframe',
-				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.material.wireframe == true,
+				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.data.type == 'rootNode' || sceneManager.selectionManager.lastPickedMesh.material.wireframe == true,
 				handler: function()
 				{
 					var mesh = sceneManager.selectionManager.lastPickedMesh;
@@ -745,7 +745,7 @@ UiManager.prototype.createSceneContextMenu = function(x, y)
 			},
 			{
 				text: 'Default Material',
-				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.material.wireframe == false,
+				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.data.type == 'rootNode' || sceneManager.selectionManager.lastPickedMesh.material.wireframe == false,
 				handler: function()
 				{
 					var mesh = sceneManager.selectionManager.lastPickedMesh;
@@ -759,7 +759,7 @@ UiManager.prototype.createSceneContextMenu = function(x, y)
 			},
 			{
 				text: 'Show BBOX',
-				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.showBoundingBox == true,
+				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.data.type == 'rootNode' || sceneManager.selectionManager.lastPickedMesh.showBoundingBox == true,
 				handler: function()
 				{
 					var mesh = sceneManager.selectionManager.lastPickedMesh;
@@ -769,7 +769,7 @@ UiManager.prototype.createSceneContextMenu = function(x, y)
 			},
 			{
 				text: 'Hide BBOX',
-				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.showBoundingBox == false,
+				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.data.type == 'rootNode' || sceneManager.selectionManager.lastPickedMesh.showBoundingBox == false,
 				handler: function()
 				{
 					var mesh = sceneManager.selectionManager.lastPickedMesh;

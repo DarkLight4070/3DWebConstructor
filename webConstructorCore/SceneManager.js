@@ -202,6 +202,7 @@ SceneManager.prototype.cloneMesh = function()
 			clone.computeWorldMatrix(true);
 			clone.setPivotPoint(clone.getBoundingInfo().boundingBox.center);
 			clone.position = child.position.clone();
+			clone.edgesWidth = 0;
 			if(child.data.originalMaterial != undefined)
 			{
 				clone.material = child.data.originalMaterial.clone('OMaterial');
@@ -215,6 +216,7 @@ SceneManager.prototype.cloneMesh = function()
 	else if(mesh.data.type == 'sceneObject')
 	{
 		var clone = mesh.clone(mesh.name);
+		clone.edgesWidth = 0;
 		clone.material = new BABYLON.StandardMaterial("mat", this.scene);
 		clone.material = mesh.data.originalMaterial.clone('OMaterial');
 		clone.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: clone.material, selectionMaterial: this.selectionMaterial.clone()};
@@ -255,6 +257,7 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 	var normals = result.getVerticesData(BABYLON.VertexBuffer.NormalKind);
 	BABYLON.VertexData.ComputeNormals(positions, indices, normals);
 	result.updateVerticesData(BABYLON.VertexBuffer.NormalKind, normals, true, true);
+	result.edgesWidth = 0;
 	
 	emmiter.emit('UI_ADD_MESH_TO_TREE', result);
 	
@@ -321,8 +324,7 @@ SceneManager.prototype.createBox = function(width, height, depth, position, rota
 	box.material = new BABYLON.StandardMaterial("boxMat", this.scene);
 	box.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	box.material.backFaceCulling = false;
-	
-	//this.enableEdgeMode(box);
+	box.edgesWidth = 0;
 	
 	box.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: box.material, selectionMaterial: this.selectionMaterial.clone()};
 	emmiter.emit('UI_ADD_MESH_TO_TREE', box);
@@ -338,9 +340,8 @@ SceneManager.prototype.createCylinder = function(height, topDiameter, bottomDiam
 	cylinder.material = new BABYLON.StandardMaterial("cylinderMat", this.scene);
 	cylinder.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	cylinder.material.backFaceCulling = false;
+	cylinder.edgesWidth = 0;
 	cylinder.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: cylinder.material, selectionMaterial: this.selectionMaterial.clone()};
-	
-	//this.enableEdgeMode(cylinder);
 	
 	emmiter.emit('UI_ADD_MESH_TO_TREE', cylinder);
 };
@@ -355,8 +356,7 @@ SceneManager.prototype.createSphere = function(diameter, segments, position, rot
 	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	mesh.material.backFaceCulling = false;
 	mesh.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: mesh.material, selectionMaterial: this.selectionMaterial.clone()};
-	
-	//this.enableEdgeMode(mesh);
+	mesh.edgesWidth = 0;
 	
 	emmiter.emit('UI_ADD_MESH_TO_TREE', mesh);
 };
@@ -380,7 +380,8 @@ SceneManager.prototype.createPlane = function(width, height, subdivisions, posit
 	mesh.material.backFaceCulling = false;
 	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	mesh.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: mesh.material, selectionMaterial: this.selectionMaterial.clone()};
-
+	mesh.edgesWidth = 0;
+	
 	emmiter.emit('UI_ADD_MESH_TO_TREE', mesh);
 };
 
@@ -397,7 +398,7 @@ SceneManager.prototype.createLine = function(x1, y1, z1, x2, y2, z2, position, r
 	line.material = new BABYLON.StandardMaterial("boxMat", this.scene);
 	line.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	line.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: line.material, selectionMaterial: this.selectionMaterial.clone()};
-
+	
 	emmiter.emit('UI_ADD_MESH_TO_TREE', line);
 };
 
@@ -464,16 +465,6 @@ SceneManager.prototype.setWireframe = function(mesh, value)
 	console.log('SceneManager.prototype.setWireframe');
 	if(mesh.name != 'Grid' && mesh.data != undefined && mesh.data.type != 'rootNode')
 	{
-		/*
-		if(value == true)
-		{
-			this.disableEdgeMode(mesh);
-		}
-		else
-		{
-			this.enableEdgeMode(mesh);
-		}
-		*/
 		if(mesh.data.originalMaterial == undefined && mesh.material != undefined)	
 		{
 			mesh.data.originalMaterial = mesh.material.clone();
@@ -513,11 +504,9 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 		{
 			continue;
 		}
-		console.log(mesh.name);
+		mesh.edgesWidth = 0;
 		mesh.computeWorldMatrix(true);
 		mesh.setPivotPoint(mesh.getBoundingInfo().boundingBox.center);
-		//enableEdgeMode(mesh);
-		mesh.name = mesh.name;
 		mesh.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: mesh.material, selectionMaterial: selectionMaterial.clone()};
 		mesh.parent = root;
 		meshes.push(mesh);
@@ -542,14 +531,12 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 	}
 	
 	var bboxInfo = totalBoundingInfo(root.getChildren());
-	//bboxInfo.update(root._worldMatrix);
 	var vectors = bboxInfo.boundingBox.vectors; 
 	var width = Number(vectors[1].x - vectors[0].x);
 	var heigh = Number(vectors[1].y - vectors[0].y);
 	var depth = Number(vectors[1].z - vectors[0].z);
 	root.setBoundingInfo(bboxInfo);
 	root.position = new BABYLON.Vector3(0, 0, 0);
-	//root.refreshBoundingInfo();
 	root.setPivotPoint(new BABYLON.Vector3(bboxInfo.boundingBox.center.x / 2 , bboxInfo.boundingBox.center.y / 2, bboxInfo.boundingBox.center.z / 2));
 	var max = width;
 	if(max > heigh)
@@ -589,10 +576,10 @@ SceneManager.prototype.loadMeshFile = function(path, objFileName)
 			var mesh = loadedMeshes[i];
 			mesh.computeWorldMatrix(true);
 			mesh.setPivotPoint(mesh.getBoundingInfo().boundingBox.center);
-			//enableEdgeMode(mesh);
 			mesh.name = mesh.name;
 			mesh.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: mesh.material, selectionMaterial: selectionMaterial.clone()};
 			mesh.parent = root;
+			mesh.edgesWidth = 0;
 			meshes.push(mesh);
 		}
 		
@@ -777,6 +764,7 @@ SceneManager.prototype.mirrorMesh = function(axe)
 {
 	console.log('SceneManager.prototype.mirrorMesh');
 	var clone = this.cloneMesh();
+	clone.edgesWidth = 0;
 	clone.material.backFaceCulling = false;
 	clone.data.originalMaterial.backFaceCulling = false;
 	if(axe == 'x')
