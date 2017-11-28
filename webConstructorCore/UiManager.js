@@ -666,6 +666,7 @@ UiManager.prototype.deleteSelectedMesh = function()
 UiManager.prototype.createSceneContextMenu = function(x, y)
 {
 	console.log('UiManager.prototype.createSceneContextMenu');
+	var uiSetMeshVibility = this.uiSetMeshVibility.bind(this);
 	var menu = Ext.create('Ext.menu.Menu', 
 	{
 		margin: '0 0 10 0',
@@ -682,6 +683,8 @@ UiManager.prototype.createSceneContextMenu = function(x, y)
 				handler: function()
 				{
 					var mesh = sceneManager.selectionManager.lastPickedMesh;
+					uiSetMeshVibility(mesh, false);
+					/*
 					mesh.visibility = false;
 					if(mesh.name != 'Grid')
 					{
@@ -692,6 +695,7 @@ UiManager.prototype.createSceneContextMenu = function(x, y)
 					sceneManager.selectionManager.lastPickedMesh.material = sceneManager.selectionManager.lastPickedMesh.data.originalMaterial;
 					sceneManager.selectionManager.lastPickedMesh = null;
 					emmiter.emit('UI_UPDATE_SELECTION', null);
+					*/
 				}
 			},
 			{
