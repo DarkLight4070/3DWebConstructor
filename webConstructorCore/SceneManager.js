@@ -187,9 +187,8 @@ SceneManager.prototype.cloneMesh = function()
 	if(mesh.data.type == 'rootNode')
 	{
 		var meshes = mesh.getChildren();
-		var uid = this.getNextUid();
 		var root = new BABYLON.AbstractMesh('Clone-Prefab', this.scene);
-		root.data = {type: 'rootNode', uid: uid};
+		root.data = {type: 'rootNode', uid: this.getNextUid()};
 		root.scaling = mesh.scaling.clone();
 		root.rotation = mesh.rotation.clone();
 		var bboxInfo = new BABYLON.BoundingInfo(mesh.getBoundingInfo().minimum.clone(), mesh.getBoundingInfo().maximum.clone());
@@ -198,9 +197,8 @@ SceneManager.prototype.cloneMesh = function()
 		root.position = mesh.position.clone();
 		for(var i=0; i<meshes.length; i++)
 		{
-			uid = this.getNextUid();
 			var child = meshes[i];
-			var clone = child.clone('Clone-' + child.name + uid);
+			var clone = child.clone(child.name);
 			clone.computeWorldMatrix(true);
 			clone.setPivotPoint(clone.getBoundingInfo().boundingBox.center);
 			clone.position = child.position.clone();
@@ -208,7 +206,7 @@ SceneManager.prototype.cloneMesh = function()
 			{
 				clone.material = child.data.originalMaterial.clone('OMaterial');
 			}
-			clone.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: clone.material, selectionMaterial: this.selectionMaterial.clone()};
+			clone.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: clone.material, selectionMaterial: this.selectionMaterial.clone()};
 			clone.parent = root;
 		}
 		emmiter.emit('UI_ADD_NODE', root);
@@ -216,11 +214,10 @@ SceneManager.prototype.cloneMesh = function()
 	}
 	else if(mesh.data.type == 'sceneObject')
 	{
-		var uid = this.getNextUid();
-		var clone = mesh.clone('Clone-' + mesh.name + uid);
+		var clone = mesh.clone(mesh.name);
 		clone.material = new BABYLON.StandardMaterial("mat", this.scene);
 		clone.material = mesh.data.originalMaterial.clone('OMaterial');
-		clone.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: clone.material, selectionMaterial: this.selectionMaterial.clone()};
+		clone.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: clone.material, selectionMaterial: this.selectionMaterial.clone()};
 		//this.enableEdgeMode(clone);
 		emmiter.emit('UI_ADD_MESH_TO_TREE', clone);
 	}
@@ -258,8 +255,6 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 	var normals = result.getVerticesData(BABYLON.VertexBuffer.NormalKind);
 	BABYLON.VertexData.ComputeNormals(positions, indices, normals);
 	result.updateVerticesData(BABYLON.VertexBuffer.NormalKind, normals, true, true);
-	
-	//this.enableEdgeMode(result);
 	
 	emmiter.emit('UI_ADD_MESH_TO_TREE', result);
 	
@@ -312,7 +307,6 @@ SceneManager.prototype.getNextUid = function()
 
 SceneManager.prototype.createBox = function(width, height, depth, position, rotation)
 {
-	var uid = this.getNextUid();
 	var options = {
 		width: width,
 		height: height,
@@ -320,7 +314,7 @@ SceneManager.prototype.createBox = function(width, height, depth, position, rota
 		updatable: false,
 		sideOrientation: BABYLON.Mesh.DOUBLESIDE
 	};
-	var box = BABYLON.MeshBuilder.CreateBox('Box' + uid, options, this.scene);
+	var box = BABYLON.MeshBuilder.CreateBox('Box', options, this.scene);
 	box.position = position.clone();
 	box.rotation = rotation.clone();
 	
@@ -330,15 +324,13 @@ SceneManager.prototype.createBox = function(width, height, depth, position, rota
 	
 	//this.enableEdgeMode(box);
 	
-	box.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: box.material, selectionMaterial: this.selectionMaterial.clone()};
+	box.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: box.material, selectionMaterial: this.selectionMaterial.clone()};
 	emmiter.emit('UI_ADD_MESH_TO_TREE', box);
 };
 
 SceneManager.prototype.createCylinder = function(height, topDiameter, bottomDiameter, tesselation, position, rotation)
-{
-	var uid = this.getNextUid();
-	
-	var cylinder = BABYLON.Mesh.CreateCylinder("Cylinder" + uid, height, topDiameter, bottomDiameter, tesselation, 10, this.scene, true, BABYLON.Mesh.DOUBLESIDE);
+{	
+	var cylinder = BABYLON.Mesh.CreateCylinder("Cylinder", height, topDiameter, bottomDiameter, tesselation, 10, this.scene, true, BABYLON.Mesh.DOUBLESIDE);
 	
 	cylinder.position = position.clone();
 	cylinder.rotation = rotation.clone();
@@ -346,7 +338,7 @@ SceneManager.prototype.createCylinder = function(height, topDiameter, bottomDiam
 	cylinder.material = new BABYLON.StandardMaterial("cylinderMat", this.scene);
 	cylinder.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	cylinder.material.backFaceCulling = false;
-	cylinder.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: cylinder.material, selectionMaterial: this.selectionMaterial.clone()};
+	cylinder.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: cylinder.material, selectionMaterial: this.selectionMaterial.clone()};
 	
 	//this.enableEdgeMode(cylinder);
 	
@@ -354,17 +346,15 @@ SceneManager.prototype.createCylinder = function(height, topDiameter, bottomDiam
 };
 
 SceneManager.prototype.createSphere = function(diameter, segments, position, rotation)
-{
-	var uid = this.getNextUid();
-	
-	var mesh = BABYLON.Mesh.CreateSphere("Sphere" + uid, segments, diameter, this.scene, true, BABYLON.Mesh.DOUBLESIDE);
+{	
+	var mesh = BABYLON.Mesh.CreateSphere("Sphere", segments, diameter, this.scene, true, BABYLON.Mesh.DOUBLESIDE);
 	mesh.position = position.clone();
 	mesh.rotation = rotation.clone();
 	
 	mesh.material = new BABYLON.StandardMaterial("SphereMat", this.scene);
 	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	mesh.material.backFaceCulling = false;
-	mesh.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: mesh.material, selectionMaterial: this.selectionMaterial.clone()};
+	mesh.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: mesh.material, selectionMaterial: this.selectionMaterial.clone()};
 	
 	//this.enableEdgeMode(mesh);
 	
@@ -372,17 +362,16 @@ SceneManager.prototype.createSphere = function(diameter, segments, position, rot
 };
 
 SceneManager.prototype.createPlane = function(width, height, subdivisions, position, rotation)
-{
-	var uid = this.getNextUid();
-	
-	var options = {
+{	
+	var options = 
+	{
 		width: width,
 		height: height,
 		subdivisions: subdivisions,
 		updatable: true
 	};
 	
-	var mesh = BABYLON.MeshBuilder.CreateGround("Plane" + uid, options, this.scene);
+	var mesh = BABYLON.MeshBuilder.CreateGround("Plane", options, this.scene);
 	
 	mesh.position = position.clone();
 	mesh.rotation = rotation.clone();
@@ -390,27 +379,24 @@ SceneManager.prototype.createPlane = function(width, height, subdivisions, posit
 	mesh.material = new BABYLON.StandardMaterial("PlaneMat", this.scene);
 	mesh.material.backFaceCulling = false;
 	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-	mesh.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: mesh.material, selectionMaterial: this.selectionMaterial.clone()};
-	
-	//this.enableEdgeMode(mesh);
+	mesh.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: mesh.material, selectionMaterial: this.selectionMaterial.clone()};
 
 	emmiter.emit('UI_ADD_MESH_TO_TREE', mesh);
 };
 
 SceneManager.prototype.createLine = function(x1, y1, z1, x2, y2, z2, position, rotation)
-{
-	var uid = this.getNextUid();
-	
-	var options = {
+{	
+	var options = 
+	{
 		points: [new BABYLON.Vector3(x1, y1, z1), new BABYLON.Vector3(x2, y2, z2)]
 	};
-	var line = BABYLON.MeshBuilder.CreateLines('Line' + uid, options, this.scene);
+	var line = BABYLON.MeshBuilder.CreateLines('Line', options, this.scene);
 	line.position = position.clone();
 	line.rotation = rotation.clone();
 	
 	line.material = new BABYLON.StandardMaterial("boxMat", this.scene);
 	line.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-	line.data = {type: 'sceneObject', uid: uid, visible: true, originalMaterial: line.material, selectionMaterial: this.selectionMaterial.clone()};
+	line.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: line.material, selectionMaterial: this.selectionMaterial.clone()};
 
 	emmiter.emit('UI_ADD_MESH_TO_TREE', line);
 };
@@ -509,7 +495,6 @@ SceneManager.prototype.setWireframe = function(mesh, value)
 SceneManager.prototype.importMeshes = function(loadedMeshes)
 {
 	console.log('SceneManager.prototype.importMeshes');
-	var uid = this.getNextUid();
 	
 	var selectionMaterial = this.selectionMaterial;
 	var scene = this.scene;
@@ -518,12 +503,10 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 	var meshes = [];
 	
 	var root = new BABYLON.AbstractMesh('Prefab', scene);
-	root.data = {type: 'rootNode'};
+	root.data = {type: 'rootNode', uid: this.getNextUid()};
 	for(var i=0; i<loadedMeshes.length; i++)
 	{
 		var mesh = loadedMeshes[i];
-		
-		//mesh.getVertexBuffer(BABYLON.VertexBuffer.PositionKind).length
 		console.log('Total vertices count: ' + mesh.getTotalVertices());
 		
 		if(mesh.data != undefined)
@@ -534,8 +517,8 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 		mesh.computeWorldMatrix(true);
 		mesh.setPivotPoint(mesh.getBoundingInfo().boundingBox.center);
 		//enableEdgeMode(mesh);
-		mesh.name = mesh.name + uid;
-		mesh.data = {type: 'sceneObject', uid: uid++, visible: true, originalMaterial: mesh.material, selectionMaterial: selectionMaterial.clone()};
+		mesh.name = mesh.name;
+		mesh.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: mesh.material, selectionMaterial: selectionMaterial.clone()};
 		mesh.parent = root;
 		meshes.push(mesh);
 	}
@@ -585,7 +568,6 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 
 SceneManager.prototype.loadMeshFile = function(path, objFileName)
 {
-	var uid = this.getNextUid();
 	console.log('SceneManager.prototype.importMesh');
 	var assetsManager = new BABYLON.AssetsManager(this.scene);
 	var meshTask = assetsManager.addMeshTask("obj task", "", path, objFileName);
@@ -608,8 +590,8 @@ SceneManager.prototype.loadMeshFile = function(path, objFileName)
 			mesh.computeWorldMatrix(true);
 			mesh.setPivotPoint(mesh.getBoundingInfo().boundingBox.center);
 			//enableEdgeMode(mesh);
-			mesh.name = mesh.name + uid;
-			mesh.data = {type: 'sceneObject', uid: uid++, visible: true, originalMaterial: mesh.material, selectionMaterial: selectionMaterial.clone()};
+			mesh.name = mesh.name;
+			mesh.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: mesh.material, selectionMaterial: selectionMaterial.clone()};
 			mesh.parent = root;
 			meshes.push(mesh);
 		}

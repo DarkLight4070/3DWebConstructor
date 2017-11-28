@@ -92,7 +92,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 				pickResult.pickedMesh.data.originalMaterial.backFaceCulling = false;
 			}
 			
-			emmiter.emit('UI_UPDATE_SELECTION', pickResult.pickedMesh.name);
+			emmiter.emit('UI_UPDATE_SELECTION', pickResult.pickedMesh.data.uid);
 			this.lastPickedMesh = pickResult.pickedMesh;
 			if(this.lastPickedMesh.data.type == 'sceneObject')
 			{

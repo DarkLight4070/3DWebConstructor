@@ -39,13 +39,41 @@ UiManager.prototype.updateUiSelection = function(uid)
 	if(uid == null)
 	{
 		mainTree.getSelectionModel().deselectAll();
+		return;
 	}
-	var rootNode = mainTree.getRootNode();
-	var node = rootNode.findChild('text', uid, true);
-	if(node != null)
+	
+	var result = null;
+	
+	function find(node, uid)
 	{
-		console.log('Mesh found in tree' + node);
-		mainTree.getSelectionModel().select(node);
+		if(node.raw.uid == uid)
+		{
+			result = node;
+		}
+		else
+		{
+			var children = node.childNodes;
+			if(children != undefined)
+			{
+				for(var i=0; i<children.length; i++)
+				{
+					arguments.callee(children[i], uid, result);
+				}
+			}
+		}
+	};
+	
+	var rootNode = mainTree.getRootNode();
+	//var node = rootNode.findChild('object', uid, true);
+	find(rootNode, uid);
+	if(result != null)
+	{
+		console.log('Mesh found in tree');
+		mainTree.getSelectionModel().select(result);
+	}
+	else
+	{
+		console.log('Mesh not found in tree');
 	}
 }
 
