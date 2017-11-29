@@ -711,8 +711,7 @@ SceneManager.prototype.hideUnselected = function()
 {
 	console.log('SceneManager.prototype.hideUnselected');
 	this.hideAll();
-	this.selectionManager.lastPickedMesh.visibility = true;
-	this.selectionManager.lastPickedMesh.isPickable = true;
+	this.meshSetVisibility(this.selectionManager.lastPickedMesh, true);
 	emmiter.emit('UI_REFRESH_TREE');
 };
 

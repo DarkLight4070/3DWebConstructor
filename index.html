@@ -35,6 +35,9 @@
 			{
 				background-image: url('icons/plain.png') !important;
 			}
+			.corrupted-row .x-grid-cell {
+				background-color: #ffda1e;
+			}
 		</style>
 		
 	</head>
@@ -1002,6 +1005,22 @@
 							width: '100%',
 							height: '100%',
 							rootVisible: true,
+							viewConfig: 
+							{
+								getRowClass: function(record, index, rowParams, ds) 
+								{
+									var mesh = record.raw.object;
+									if(mesh != undefined)
+									{
+										if(mesh.data != undefined && mesh.data.type == 'sceneObject' && mesh.getTotalVertices() == 0)
+										{
+											return 'corrupted-row';
+										}
+									}
+									return '';
+								},
+								preserveScrollOnRefresh: true
+							},
 							columns: 
 							[
 								{
@@ -1026,6 +1045,11 @@
 											getClass: function(value, metadata, record)
 											{
 												if(record.raw.object == undefined || record.raw.object.data == undefined)
+												{
+													return '';
+												}
+												
+												if(record.raw.object.data.type == 'sceneObject' && record.raw.object.getTotalVertices() == 0)
 												{
 													return '';
 												}
@@ -1071,13 +1095,16 @@
 												var store = grid.getStore();
 												var rec = store.getAt(rowIndex);
 												var mesh = rec.raw.object;
-												emmiter.emit('MESH_SET_WIREFRAME', mesh, !mesh.material.wireframe);
+												if(mesh.material != undefined)
+												{
+													emmiter.emit('MESH_SET_WIREFRAME', mesh, !mesh.material.wireframe);
+												}
 												rec.commit();
 											},
 											getClass: function(value, metadata, record)
 											{
 												var mesh = record.raw.object;
-												if(mesh != null && mesh != undefined && mesh.data != undefined && mesh.data.type == 'sceneObject')
+												if(mesh != null && mesh != undefined && mesh.data != undefined && mesh.data.type == 'sceneObject' && mesh.getTotalVertices() > 0)
 												{
 													var material = mesh.data.originalMaterial;
 													if(material == undefined)
@@ -1116,14 +1143,27 @@
 											{
 												if(mesh.data.type == 'sceneObject')
 												{
-													if(mesh.data.originalMaterial == undefined)
+													if(mesh.getTotalVertices() > 0)
 													{
-														mesh.data.originalMaterial = mesh.material.clone();
+														if(mesh.data.originalMaterial == undefined)
+														{
+															if(mesh.material != undefined)
+															{
+																mesh.data.originalMaterial = mesh.material.clone();
+															}
+														}
+													}
+													else
+													{
+														emmiter.emit('SELECT_MESH', null);
+														return;
 													}
 												}
 												emmiter.emit('SELECT_MESH', mesh);
+												return;
 											}
 										}
+										emmiter.emit('SELECT_MESH', null);
 									}
 								}
 							}

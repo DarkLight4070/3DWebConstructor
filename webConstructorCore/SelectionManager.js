@@ -193,16 +193,20 @@ SelectionManager.prototype.setCompoundObjectsMode = function(enable)
 
 SelectionManager.prototype.selectMesh = function(mesh)
 {
-	if(mesh != null)
-	{
-		console.log('Selected mesh name: ' + mesh.name);
-	}
-	if(this.lastPickedMesh != null)
-	{
-		console.log('Last picked name: ' + this.lastPickedMesh.name);
-	}
 	if(mesh == null)
 	{
+		if(this.lastPickedMesh != null)
+		{
+			if(this.lastPickedMesh.data.type == 'sceneObject')
+			{
+				this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+			}
+			else
+			{
+				this.lastPickedMesh.showBoundingBox = false;
+			}
+			this.removeEditControl();
+		}
 		this.lastPickedMesh = null;
 		return;
 	}
@@ -247,6 +251,8 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	{
 		this.sceneManager.camera.setTarget(mesh.getBoundingInfo().boundingBox.centerWorld.clone());
 	}
+	
+	this.lastPickedMesh = mesh;
 	if(mesh.data != undefined && (mesh.data.type == 'sceneObject' || mesh.data.type == 'rooNode'))
 	{
 		if(this.transform != '')
@@ -254,8 +260,6 @@ SelectionManager.prototype.selectMesh = function(mesh)
 			this.createEditControl();
 		}
 	}
-	
-	this.lastPickedMesh = mesh;
 	
 	if(this.compoundObjectsMode && mesh.data.type == 'sceneObject')
 	{
@@ -319,16 +323,19 @@ SelectionManager.prototype.removeEditControl = function()
 
 SelectionManager.prototype.createEditControl = function()
 {
-	console.log('SelectionManager.prototype.createEditControl');
-	var EditControl = org.ssatguru.babylonjs.component.EditControl;
-	this.editControl = new EditControl(this.lastPickedMesh, this.sceneManager.camera, this.sceneManager.canvas, 0.75, true);
-	this.editControl.enableTranslation(3.14/18);
-	this.editControl.enableTranslation(3.14/18);
-	this.editControl.setRotSnapValue(3.14 / 18);
-	this.editControl.setScaleSnapValue(.5);
-	this.editControl.setTransSnapValue(.1);
-	this.bindEditControlActionListeners();
-	this.editControl.setLocal(false);
+	if(this.lastPickedMesh != null)
+	{
+		console.log('SelectionManager.prototype.createEditControl');
+		var EditControl = org.ssatguru.babylonjs.component.EditControl;
+		this.editControl = new EditControl(this.lastPickedMesh, this.sceneManager.camera, this.sceneManager.canvas, 0.75, true);
+		this.editControl.enableTranslation(3.14/18);
+		this.editControl.enableTranslation(3.14/18);
+		this.editControl.setRotSnapValue(3.14 / 18);
+		this.editControl.setScaleSnapValue(.5);
+		this.editControl.setTransSnapValue(.1);
+		this.bindEditControlActionListeners();
+		this.editControl.setLocal(false);
+	}
 };
 
 SelectionManager.prototype.enableSectionMode = function(pressed)
