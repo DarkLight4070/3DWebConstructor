@@ -35,6 +35,7 @@ function SceneManager()
 	emmiter.on('MESH_DISABLE_EDGES', this.disableEdgeMode.bind(this));
 	emmiter.on('MESH_IMPORT_FILES', this.importMeshFiles.bind(this));
 	emmiter.on('MESH_SET_VISIBILITY', this.meshSetVisibility.bind(this));
+	emmiter.on('MESH_REFRESH_ROOT_BBOX', this.computeRootNodeBbox.bind(this));
 }
 
 SceneManager.prototype.instance = function()
@@ -163,6 +164,8 @@ SceneManager.prototype.removeMesh = function(mesh)
 {
 	this.selectionManager.removeEditControl();
 	this.selectionManager.lastPickedMesh = null;
+	var rootNode = mesh.parent;
+	
 	if(mesh.data.type == 'rootNode')
 	{
 		var children = mesh.getChildren();
@@ -172,7 +175,12 @@ SceneManager.prototype.removeMesh = function(mesh)
 			this.scene.removeMesh(child);
 		}
 	}
+	mesh.parent = null;
 	this.scene.removeMesh(mesh);
+	if(rootNode != null)
+	{
+		this.computeRootNodeBbox(rootNode);
+	}
 	emmiter.emit('UI_REMOVE_MESH_FROM_TREE', mesh.name);
 	
 };
@@ -784,4 +792,30 @@ SceneManager.prototype.importMeshFiles = function(event)
 {
 	console.log('SceneManager.prototype.importMeshFiles');
 	this.filesInput.loadFiles(event);
+};
+
+SceneManager.prototype.computeRootNodeBbox = function(rootNode)
+{
+	console.log('SceneManager.prototype.computeRootNodeBbox');
+	var totalBoundingInfo = function(meshes)
+	{
+		var boundingInfo = meshes[0].getBoundingInfo();
+		var min = boundingInfo.minimum;
+		var max = boundingInfo.maximum;
+		for(var i=1; i<meshes.length; i++)
+		{
+			if(meshes[i].getTotalVertices() == 0)
+			{
+				continue;
+			}
+			boundingInfo = meshes[i].getBoundingInfo();
+			min = BABYLON.Vector3.Minimize(min, boundingInfo.minimum);
+			max = BABYLON.Vector3.Maximize(max, boundingInfo.maximum);
+		}
+		return new BABYLON.BoundingInfo(min, max);
+	}
+	
+	var bboxInfo = totalBoundingInfo(rootNode.getChildren());
+	rootNode.setBoundingInfo(bboxInfo);
+	return bboxInfo;
 };
