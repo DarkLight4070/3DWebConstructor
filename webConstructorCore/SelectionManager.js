@@ -8,9 +8,8 @@ function SelectionManager(__sceneManager)
 	this.wireframe = false;
 	this.editControl = null;
 	this.vertexSelectionMode = 0;
-	this.objectSelectionMode = 1;
 	this.transform = '';
-	this.selectionMode = this.objectSelectionMode;
+	this.selectionMode = 'MATERIAL';
 	this.compoundObjectsMode = false;
 	this.coFirst = null;
 	this.coSecond = null;
@@ -23,6 +22,7 @@ function SelectionManager(__sceneManager)
 	emmiter.on('ENABLE_CO_MODE', this.setCompoundObjectsMode.bind(this));
 	emmiter.on('SELECT_MESH', this.selectMesh.bind(this));
 	emmiter.on('ENABLE_SECTION_MODE', this.enableSectionMode.bind(this));
+	emmiter.on('SET_SELECTION_MODE', this.setSelectionMode.bind(this));
 }
 
 SelectionManager.prototype.instance = function()
@@ -57,13 +57,20 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 		emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', null);
 		return;
 	}
-	if(this.lastClickX == evt.clientX && this.lastClickY == evt.clientY && this.objectSelectionMode == 1)
+	if(this.lastClickX == evt.clientX && this.lastClickY == evt.clientY)
 	{
 		if(this.lastPickedMesh != null)
 		{
 			if(this.lastPickedMesh.data.type == 'sceneObject')
 			{
-				this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+				if(this.selectionMode == 'MATERIAL')
+				{
+					this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+				}
+				else if(this.selectionMode == 'BBOX')
+				{
+					this.lastPickedMesh.showBoundingBox = false;
+				}
 			}
 			else
 			{
@@ -77,7 +84,14 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			{
 				if(this.lastPickedMesh.data.type == 'sceneObject')
 				{
-					this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+					if(this.selectionMode == 'MATERIAL')
+					{
+						this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+					}
+					else if(this.selectionMode == 'BBOX')
+					{
+						this.lastPickedMesh.showBoundingBox = false;
+					}
 				}
 				else
 				{
@@ -96,7 +110,14 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			this.lastPickedMesh = pickResult.pickedMesh;
 			if(this.lastPickedMesh.data.type == 'sceneObject')
 			{
-				pickResult.pickedMesh.material = pickResult.pickedMesh.data.selectionMaterial;
+				if(this.selectionMode == 'MATERIAL')
+				{
+					pickResult.pickedMesh.material = pickResult.pickedMesh.data.selectionMaterial;
+				}
+				else if(this.selectionMode == 'BBOX')
+				{
+					pickResult.pickedMesh.showBoundingBox = true;
+				}
 			}
 			else
 			{
@@ -199,7 +220,14 @@ SelectionManager.prototype.selectMesh = function(mesh)
 		{
 			if(this.lastPickedMesh.data.type == 'sceneObject')
 			{
-				this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+				if(this.selectionMode == 'MATERIAL')
+				{
+					this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+				} 
+				else if(this.selectionMode == 'BBOX')
+				{
+					this.lastPickedMesh.showBoundingBox = false;
+				}
 			}
 			else
 			{
@@ -229,7 +257,14 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	{
 		if(this.lastPickedMesh.data.type == 'sceneObject')
 		{
-			this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+			if(this.selectionMode == 'MATERIAL')
+			{
+				this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+			}
+			else if(this.selectionMode == 'BBOX')
+			{
+				this.lastPickedMesh.showBoundingBox = false;
+			}
 		}
 		else
 		{
@@ -240,7 +275,14 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	
 	if(mesh.data.type == 'sceneObject')
 	{
-		mesh.material = mesh.data.selectionMaterial;
+		if(this.selectionMode == 'MATERIAL')
+		{
+			mesh.material = mesh.data.selectionMaterial;
+		}
+		else if(this.selectionMode == 'BBOX')
+		{
+			mesh.showBoundingBox = true;
+		}
 	}
 	else
 	{
@@ -335,6 +377,29 @@ SelectionManager.prototype.createEditControl = function()
 		this.editControl.setTransSnapValue(.1);
 		this.bindEditControlActionListeners();
 		this.editControl.setLocal(false);
+	}
+};
+
+SelectionManager.prototype.setSelectionMode = function(selectionMode)
+{
+	console.log('SelectionManager.prototype.setSelectionMode');
+	if(selectionMode == this.selectionMode)
+	{
+		return;
+	}
+	this.selectionMode = selectionMode;
+	if(this.lastPickedMesh != null && this.lastPickedMesh.data.type == 'sceneObject')
+	{
+		if(this.selectionMode == 'MATERIAL')
+		{
+			this.lastPickedMesh.showBoundingBox = false;
+			this.lastPickedMesh.material = this.lastPickedMesh.data.selectionMaterial;
+		}
+		else if(this.selectionMode == 'BBOX')
+		{
+			this.lastPickedMesh.material = this.lastPickedMesh.data.originalMaterial;
+			this.lastPickedMesh.showBoundingBox = true;
+		}
 	}
 };
 
@@ -433,4 +498,4 @@ SelectionManager.prototype.enableSectionMode = function(pressed)
 	{
 		this.lastPickedMesh.material = this.lastPickedMesh.data.selectionMaterial;
 	}
-}
+};

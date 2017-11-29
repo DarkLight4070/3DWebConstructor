@@ -867,7 +867,7 @@
 								},
 								{
 									xtype: 'buttongroup',
-									columns: 2,
+									columns: 3,
 									defaults: 
 									{
 										scale: 'small'
@@ -883,6 +883,37 @@
 											{
 												sceneManager.targetSelection = state;	
 											}
+										},
+										{
+											xtype: 'button',
+											tooltip: 'Selection Mode',
+											icon: 'icons/selection_mode.png',
+											menu: 
+											[
+												{
+													xtype: 'menucheckitem',
+													group: 'selectionGroup',
+													text: 'Material',
+													name: 'selection',
+													checked: true,
+													icon: 'icons/solid.png',
+													handler: function()
+													{
+														emmiter.emit('SET_SELECTION_MODE', 'MATERIAL');
+													}
+												},
+												{
+													xtype: 'menucheckitem',
+													group: 'selectionGroup',
+													text: 'Bbox',
+													name: 'selection',
+													icon: 'icons/wireframe.png',
+													handler: function()
+													{
+														emmiter.emit('SET_SELECTION_MODE', 'BBOX');
+													}
+												}
+											]
 										},
 										{
 											xtype: 'button',
