@@ -798,8 +798,12 @@ SceneManager.prototype.mirrorMesh = function(axe)
 	console.log('SceneManager.prototype.mirrorMesh');
 	var clone = this.cloneMesh();
 	clone.edgesWidth = 0;
-	clone.material.backFaceCulling = false;
-	clone.data.originalMaterial.backFaceCulling = false;
+	if(clone.data.type == 'sceneObject')
+	{
+		clone.material.backFaceCulling = false;
+		clone.data.originalMaterial.backFaceCulling = false;
+	}
+	
 	if(axe == 'x')
 	{
 		clone.scaling.x = -clone.scaling.x;
