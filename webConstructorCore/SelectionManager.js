@@ -74,7 +74,8 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			}
 			else
 			{
-				this.lastPickedMesh.showBoundingBox = false;
+				//this.lastPickedMesh.showBoundingBox = false;
+				this.deselecRootNode(this.lastPickedMesh);
 			}
 		}
 
@@ -95,7 +96,8 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 				}
 				else
 				{
-					this.lastPickedMesh.showBoundingBox = false;
+					//this.lastPickedMesh.showBoundingBox = false;
+					this.deselecRootNode(this.lastPickedMesh);
 				}
 				this.removeEditControl();
 			}
@@ -121,7 +123,8 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			}
 			else
 			{
-				this.lastPickedMesh.showBoundingBox = true;
+				//this.lastPickedMesh.showBoundingBox = true;
+				this.selecRootNode(this.lastPickedMesh);
 			}
 			
 			if(this.lastPickedMesh.data != undefined && this.lastPickedMesh.data.type == 'sceneObject')
@@ -231,7 +234,8 @@ SelectionManager.prototype.selectMesh = function(mesh)
 			}
 			else
 			{
-				this.lastPickedMesh.showBoundingBox = false;
+				//this.lastPickedMesh.showBoundingBox = false;
+				this.deselecRootNode(this.lastPickedMesh);
 			}
 			this.removeEditControl();
 		}
@@ -268,7 +272,8 @@ SelectionManager.prototype.selectMesh = function(mesh)
 		}
 		else
 		{
-			this.lastPickedMesh.showBoundingBox = false;
+			//this.lastPickedMesh.showBoundingBox = false;
+			this.deselecRootNode(this.lastPickedMesh);
 		}
 		this.removeEditControl();
 	}
@@ -286,7 +291,13 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	}
 	else
 	{
-		mesh.showBoundingBox = true;
+		//this.removeEditControl();
+		//mesh.computeWorldMatrix(true);
+		//mesh.refreshBoundingInfo();
+		//this.sceneManager.computeRootNodeBbox(mesh);
+		//mesh.showBoundingBox = true;
+		//this.createEditControl();
+		this.selecRootNode(mesh);
 	}
 	
 	if(this.sceneManager.targetSelection == true)
@@ -339,6 +350,14 @@ SelectionManager.prototype.addEditControlActionsEndListener = function(action)
 	if(this.editControl.mesh != null)
 	{
 		emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.editControl.mesh);
+		if(this.editControl.mesh.parent != null)
+		{
+			this.sceneManager.computeRootNodeBbox(this.editControl.mesh.parent);
+		}
+		if(this.editControl.mesh.data.type == 'rootNode')
+		{
+			emmiter.emit('MESH_REFRESH_ROOT_BBOX', this.editControl.mesh);
+		}
 	}
 };
 
@@ -497,5 +516,46 @@ SelectionManager.prototype.enableSectionMode = function(pressed)
 	else
 	{
 		this.lastPickedMesh.material = this.lastPickedMesh.data.selectionMaterial;
+	}
+};
+
+SelectionManager.prototype.selecRootNode = function(rootNode)
+{
+	if(rootNode.data.type != 'rootNode')
+	{
+		return;
+	}
+	var meshes = rootNode.getChildren();
+	for(var i=0; i<meshes.length; i++)
+	{
+		var mesh = meshes[i];
+		if(mesh.getTotalVertices() == 0)
+		{
+			continue;
+		}
+		if(mesh.data.originalMaterial == undefined)
+		{
+			mesh.data.originalMaterial = mesh.material.clone();
+			mesh.data.originalMaterial.backFaceCulling = false;
+		}
+		mesh.material = mesh.data.selectionMaterial;
+	}
+};
+
+SelectionManager.prototype.deselecRootNode = function(rootNode)
+{
+	if(rootNode.data.type != 'rootNode')
+	{
+		return;
+	}
+	var meshes = rootNode.getChildren();
+	for(var i=0; i<meshes.length; i++)
+	{
+		var mesh = meshes[i];
+		if(mesh.getTotalVertices() == 0)
+		{
+			continue;
+		}
+		mesh.material = mesh.data.originalMaterial;
 	}
 };

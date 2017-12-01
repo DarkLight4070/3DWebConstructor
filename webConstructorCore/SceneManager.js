@@ -195,7 +195,7 @@ SceneManager.prototype.cloneMesh = function()
 	if(mesh.data.type == 'rootNode')
 	{
 		var meshes = mesh.getChildren();
-		var root = new BABYLON.AbstractMesh('Clone-Prefab', this.scene);
+		var root = new BABYLON.Mesh('Clone-Prefab', this.scene);
 		root.data = {type: 'rootNode', uid: this.getNextUid()};
 		root.scaling = mesh.scaling.clone();
 		root.rotation = mesh.rotation.clone();
@@ -206,6 +206,10 @@ SceneManager.prototype.cloneMesh = function()
 		for(var i=0; i<meshes.length; i++)
 		{
 			var child = meshes[i];
+			if(child.getTotalVertices() == 0)
+			{
+				continue;
+			}
 			var clone = child.clone(child.name);
 			clone.computeWorldMatrix(true);
 			clone.setPivotPoint(clone.getBoundingInfo().boundingBox.center);
@@ -427,15 +431,23 @@ SceneManager.prototype.applyTransformationToSelection = function(x, y, z, xr, yr
 		this.selectionManager.lastPickedMesh.scaling.y = sy;
 		this.selectionManager.lastPickedMesh.scaling.z = sz;
 	}
+	var rootNode = this.selectionManager.lastPickedMesh.parent;
+	if(rootNode != null)
+	{
+		this.computeRootNodeBbox(rootNode);
+	}
 };
 
 SceneManager.prototype.enableEdgeMode = function(mesh)
 {
 	mesh.enableEdgesRendering(.9999999999);
+	
+	/*
 	var vectors = mesh.getBoundingInfo().boundingBox.vectors; 
 	var width = Number(vectors[1].x - vectors[0].x);
 	var heigh = Number(vectors[1].y - vectors[0].y);
 	var depth = Number(vectors[1].z - vectors[0].z);
+	
 	if((width + heigh + depth) / 3> 10)
 	{
 		mesh.edgesWidth = 5.0;
@@ -448,7 +460,8 @@ SceneManager.prototype.enableEdgeMode = function(mesh)
 	{
 		mesh.edgesWidth = 0.5;
 	}
-	
+	*/
+	mesh.edgesWidth = 3;
 	mesh.edgesColor = new BABYLON.Color4(1, 1, 1, 1);
 };
 
@@ -501,12 +514,17 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 	var camera = this.camera;
 	var meshes = [];
 	
-	var root = new BABYLON.AbstractMesh('Prefab', scene);
+	var root = new BABYLON.Mesh('Prefab', scene);
 	root.data = {type: 'rootNode', uid: this.getNextUid()};
 	for(var i=0; i<loadedMeshes.length; i++)
 	{
 		var mesh = loadedMeshes[i];
 		console.log('Total vertices count: ' + mesh.getTotalVertices());
+		
+		if(mesh.getTotalVertices() == 0)
+		{
+			continue;
+		}
 		
 		if(mesh.data != undefined)
 		{
@@ -522,21 +540,28 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 	
 	var totalBoundingInfo = function(meshes)
 	{
+		meshes[0].computeWorldMatrix(true);
+		meshes[0].refreshBoundingInfo();
+
 		var boundingInfo = meshes[0].getBoundingInfo();
-		var min = boundingInfo.minimum;
-		var max = boundingInfo.maximum;
+		var min = boundingInfo.boundingBox.minimumWorld;
+		var max = boundingInfo.boundingBox.maximumWorld;
 		for(var i=1; i<meshes.length; i++)
 		{
 			if(meshes[i].getTotalVertices() == 0)
 			{
 				continue;
 			}
+			meshes[i].computeWorldMatrix(true);
+			meshes[i].refreshBoundingInfo();
 			boundingInfo = meshes[i].getBoundingInfo();
-			min = BABYLON.Vector3.Minimize(min, boundingInfo.minimum);
-			max = BABYLON.Vector3.Maximize(max, boundingInfo.maximum);
+			min = BABYLON.Vector3.Minimize(min, boundingInfo.boundingBox.minimumWorld);
+			max = BABYLON.Vector3.Maximize(max, boundingInfo.boundingBox.maximumWorld);
 		}
+		console.log('Min: ' + min);
+		console.log('max: ' + max);
 		return new BABYLON.BoundingInfo(min, max);
-	}
+	};
 	
 	var bboxInfo = totalBoundingInfo(root.getChildren());
 	var vectors = bboxInfo.boundingBox.vectors; 
@@ -546,6 +571,7 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 	root.setBoundingInfo(bboxInfo);
 	root.position = new BABYLON.Vector3(0, 0, 0);
 	root.setPivotPoint(new BABYLON.Vector3(bboxInfo.boundingBox.center.x / 2 , bboxInfo.boundingBox.center.y / 2, bboxInfo.boundingBox.center.z / 2));
+	/*
 	var max = width;
 	if(max > heigh)
 	{
@@ -555,9 +581,9 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 	{
 		max = depth
 	}
-	
-	camera.radius = 2 * max;
 	camera.setTarget(new BABYLON.Vector3(bboxInfo.boundingBox.center.x / 2, bboxInfo.boundingBox.center.y / 2, bboxInfo.boundingBox.center.z / 2));
+	*/
+	this.setView('FRONT');
 	emmiter.emit('UI_ADD_NODE', root);
 };
 
@@ -575,7 +601,7 @@ SceneManager.prototype.loadMeshFile = function(path, objFileName)
 	
 	meshTask.onSuccess = function (task)
 	{
-		var root = new BABYLON.AbstractMesh('Prefab', scene);
+		var root = new BABYLON.Mesh('Prefab', scene);
 		console.log('onSuccess');
 		console.log('Loaded meshes number: ' + task.loadedMeshes.length);
 		var loadedMeshes = task.loadedMeshes;
@@ -797,25 +823,35 @@ SceneManager.prototype.importMeshFiles = function(event)
 SceneManager.prototype.computeRootNodeBbox = function(rootNode)
 {
 	console.log('SceneManager.prototype.computeRootNodeBbox');
-	var totalBoundingInfo = function(meshes)
+	/*
+	var meshes = rootNode.getChildren();
+	meshes[0].computeWorldMatrix(true);
+	meshes[0].refreshBoundingInfo();
+	var boundingInfo = meshes[0].getBoundingInfo();
+	var min = boundingInfo.boundingBox.minimumWorld;
+	var max = boundingInfo.boundingBox.maximumWorld;
+	for(var i=1; i<meshes.length; i++)
 	{
-		var boundingInfo = meshes[0].getBoundingInfo();
-		var min = boundingInfo.minimum;
-		var max = boundingInfo.maximum;
-		for(var i=1; i<meshes.length; i++)
+		if(meshes[i].getTotalVertices() == 0)
 		{
-			if(meshes[i].getTotalVertices() == 0)
-			{
-				continue;
-			}
-			boundingInfo = meshes[i].getBoundingInfo();
-			min = BABYLON.Vector3.Minimize(min, boundingInfo.minimum);
-			max = BABYLON.Vector3.Maximize(max, boundingInfo.maximum);
+			continue;
 		}
-		return new BABYLON.BoundingInfo(min, max);
+		meshes[i].computeWorldMatrix(true);
+		meshes[i].refreshBoundingInfo();
+		boundingInfo = meshes[i].getBoundingInfo();
+		min = BABYLON.Vector3.Minimize(min, boundingInfo.boundingBox.minimumWorld);
+		max = BABYLON.Vector3.Maximize(max, boundingInfo.boundingBox.maximumWorld);
 	}
+	console.log('Min: ' + min);
+	console.log('max: ' + max);
 	
-	var bboxInfo = totalBoundingInfo(rootNode.getChildren());
+	var bboxInfo = new BABYLON.BoundingInfo(min, max);
+	console.log('minimum: ' + bboxInfo.minimum);
+	console.log('maximum: ' + bboxInfo.maximum);
+	
+	rootNode.computeWorldMatrix(true);
+	rootNode.refreshBoundingInfo();
 	rootNode.setBoundingInfo(bboxInfo);
 	return bboxInfo;
+	*/
 };

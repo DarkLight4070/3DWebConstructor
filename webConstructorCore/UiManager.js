@@ -42,13 +42,14 @@ UiManager.prototype.updateUiSelection = function(uid)
 		return;
 	}
 	
-	var result = null;
-	
 	function find(node, uid)
 	{
 		if(node.raw.uid == uid)
 		{
-			result = node;
+			node.parentNode.expand(false, function()
+			{
+				mainTree.getSelectionModel().select(node);
+			});
 		}
 		else
 		{
@@ -57,24 +58,14 @@ UiManager.prototype.updateUiSelection = function(uid)
 			{
 				for(var i=0; i<children.length; i++)
 				{
-					arguments.callee(children[i], uid, result);
+					arguments.callee(children[i], uid);
 				}
 			}
 		}
 	};
 	
 	var rootNode = mainTree.getRootNode();
-	//var node = rootNode.findChild('object', uid, true);
 	find(rootNode, uid);
-	if(result != null)
-	{
-		console.log('Mesh found in tree');
-		mainTree.getSelectionModel().select(result);
-	}
-	else
-	{
-		console.log('Mesh not found in tree');
-	}
 }
 
 UiManager.prototype.createBoxPrefabUi = function(__container)
@@ -731,6 +722,19 @@ UiManager.prototype.createSceneContextMenu = function(x, y)
 				handler: function()
 				{
 					emmiter.emit('MESH_DISABLE_EDGES', sceneManager.selectionManager.lastPickedMesh);
+				}
+			},
+			{
+				xtype: 'menuseparator'
+			},
+			{
+				text: 'Select Parent',
+				disabled: sceneManager.selectionManager.lastPickedMesh == null || sceneManager.selectionManager.lastPickedMesh.parent == null,
+				handler: function()
+				{
+					var parent = sceneManager.selectionManager.lastPickedMesh.parent;
+					emmiter.emit('SELECT_MESH', parent);
+					emmiter.emit('UI_UPDATE_SELECTION', parent.data.uid);
 				}
 			},
 			{
