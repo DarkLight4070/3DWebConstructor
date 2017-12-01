@@ -272,6 +272,11 @@
 													text: 'Update',
 													handler: function()
 													{
+														if(sceneManager.selectionManager.lastPickedMesh == null)
+														{
+															Ext.MessageBox.alert('Update Prefab', 'Please select an object !');
+															return;
+														}
 														var x = Ext.getCmp('pXId').getValue();
 														var y = Ext.getCmp('pYId').getValue();
 														var z = Ext.getCmp('pZId').getValue();
@@ -320,6 +325,7 @@
 															xtype: 'combo',
 															fieldLabel: 'Type',
 															store: prefabsStore,
+															id: 'prefabTypesId',
 															queryMode: 'local',
 															displayField: 'name',
 															valueField: 'id',
@@ -452,6 +458,11 @@
 													text: 'Create',
 													handler: function()
 													{
+														if(Ext.getCmp('prefabTypesId').getValue() == null)
+														{
+															Ext.MessageBox.alert('Create Prefab', 'Please select a type!');
+															return;
+														}
 														prefabCreationFunction();
 														emmiter.emit('UI_RESET_PREFAB_UI');
 													}
