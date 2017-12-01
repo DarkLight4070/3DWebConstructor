@@ -232,7 +232,7 @@ SceneManager.prototype.cloneMesh = function()
 		clone.material = new BABYLON.StandardMaterial("mat", this.scene);
 		clone.material = mesh.data.originalMaterial.clone('OMaterial');
 		clone.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: clone.material, selectionMaterial: this.selectionMaterial.clone()};
-		//this.enableEdgeMode(clone);
+		clone.parent = null;
 		emmiter.emit('UI_ADD_MESH_TO_TREE', clone);
 	}
 	
