@@ -834,20 +834,19 @@ SceneManager.prototype.changeMaterial = function(mesh, ambient, diffuse, specula
 	}
 	if(ambient != null)
 	{
-		mesh.data.originalMaterial.ambientColor = new BABYLON.Color3(ambient[0] / 255, ambient[1] / 255, ambient[2] / 255);
+		mesh.data.originalMaterial.ambientColor = new BABYLON.Color3(ambient[0], ambient[1], ambient[2]);
 	}
 	if(diffuse != null)
 	{
-		mesh.data.originalMaterial.diffuseColor = new BABYLON.Color3(diffuse[0] / 255, diffuse[1] / 255, diffuse[2] / 255);
-		mesh.data.originalMaterial.alpha = diffuse[3];
+		mesh.data.originalMaterial.diffuseColor = new BABYLON.Color3(diffuse[0], diffuse[1], diffuse[2]);
 	}
 	if(specular != null)
 	{
-		mesh.data.originalMaterial.specularColor  = new BABYLON.Color3(specular[0] / 255, specular[1] / 255, specular[2] / 255);
+		mesh.data.originalMaterial.specularColor  = new BABYLON.Color3(specular[0], specular[1], specular[2]);
 	}
 	if(emmisive != null)
 	{
-		mesh.data.originalMaterial.emissiveColor  = new BABYLON.Color3(emmisive[0] / 255, emmisive[1] / 255, emmisive[2] / 255);
+		mesh.data.originalMaterial.emissiveColor  = new BABYLON.Color3(emmisive[0], emmisive[1], emmisive[2]);
 	}
 };
 

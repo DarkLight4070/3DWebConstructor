@@ -157,7 +157,7 @@
 											{
 												var value = $("#paletteId").spectrum("get");
 												var rgb = value.toRgb();
-												var colorText = rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', ' + rgb.a;
+												var colorText = rgb.r / 255 + ', ' + rgb.g / 255 + ', ' + rgb.b / 255
 												cmp.setValue(colorText);
 												//cmp.setFieldStyle('background-color: rgba(' + colorText + '); background-image:none');
 												Ext.getCmp('colorPaletteWindowId').destroy();
@@ -430,7 +430,7 @@
 															if(text != null)
 															{
 																color = text.split(', ');
-																if(color.length != 4)
+																if(color.length != 3)
 																{
 																	color = null;
 																}

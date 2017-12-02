@@ -22,6 +22,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_INIT_PREFAB_POS_UI_FROM_SELECTION', this.initPrefabPositionUiFromSelection.bind(this));
 	emmiter.on('UI_ADD_NODE', this.addNodeToTree.bind(this));
 	emmiter.on('UI_SET_MESH_VISIBILITY', this.uiSetMeshVibility.bind(this));
+	emmiter.on('UI_UPDATE_MATERIAL_VIEW', this.updateMaterialView.bind(this));
 }
 
 UiManager.prototype.UI_CreateNumberField = function(__label, __id, __defaultValue)
@@ -420,6 +421,11 @@ UiManager.prototype.updateMeshPropertiesUiFromSelection = function(mesh)
 		Ext.getCmp('pSXId').setValue(mesh.scaling.x);
 		Ext.getCmp('pSYId').setValue(mesh.scaling.y);
 		Ext.getCmp('pSZId').setValue(mesh.scaling.z);
+		
+		if(mesh.data.type == 'sceneObject')
+		{
+			this.updateMaterialView(mesh);
+		}
 	}
 };
 
@@ -838,4 +844,30 @@ UiManager.prototype.uiSetMeshVibility = function(mesh, value)
 		this.refreshTreeUi();
 	}.bind(this);
 	emmiter.emit('MESH_SET_VISIBILITY', mesh, value, callback);
+};
+
+UiManager.prototype.updateMaterialView = function(mesh)
+{
+	console.log('UiManager.prototype.uiSetMeshVibility');
+	var ambient = mesh.data.originalMaterial.ambientColor;
+	var diffuse = mesh.data.originalMaterial.diffuseColor;
+	var specular = mesh.data.originalMaterial.specularColor;
+	var emmisive = mesh.data.originalMaterial.emissiveColor;
+	
+	if(ambient != undefined)
+	{
+		Ext.getCmp('ambientColorId').setValue(ambient.r + ', ' + ambient.g + ', ' + ambient.b);
+	}
+	if(diffuse != undefined)
+	{
+		Ext.getCmp('diffuseColorId').setValue(diffuse.r + ', ' + diffuse.g + ', ' + diffuse.b);
+	}
+	if(specular != undefined)
+	{
+		Ext.getCmp('specularColorId').setValue(specular.r + ', ' + specular.g + ', ' + specular.b);
+	}
+	if(emmisive != undefined)
+	{
+		Ext.getCmp('emmisiveColorId').setValue(emmisive.r + ', ' + emmisive.g + ', ' + emmisive.b);
+	}
 };
