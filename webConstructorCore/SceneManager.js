@@ -36,6 +36,7 @@ function SceneManager()
 	emmiter.on('MESH_IMPORT_FILES', this.importMeshFiles.bind(this));
 	emmiter.on('MESH_SET_VISIBILITY', this.meshSetVisibility.bind(this));
 	emmiter.on('MESH_REFRESH_ROOT_BBOX', this.computeRootNodeBbox.bind(this));
+	emmiter.on('MESH_CHANGE_METERIAL', this.changeMaterial.bind(this));
 }
 
 SceneManager.prototype.instance = function()
@@ -823,6 +824,33 @@ SceneManager.prototype.importMeshFiles = function(event)
 	console.log('SceneManager.prototype.importMeshFiles');
 	this.filesInput.loadFiles(event);
 };
+
+SceneManager.prototype.changeMaterial = function(mesh, ambient, diffuse, specular, emmisive)
+{
+	console.log('SceneManager.prototype.changeMaterial');
+	if(mesh == null)
+	{
+		return;
+	}
+	if(ambient != null)
+	{
+		mesh.data.originalMaterial.ambientColor = new BABYLON.Color3(ambient[0] / 255, ambient[1] / 255, ambient[2] / 255);
+	}
+	if(diffuse != null)
+	{
+		mesh.data.originalMaterial.diffuseColor = new BABYLON.Color3(diffuse[0] / 255, diffuse[1] / 255, diffuse[2] / 255);
+		mesh.data.originalMaterial.alpha = diffuse[3];
+	}
+	if(specular != null)
+	{
+		mesh.data.originalMaterial.specularColor  = new BABYLON.Color3(specular[0] / 255, specular[1] / 255, specular[2] / 255);
+	}
+	if(emmisive != null)
+	{
+		mesh.data.originalMaterial.emissiveColor  = new BABYLON.Color3(emmisive[0] / 255, emmisive[1] / 255, emmisive[2] / 255);
+	}
+};
+
 
 SceneManager.prototype.computeRootNodeBbox = function(rootNode)
 {

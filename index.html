@@ -1,6 +1,11 @@
 <html>
 	<head>
 	    <title>3D Web Constructor</title>
+		
+		<link rel="stylesheet" type="text/css" href="ux/spectrum.css">
+		<script type="text/javascript" src="ux/jquery-1.9.1.js"></script>
+		<script type="text/javascript" src="ux/spectrum.js"></script>
+		
 	    <link rel="stylesheet" type="text/css" href="extjs/resources/css/ext-all.css">
     	<script type="text/javascript" src="extjs/ext-all.js"></script>
 
@@ -103,6 +108,89 @@
 					Ext.getCmp('importDialogId').close();
 				}
 			});
+			
+			function createColorPicker(__label, __id)
+			{
+				return Ext.create('Ext.form.field.Text',
+				{
+					fieldLabel: __label,
+					id: __id,
+					handleMouseEvents: true,
+					listeners: 
+					{
+						'render': function(cmp) 
+						{
+							var pickColor = function()
+							{
+								Ext.create('Ext.window.Window',
+								{
+									title: 'Color Palette',
+									
+									modal: true,
+									closable: false,
+									id: 'colorPaletteWindowId',
+									resizable: false,
+									width: 200,
+									height: 240,
+									layout:'fit',
+									bodyPadding: 5,
+									items: 
+									[
+										{
+											xtype: 'form',
+											id: 'paletteId'
+										}
+									],
+									buttons: 
+									[
+										{
+											text: 'Cancel',
+											handler: function()
+											{
+												Ext.getCmp('colorPaletteWindowId').destroy();
+												$("#paletteId").spectrum("destroy");
+											}
+										},
+										{
+											text: 'Apply',
+											handler: function()
+											{
+												var value = $("#paletteId").spectrum("get");
+												var rgb = value.toRgb();
+												var colorText = rgb.r + ', ' + rgb.g + ', ' + rgb.b + ', ' + rgb.a;
+												cmp.setValue(colorText);
+												//cmp.setFieldStyle('background-color: rgba(' + colorText + '); background-image:none');
+												Ext.getCmp('colorPaletteWindowId').destroy();
+												$("#paletteId").spectrum("destroy");
+											}
+										}
+									]
+								}).show();
+								$("#paletteId").spectrum(
+								{
+									color: "#ECC",
+									flat: true,
+									showAlpha: true,
+									clickoutFiresChange: false,
+									showButtons: false,
+									showInput: false,
+									className: "full-spectrum",
+									showInitial: false,
+									showPalette: false,
+									showSelectionPalette: true,
+									maxPaletteSize: 10,
+									preferredFormat: "hex",
+									localStorageKey: "spectrum.demo",
+									palette: 
+									[
+									]
+								});
+							};
+							cmp.getEl().on('dblclick', pickColor);
+						}
+					}
+				});
+			}
 			
 			Ext.onReady(function()
 			{
@@ -294,7 +382,73 @@
 											]
 										}
 									]
-								}, 
+								},
+								{
+									title: 'Material',
+									layout: 'fit',
+									height: '100%',
+									items: 
+									[
+										{
+											xtype: 'form',
+											bodyPadding: 5,
+											layout: 'anchor',
+											id: 'materialPropsFormId',
+											defaults: 
+											{
+												anchor: '100%'
+											},
+											items: 
+											[
+												{
+													xtype:'fieldset',
+													title: 'Colors',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													layout: 'anchor',
+													items :
+													[
+														createColorPicker('Ambient', 'ambientColorId'),
+														createColorPicker('Diffuse', 'diffuseColorId'),
+														createColorPicker('Specular', 'specularColorId'),
+														createColorPicker('Emmisive', 'emmisiveColorId')
+													]
+												}
+											],
+											buttons: 
+											[
+												{
+													text: 'Update',
+													handler: function()
+													{
+														var extractColorValue = function(id)
+														{
+															var text = Ext.getCmp(id).getValue();
+															var color = null;
+															if(text != null)
+															{
+																color = text.split(', ');
+																if(color.length != 4)
+																{
+																	color = null;
+																}
+															}
+															return color;
+														};
+														var ambientColor = extractColorValue('ambientColorId');
+														var diffuseColor = extractColorValue('diffuseColorId');
+														var specularColor = extractColorValue('specularColorId');
+														var emmisiveColor = extractColorValue('emmisiveColorId');
+														
+														emmiter.emit('MESH_CHANGE_METERIAL', sceneManager.selectionManager.lastPickedMesh, ambientColor, diffuseColor, specularColor, emmisiveColor);
+													}
+												}
+											]
+										}
+									]
+								},
 								{
 									title: 'Prefabs Factory',
 									layout: 'fit',
@@ -1289,6 +1443,7 @@
 				sceneManager.create3DScene();
 				uiManager = new UiManager(sceneManager);
 				uiManager.updateRootTreeUi();
+				
 			});
 		</script>
 	</body>
