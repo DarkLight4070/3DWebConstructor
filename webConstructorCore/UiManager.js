@@ -421,11 +421,6 @@ UiManager.prototype.updateMeshPropertiesUiFromSelection = function(mesh)
 		Ext.getCmp('pSXId').setValue(mesh.scaling.x);
 		Ext.getCmp('pSYId').setValue(mesh.scaling.y);
 		Ext.getCmp('pSZId').setValue(mesh.scaling.z);
-		
-		if(mesh.data.type == 'sceneObject')
-		{
-			this.updateMaterialView(mesh);
-		}
 	}
 };
 
@@ -848,16 +843,29 @@ UiManager.prototype.uiSetMeshVibility = function(mesh, value)
 
 UiManager.prototype.updateMaterialView = function(mesh)
 {
+	if(mesh == null || mesh.data.type != 'sceneObject')
+	{
+		Ext.getCmp('ambientColorId').reset();
+		Ext.getCmp('diffuseColorId').reset();
+		Ext.getCmp('specularColorId').reset();
+		Ext.getCmp('emmisiveColorId').reset();
+		Ext.getCmp('specularPowerId').reset();
+		Ext.getCmp('roughnessId').reset();
+		return;
+	}
 	console.log('UiManager.prototype.uiSetMeshVibility');
 	var ambient = mesh.data.originalMaterial.ambientColor;
 	var diffuse = mesh.data.originalMaterial.diffuseColor;
 	var specular = mesh.data.originalMaterial.specularColor;
 	var emmisive = mesh.data.originalMaterial.emissiveColor;
+	var specularPower = mesh.data.originalMaterial.specularPower;
+	var roughness = mesh.data.originalMaterial.roughness;
 	
 	if(ambient != undefined)
 	{
 		Ext.getCmp('ambientColorId').setValue(ambient.r + ', ' + ambient.g + ', ' + ambient.b);
 	}
+
 	if(diffuse != undefined)
 	{
 		Ext.getCmp('diffuseColorId').setValue(diffuse.r + ', ' + diffuse.g + ', ' + diffuse.b);
@@ -870,4 +878,6 @@ UiManager.prototype.updateMaterialView = function(mesh)
 	{
 		Ext.getCmp('emmisiveColorId').setValue(emmisive.r + ', ' + emmisive.g + ', ' + emmisive.b);
 	}
+	Ext.getCmp('specularPowerId').setValue(specularPower);
+	Ext.getCmp('roughnessId').setValue(roughness);
 };

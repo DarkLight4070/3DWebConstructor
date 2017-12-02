@@ -55,6 +55,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 	if(pickResult == null)
 	{
 		emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', null);
+		emmiter.emit('UI_UPDATE_MATERIAL_VIEW', null);
 		return;
 	}
 	if(this.lastClickX == evt.clientX && this.lastClickY == evt.clientY)
@@ -144,6 +145,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 				this.sceneManager.camera.setTarget(this.lastPickedMesh.getBoundingInfo().boundingBox.centerWorld.clone());
 			}
 			emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', this.lastPickedMesh);
+			emmiter.emit('UI_UPDATE_MATERIAL_VIEW', this.lastPickedMesh);
 		}
 		else
 		{
@@ -151,6 +153,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			this.lastPickedMesh = null;
 			this.removeEditControl();
 			emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', null);
+			emmiter.emit('UI_UPDATE_MATERIAL_VIEW', null);
 		}
 	}
 };
@@ -249,6 +252,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	if(mesh.name == 'Grid')
 	{
 		emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', null);
+		emmiter.emit('UI_UPDATE_MATERIAL_VIEW', null);
 		return;
 	}
 	
@@ -331,6 +335,7 @@ SelectionManager.prototype.selectMesh = function(mesh)
 	}
 	
 	emmiter.emit('UI_UPDATE_MESH_PROPERTIES_FROM_SELECTION', mesh);
+	emmiter.emit('UI_UPDATE_MATERIAL_VIEW', mesh);
 };
 
 SelectionManager.prototype.addEditControlActionsOnListener = function(action)
