@@ -111,12 +111,13 @@
 				}
 			});
 			
-			function createColorPicker(__label, __id)
+			function createColorPicker(__label, __id, __value)
 			{
 				return Ext.create('Ext.form.field.Text',
 				{
 					fieldLabel: __label,
 					id: __id,
+					value: __value.r + ', ' + __value.g + ', ' + __value.b,
 					handleMouseEvents: true,
 					listeners:
 					{
@@ -437,14 +438,14 @@
 													layout: 'anchor',
 													items :
 													[
-														createColorPicker('Ambient', 'ambientColorId'),
-														createColorPicker('Diffuse', 'diffuseColorId'),
-														createColorPicker('Specular', 'specularColorId'),
+														createColorPicker('Ambient', 'ambientColorId', new BABYLON.Color3(0, 0, 0)),
+														createColorPicker('Diffuse', 'diffuseColorId', new BABYLON.Color3(1, 1, 1)),
+														createColorPicker('Specular', 'specularColorId', new BABYLON.Color3(1, 1, 1)),
 														{
 															xtype: 'numberfield',
 															fieldLabel: 'Specular Power',
 															id: 'specularPowerId',
-															value: 0,
+															value: 64,
 															step: 0.1,
 															minValue: 0,
 															listeners:
@@ -477,7 +478,7 @@
 																}
 															}
 														},
-														createColorPicker('Emmisive', 'emmisiveColorId')
+														createColorPicker('Emmisive', 'emmisiveColorId', new BABYLON.Color3(0, 0, 0))
 													]
 												},
 												{
