@@ -825,7 +825,7 @@ SceneManager.prototype.importMeshFiles = function(event)
 	this.filesInput.loadFiles(event);
 };
 
-SceneManager.prototype.changeMaterial = function(mesh, ambient, diffuse, specular, emmisive, specularPower, roughness)
+SceneManager.prototype.changeMaterial = function(mesh, ambient, diffuse, specular, emmisive, specularPower, alpha, roughness)
 {
 	console.log('SceneManager.prototype.changeMaterial');
 	if(mesh == null)
@@ -849,6 +849,7 @@ SceneManager.prototype.changeMaterial = function(mesh, ambient, diffuse, specula
 		mesh.data.originalMaterial.emissiveColor  = new BABYLON.Color3(emmisive[0], emmisive[1], emmisive[2]);
 	}
 	mesh.data.originalMaterial.specularPower = specularPower;
+	mesh.data.originalMaterial.alpha = alpha;
 	mesh.data.originalMaterial.roughness = roughness;
 };
 

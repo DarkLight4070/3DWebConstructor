@@ -848,6 +848,7 @@ UiManager.prototype.updateMaterialView = function(mesh)
 	{
 		return;
 	}
+	
 	if(mesh == null || mesh.data.type != 'sceneObject')
 	{
 		Ext.getCmp('ambientColorId').reset();
@@ -856,6 +857,7 @@ UiManager.prototype.updateMaterialView = function(mesh)
 		Ext.getCmp('emmisiveColorId').reset();
 		Ext.getCmp('specularPowerId').reset();
 		Ext.getCmp('roughnessId').reset();
+		Ext.getCmp('alphaId').reset();
 		return;
 	}
 	console.log('UiManager.prototype.uiSetMeshVibility');
@@ -865,6 +867,7 @@ UiManager.prototype.updateMaterialView = function(mesh)
 	var emmisive = mesh.data.originalMaterial.emissiveColor;
 	var specularPower = mesh.data.originalMaterial.specularPower;
 	var roughness = mesh.data.originalMaterial.roughness;
+	var alpha = mesh.data.originalMaterial.alpha;
 	
 	if(ambient != undefined)
 	{
@@ -885,6 +888,7 @@ UiManager.prototype.updateMaterialView = function(mesh)
 	}
 	Ext.getCmp('specularPowerId').setValue(specularPower);
 	Ext.getCmp('roughnessId').setValue(roughness);
+	Ext.getCmp('alphaId').setValue(alpha);
 };
 
 UiManager.prototype.extractMaterialDataAndUpdateMiniViewScene = function()
@@ -910,5 +914,6 @@ UiManager.prototype.extractMaterialDataAndUpdateMiniViewScene = function()
 	var emmisiveColor = extractColorValue('emmisiveColorId');
 	var specularPower = Ext.getCmp('specularPowerId').getValue();
 	var roughness = Ext.getCmp('roughnessId').getValue();
-	emmiter.emit('MATERAIL_MINI_VIEW_UPDATE_MATERIAL', ambientColor, diffuseColor, specularColor, emmisiveColor, specularPower, roughness);
+	var alpha = Ext.getCmp('alphaId').getValue();
+	emmiter.emit('MATERAIL_MINI_VIEW_UPDATE_MATERIAL', ambientColor, diffuseColor, specularColor, emmisiveColor, specularPower, alpha, roughness);
 };

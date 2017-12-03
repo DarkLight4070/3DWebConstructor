@@ -18,7 +18,7 @@ MiniMaterial3DView.prototype.createMaterialMiniView = function()
 			
 	this.scene = new BABYLON.Scene(this.engine);
 	
-	var light = new BABYLON.HemisphericLight("HemiLight", new BABYLON.Vector3(0, -5, 0), this.scene);
+	var light = new BABYLON.HemisphericLight("MiniViewHemiLight", new BABYLON.Vector3(0, -10, 0), this.scene);
 	
 	this.material = new BABYLON.StandardMaterial("TestMaterial", this.scene);
 	this.material.backFaceCulling = false;
@@ -28,6 +28,7 @@ MiniMaterial3DView.prototype.createMaterialMiniView = function()
 	this.material.emissiveColor  = new BABYLON.Color3(0, 0, 0);
 	this.material.specularPower = 64;
 	this.material.roughness = 0;
+	this.material.alpha = 1;
 	
 	this.camera = new BABYLON.ArcRotateCamera("MiniViewCamera", 0, 0, 0, new BABYLON.Vector3(0, 0, 0), this.scene);
 	this.camera.setPosition(new BABYLON.Vector3(0, 5, -5));
@@ -35,15 +36,6 @@ MiniMaterial3DView.prototype.createMaterialMiniView = function()
 	this.camera.setTarget(BABYLON.Vector3.Zero());
 	this.camera.attachControl(this.canvas, false);
 	
-	
-	/*
-	var ground = BABYLON.Mesh.CreateGround("Grid", 20, 20, 20, this.scene);
-	ground.material = new BABYLON.StandardMaterial("GridMaterial", this.scene);
-	ground.material.wireframe = true;
-	ground.material.backFaceCulling = false;
-	ground.material.diffuseColor = new BABYLON.Color3(1, 1, 1);
-	ground.isPickable = false;
-	*/
 	
 	var options = 
 	{
@@ -61,21 +53,14 @@ MiniMaterial3DView.prototype.createMaterialMiniView = function()
 	sphere.material = this.material;
 	
 	var scene = this.scene;
-	var updateMaterial = this.updateMaterial.bind(this);
-	var init = true;
 	this.engine.runRenderLoop(function()
 	{
-		if(init)
-		{
-			updateMaterial();
-			init = false;
-		}
 		scene.render();
 	});
 	
 };
 
-MiniMaterial3DView.prototype.updateMaterial = function(ambient, diffuse, specular, emissive, specularPower, roughness)
+MiniMaterial3DView.prototype.updateMaterial = function(ambient, diffuse, specular, emissive, specularPower, alpha, roughness)
 {
 	console.log('MiniMaterial3DView.prototype.updateMaterial');
 	
@@ -85,6 +70,7 @@ MiniMaterial3DView.prototype.updateMaterial = function(ambient, diffuse, specula
 	this.material.emissiveColor  = new BABYLON.Color3(0, 0, 0);
 	this.material.specularPower = 64;
 	this.material.roughness = 0;
+	this.material.alpha = 1;
 	
 	if(ambient != null)
 	{
@@ -111,5 +97,8 @@ MiniMaterial3DView.prototype.updateMaterial = function(ambient, diffuse, specula
 	{
 		this.material.roughness = roughness;
 	}
-	
+	if(alpha != null && alpha != undefined)
+	{
+		this.material.alpha = alpha;
+	}
 };
