@@ -917,3 +917,39 @@ UiManager.prototype.extractMaterialDataAndUpdateMiniViewScene = function()
 	var alpha = Ext.getCmp('alphaId').getValue();
 	emmiter.emit('MATERAIL_MINI_VIEW_UPDATE_MATERIAL', ambientColor, diffuseColor, specularColor, emmisiveColor, specularPower, alpha, roughness);
 };
+
+UiManager.prototype.createLightProperties = function(lightType)
+{
+	Ext.getCmp('lightPropertiesId').removeAll(true);
+	if(lightType == 'hemispheric')
+	{
+		var direction = createVector3Field('Direction:', 'hemisphericDirectionXId', 'hemisphericDirectionYId', 'hemisphericDirectionZId', new BABYLON.Vector3(0, 0, 0));
+		Ext.getCmp('lightPropertiesId').add(direction);
+		
+		var groudColor = createColorPicker('Ground Color:', 'hemisphericGroundColorId', new BABYLON.Color3(1, 1, 1), function() 
+		{
+		});
+		Ext.getCmp('lightPropertiesId').add(groudColor);
+	}
+	if(lightType == 'directional')
+	{
+		var direction = createVector3Field('Direction:', 'directionalDirectionXId', 'directionalDirectionYId', 'directionalDirectionZId', new BABYLON.Vector3(0, 0, 0));
+		Ext.getCmp('lightPropertiesId').add(direction);
+	}
+	if(lightType == 'point')
+	{
+		var position = createVector3Field('Position:', 'pointPositionXId', 'pointPositionYId', 'pointPositionZId', new BABYLON.Vector3(0, 0, 0));
+		Ext.getCmp('lightPropertiesId').add(position);
+	}
+	if(lightType == 'spot')
+	{
+		var position = createVector3Field('Position:', 'spotPositionXId', 'spotPositionYId', 'spotPositionZId', new BABYLON.Vector3(0, 0, 0));
+		Ext.getCmp('lightPropertiesId').add(position);
+		var direction = createVector3Field('Direction:', 'spotDirectionXId', 'spotDirectionYId', 'spotDirectionZId', new BABYLON.Vector3(0, 0, 0));
+		Ext.getCmp('lightPropertiesId').add(direction);
+		var angle = uiManager.UI_CreateNumberField('Angle:', 'spotAngleId', 0);
+		Ext.getCmp('lightPropertiesId').add(angle);
+		var exponent = uiManager.UI_CreateNumberField('Exponent:', 'spotExponentId', 0);
+		Ext.getCmp('lightPropertiesId').add(exponent);
+	}
+};

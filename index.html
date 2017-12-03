@@ -111,7 +111,50 @@
 				}
 			});
 			
-			function createColorPicker(__label, __id, __value)
+			function createVector3Field(__label, __xId, __yId, __zId, __value)
+			{
+				var container = Ext.create('Ext.container.Container', 
+				{
+					layout: 
+					{
+						type: 'hbox'
+					},
+					border: 1,
+					padding: '0, 0, 5, 0',
+					defaults: 
+					{
+						flex: 1
+					},
+					items: 
+					[
+						{
+							xtype: 'label',
+							text: __label,
+						},
+						{
+							xtype: 'numberfield',
+							id: __xId,
+							padding: '0, 0, 0, 5',
+							value: __value.x
+						},
+						{
+							xtype: 'numberfield',
+							padding: '0, 0, 0, 5',
+							id: __yId,
+							value: __value.y
+						},
+						{
+							xtype: 'numberfield',
+							padding: '0, 0, 0, 5',
+							id: __zId,
+							value: __value.z
+						}
+					]
+				});
+				return container;
+			}
+			
+			function createColorPicker(__label, __id, __value, __onChangeCallBack)
 			{
 				return Ext.create('Ext.form.field.Text',
 				{
@@ -123,7 +166,10 @@
 					{
 						'change': function(__this, newValue, oldValue, eOpts )
 						{
-							emmiter.emit('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE');
+							if(__onChangeCallBack != undefined)
+							{
+								__onChangeCallBack();
+							}
 						},
 						'render': function(cmp) 
 						{
@@ -224,6 +270,18 @@
 				    	{"id": "sub", "name": "Substruct"},
 				    	{"id": "union", "name": "Union"},
 				        {"id": "intersect", "name": "Intersect"}
+				    ]
+				});
+				
+				var lightsStore = Ext.create('Ext.data.Store', {
+				    fields: 
+				    ['id', 'name'],
+				    data : 
+				    [
+				    	{"id": "hemispheric", "name": "Hemispheric"},
+				    	{"id": "directional", "name": "Directional"},
+				        {"id": "point", "name": "Point"},
+						{"id": "spot", "name": "Spot"}
 				    ]
 				});
 				
@@ -388,179 +446,6 @@
 											]
 										}
 									]
-								},
-								{
-									title: 'Material',
-									layout: 'fit',
-									height: '100%',
-									items: 
-									[
-										{
-											xtype: 'form',
-											bodyPadding: 5,
-											layout: 'anchor',
-											id: 'materialPropsFormId',
-											defaults: 
-											{
-												anchor: '100%'
-											},
-											items: 
-											[
-												{
-													xtype:'fieldset',
-													bodyPadding: 5,
-													title: 'General',
-													defaults: 
-													{
-														anchor: '100%'
-													},
-													layout: 'anchor',
-													items :
-													[
-														{
-															xtype: 'checkboxfield',
-															fieldLabel: 'From Selection',
-															id: 'materialViewUpdateFromSelectionId'
-														}
-													]
-												},
-												{
-													xtype:'fieldset',
-													title: 'Colors',
-													defaults: 
-													{
-														anchor: '100%'
-													},
-													layout: 'anchor',
-													items :
-													[
-														createColorPicker('Ambient', 'ambientColorId', new BABYLON.Color3(0, 0, 0)),
-														createColorPicker('Diffuse', 'diffuseColorId', new BABYLON.Color3(1, 1, 1)),
-														createColorPicker('Specular', 'specularColorId', new BABYLON.Color3(1, 1, 1)),
-														{
-															xtype: 'numberfield',
-															fieldLabel: 'Specular Power',
-															id: 'specularPowerId',
-															value: 64,
-															step: 0.1,
-															minValue: 0,
-															listeners:
-															{
-																'change': function(__this, newValue, oldValue, eOpts )
-																{
-																	emmiter.emit('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE');
-																}
-															}
-														},
-														createColorPicker('Emissive', 'emmisiveColorId', new BABYLON.Color3(0, 0, 0))
-													]
-												},
-												{
-													xtype:'fieldset',
-													title: 'Properties',
-													defaults: 
-													{
-														anchor: '100%'
-													},
-													layout: 'anchor',
-													items :
-													[
-														{
-															xtype: 'numberfield',
-															fieldLabel: 'Alpha',
-															id: 'alphaId',
-															value: 1,
-															step: 0.1,
-															minValue: 0,
-															maxValue: 1,
-															listeners:
-															{
-																'change': function(__this, newValue, oldValue, eOpts )
-																{
-																	emmiter.emit('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE');
-																}
-															}
-														},
-														{
-															xtype: 'numberfield',
-															fieldLabel: 'Roughness',
-															id: 'roughnessId',
-															value: 0,
-															step: 0.1,
-															minValue: 0,
-															listeners:
-															{
-																'change': function(__this, newValue, oldValue, eOpts )
-																{
-																	emmiter.emit('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE');
-																}
-															}
-														}
-													]
-												},
-												{
-													xtype:'fieldset',
-													bodyPadding: 5,
-													title: 'Result',
-													defaults: 
-													{
-														anchor: '100%'
-													},
-													layout: 'anchor',
-													items :
-													[
-														{
-															html: '<canvas id="miniViewCanvas" style="width:100%;height:200;" touch-action="none"></canvas>',
-														}
-													]
-												}
-											],
-											buttons: 
-											[
-												{
-													text: 'Update',
-													handler: function()
-													{
-														var extractColorValue = function(id)
-														{
-															var text = Ext.getCmp(id).getValue();
-															var color = null;
-															if(text != null)
-															{
-																color = text.split(', ');
-																if(color.length != 3)
-																{
-																	color = null;
-																}
-															}
-															return color;
-														};
-														var ambientColor = extractColorValue('ambientColorId');
-														var diffuseColor = extractColorValue('diffuseColorId');
-														var specularColor = extractColorValue('specularColorId');
-														var emmisiveColor = extractColorValue('emmisiveColorId');
-														var specularPower = Ext.getCmp('specularPowerId').getValue();
-														var alpha = Ext.getCmp('alphaId').getValue();
-														var roughness = Ext.getCmp('roughnessId').getValue();
-														
-														emmiter.emit('MESH_CHANGE_METERIAL', sceneManager.selectionManager.lastPickedMesh, ambientColor, diffuseColor, specularColor, emmisiveColor, specularPower, alpha, roughness);
-													}
-												}
-											]
-										}
-									],
-									listeners:
-									{
-										afterrender: 
-										{
-
-											fn: function(__this, eOpts)
-											{
-												console.log('Material tab rendered');
-												sceneManager.miniMaterial3DView.createMaterialMiniView();
-											}
-										}
-									}
 								},
 								{
 									title: 'Prefabs Factory',
@@ -735,6 +620,313 @@
 													}
 												}
 											]
+										}
+									]
+								},
+								{
+									title: 'Material',
+									layout: 'fit',
+									height: '100%',
+									items: 
+									[
+										{
+											xtype: 'form',
+											bodyPadding: 5,
+											layout: 'anchor',
+											id: 'materialPropsFormId',
+											defaults: 
+											{
+												anchor: '100%'
+											},
+											items: 
+											[
+												{
+													xtype:'fieldset',
+													bodyPadding: 5,
+													title: 'General',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													layout: 'anchor',
+													items :
+													[
+														{
+															xtype: 'checkboxfield',
+															fieldLabel: 'From Selection',
+															id: 'materialViewUpdateFromSelectionId'
+														}
+													]
+												},
+												{
+													xtype:'fieldset',
+													title: 'Colors',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													layout: 'anchor',
+													items :
+													[
+														createColorPicker('Ambient', 'ambientColorId', new BABYLON.Color3(0, 0, 0), function()
+														{
+															emmiter.emit('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE');
+														}),
+														createColorPicker('Diffuse', 'diffuseColorId', new BABYLON.Color3(1, 1, 1), function() 
+														{
+															emmiter.emit('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE');
+														}),
+														createColorPicker('Specular', 'specularColorId', new BABYLON.Color3(1, 1, 1), function() 
+														{
+															emmiter.emit('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE');
+														}),
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'Specular Power',
+															id: 'specularPowerId',
+															value: 64,
+															step: 0.1,
+															minValue: 0,
+															listeners:
+															{
+																'change': function(__this, newValue, oldValue, eOpts )
+																{
+																	emmiter.emit('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE');
+																}
+															}
+														},
+														createColorPicker('Emissive', 'emmisiveColorId', new BABYLON.Color3(0, 0, 0), function() 
+														{
+															emmiter.emit('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE');
+														})
+													]
+												},
+												{
+													xtype:'fieldset',
+													title: 'Properties',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													layout: 'anchor',
+													items :
+													[
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'Alpha',
+															id: 'alphaId',
+															value: 1,
+															step: 0.1,
+															minValue: 0,
+															maxValue: 1,
+															listeners:
+															{
+																'change': function(__this, newValue, oldValue, eOpts )
+																{
+																	emmiter.emit('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE');
+																}
+															}
+														},
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'Roughness',
+															id: 'roughnessId',
+															value: 0,
+															step: 0.1,
+															minValue: 0,
+															listeners:
+															{
+																'change': function(__this, newValue, oldValue, eOpts )
+																{
+																	emmiter.emit('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE');
+																}
+															}
+														}
+													]
+												},
+												{
+													xtype:'fieldset',
+													bodyPadding: 5,
+													title: 'Result',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													layout: 'anchor',
+													items :
+													[
+														{
+															html: '<canvas id="miniViewCanvas" style="width:100%;height:200;" touch-action="none"></canvas>',
+														}
+													]
+												}
+											],
+											buttons: 
+											[
+												{
+													text: 'Update',
+													handler: function()
+													{
+														var extractColorValue = function(id)
+														{
+															var text = Ext.getCmp(id).getValue();
+															var color = null;
+															if(text != null)
+															{
+																color = text.split(', ');
+																if(color.length != 3)
+																{
+																	color = null;
+																}
+															}
+															return color;
+														};
+														var ambientColor = extractColorValue('ambientColorId');
+														var diffuseColor = extractColorValue('diffuseColorId');
+														var specularColor = extractColorValue('specularColorId');
+														var emmisiveColor = extractColorValue('emmisiveColorId');
+														var specularPower = Ext.getCmp('specularPowerId').getValue();
+														var alpha = Ext.getCmp('alphaId').getValue();
+														var roughness = Ext.getCmp('roughnessId').getValue();
+														
+														emmiter.emit('MESH_CHANGE_METERIAL', sceneManager.selectionManager.lastPickedMesh, ambientColor, diffuseColor, specularColor, emmisiveColor, specularPower, alpha, roughness);
+													}
+												}
+											]
+										}
+									],
+									listeners:
+									{
+										afterrender: 
+										{
+
+											fn: function(__this, eOpts)
+											{
+												console.log('Material tab rendered');
+												sceneManager.miniMaterial3DView.createMaterialMiniView();
+											}
+										}
+									}
+								},
+								{
+									title: 'Light',
+									layout: 'fit',
+									height: '100%',
+									items: 
+									[
+										{
+											xtype: 'form',
+											bodyPadding: 5,
+											layout: 'anchor',
+											id: 'lightPropsFormId',
+											defaults: 
+											{
+												anchor: '100%'
+											},
+											items: 
+											[
+												{
+													xtype:'fieldset',
+													bodyPadding: 5,
+													title: 'General',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													layout: 'anchor',
+													items :
+													[
+														{
+															xtype: 'combo',
+															fieldLabel: 'Type',
+															store: lightsStore,
+															queryMode: 'local',
+															displayField: 'name',
+															valueField: 'id',
+															id: 'lightTypeId',
+															listeners:
+															{
+																change: 
+																{
+
+																	fn: function(_this, newValue, oldValue, eOpts)
+																	{
+																		uiManager.createLightProperties(newValue);
+																	}
+																}
+															}
+														},
+														{
+															xtype: 'textfield',
+															fieldLabel: 'Name',
+															id: 'lightNameId'
+														},
+														createColorPicker('Diffuse', 'lightDiffuseId', new BABYLON.Color3(1, 1, 1), function() 
+														{
+														}),
+														createColorPicker('Specular', 'lightSpecularId', new BABYLON.Color3(1, 1, 1), function() 
+														{
+														}),
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'Intensity',
+															id: 'lightIntensityId',
+															value: 0,
+															step: 0.1,
+															minValue: 0,
+															maxValue: 1,
+															listeners:
+															{
+																'change': function(__this, newValue, oldValue, eOpts )
+																{
+																}
+															}
+														},
+														{
+															xtype: 'numberfield',
+															fieldLabel: 'Range',
+															id: 'lightRangeId',
+															value: 0,
+															step: 1,
+															minValue: 0,
+															listeners:
+															{
+																'change': function(__this, newValue, oldValue, eOpts )
+																{
+																}
+															}
+														}
+													]
+												},
+												{
+													xtype:'fieldset',
+													bodyPadding: 5,
+													title: 'Properties',
+													id: 'lightPropertiesId',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													layout: 'anchor',
+													items :
+													[]
+												}
+											]
+										}
+									],
+									buttons: 
+									[
+										{
+											text: 'Create',
+											handler: function()
+											{
+											}
+										},
+										{
+											text: 'Update',
+											handler: function()
+											{
+											}
 										}
 									]
 								},

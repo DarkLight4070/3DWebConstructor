@@ -72,9 +72,9 @@ SceneManager.prototype.create3DScene = function()
 	this.camera.attachControl(this.canvas, false);
 	this.camera.useFramingBehavior = true;
 	
-	var lightUp = new BABYLON.HemisphericLight("HemiLight Up", new BABYLON.Vector3(0, -100, 0), this.scene);
+	var lightUp = new BABYLON.HemisphericLight("HemiLight Up", new BABYLON.Vector3(0, -1, 0), this.scene);
 	lightUp.intensity = 1;
-	var lightDown = new BABYLON.HemisphericLight("HemiLight Down", new BABYLON.Vector3(0, 100, 0), this.scene);
+	var lightDown = new BABYLON.HemisphericLight("HemiLight Down", new BABYLON.Vector3(0, 1, 0), this.scene);
 	lightDown.intensity = .7;
 	
 	// Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene

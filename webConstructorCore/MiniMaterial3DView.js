@@ -18,7 +18,7 @@ MiniMaterial3DView.prototype.createMaterialMiniView = function()
 			
 	this.scene = new BABYLON.Scene(this.engine);
 	
-	var light = new BABYLON.HemisphericLight("MiniViewHemiLight", new BABYLON.Vector3(0, -10, 0), this.scene);
+	var light = new BABYLON.HemisphericLight("MiniViewHemiLight", new BABYLON.Vector3(0, -1, 0), this.scene);
 	
 	this.material = new BABYLON.StandardMaterial("TestMaterial", this.scene);
 	this.material.backFaceCulling = false;
