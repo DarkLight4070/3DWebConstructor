@@ -521,7 +521,6 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 	for(var i=0; i<loadedMeshes.length; i++)
 	{
 		var mesh = loadedMeshes[i];
-		console.log('Total vertices count: ' + mesh.getTotalVertices());
 		
 		if(mesh.getTotalVertices() == 0)
 		{

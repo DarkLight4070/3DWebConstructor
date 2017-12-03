@@ -123,29 +123,7 @@
 					{
 						'change': function(__this, newValue, oldValue, eOpts )
 						{
-							var extractColorValue = function(id)
-							{
-								var text = Ext.getCmp(id).getValue();
-								var color = null;
-								if(text != null)
-								{
-									color = text.split(', ');
-									if(color.length != 3)
-									{
-										color = null;
-									}
-								}
-								return color;
-							};
-							
-							var ambientColor = extractColorValue('ambientColorId');
-							var diffuseColor = extractColorValue('diffuseColorId');
-							var specularColor = extractColorValue('specularColorId');
-							var emmisiveColor = extractColorValue('emmisiveColorId');
-							var specularPower = Ext.getCmp('specularPowerId').getValue();
-							var roughness = Ext.getCmp('roughnessId').getValue();
-							
-							emmiter.emit('MATERAIL_MINI_VIEW_UPDATE_MATERIAL', ambientColor, diffuseColor, specularColor, emmisiveColor, specularPower, roughness);
+							emmiter.emit('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE');
 						},
 						'render': function(cmp) 
 						{
@@ -430,6 +408,24 @@
 											[
 												{
 													xtype:'fieldset',
+													bodyPadding: 5,
+													title: 'General',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													layout: 'anchor',
+													items :
+													[
+														{
+															xtype: 'checkboxfield',
+															fieldLabel: 'From Selection',
+															id: 'materialViewUpdateFromSelectionId'
+														}
+													]
+												},
+												{
+													xtype:'fieldset',
 													title: 'Colors',
 													defaults: 
 													{
@@ -452,29 +448,7 @@
 															{
 																'change': function(__this, newValue, oldValue, eOpts )
 																{
-																	var extractColorValue = function(id)
-																	{
-																		var text = Ext.getCmp(id).getValue();
-																		var color = null;
-																		if(text != null)
-																		{
-																			color = text.split(', ');
-																			if(color.length != 3)
-																			{
-																				color = null;
-																			}
-																		}
-																		return color;
-																	};
-																	
-																	var ambientColor = extractColorValue('ambientColorId');
-																	var diffuseColor = extractColorValue('diffuseColorId');
-																	var specularColor = extractColorValue('specularColorId');
-																	var emmisiveColor = extractColorValue('emmisiveColorId');
-																	var specularPower = Ext.getCmp('specularPowerId').getValue();
-																	var roughness = Ext.getCmp('roughnessId').getValue();
-																	
-																	emmiter.emit('MATERAIL_MINI_VIEW_UPDATE_MATERIAL', ambientColor, diffuseColor, specularColor, emmisiveColor, specularPower, roughness);
+																	emmiter.emit('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE');
 																}
 															}
 														},
@@ -517,7 +491,6 @@
 														}
 													]
 												}
-												
 											],
 											buttons: 
 											[

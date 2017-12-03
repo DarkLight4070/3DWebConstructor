@@ -23,6 +23,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_ADD_NODE', this.addNodeToTree.bind(this));
 	emmiter.on('UI_SET_MESH_VISIBILITY', this.uiSetMeshVibility.bind(this));
 	emmiter.on('UI_UPDATE_MATERIAL_VIEW', this.updateMaterialView.bind(this));
+	emmiter.on('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE', this.extractMaterialDataAndUpdateMiniViewScene.bind(this));
 }
 
 UiManager.prototype.UI_CreateNumberField = function(__label, __id, __defaultValue)
@@ -843,6 +844,10 @@ UiManager.prototype.uiSetMeshVibility = function(mesh, value)
 
 UiManager.prototype.updateMaterialView = function(mesh)
 {
+	if(!Ext.getCmp('materialViewUpdateFromSelectionId').getValue())
+	{
+		return;
+	}
 	if(mesh == null || mesh.data.type != 'sceneObject')
 	{
 		Ext.getCmp('ambientColorId').reset();
@@ -880,4 +885,30 @@ UiManager.prototype.updateMaterialView = function(mesh)
 	}
 	Ext.getCmp('specularPowerId').setValue(specularPower);
 	Ext.getCmp('roughnessId').setValue(roughness);
+};
+
+UiManager.prototype.extractMaterialDataAndUpdateMiniViewScene = function()
+{
+	var extractColorValue = function(id)
+	{
+		var text = Ext.getCmp(id).getValue();
+		var color = null;
+		if(text != null)
+		{
+			color = text.split(', ');
+			if(color.length != 3)
+			{
+				color = null;
+			}
+		}
+		return color;
+	};
+	
+	var ambientColor = extractColorValue('ambientColorId');
+	var diffuseColor = extractColorValue('diffuseColorId');
+	var specularColor = extractColorValue('specularColorId');
+	var emmisiveColor = extractColorValue('emmisiveColorId');
+	var specularPower = Ext.getCmp('specularPowerId').getValue();
+	var roughness = Ext.getCmp('roughnessId').getValue();
+	emmiter.emit('MATERAIL_MINI_VIEW_UPDATE_MATERIAL', ambientColor, diffuseColor, specularColor, emmisiveColor, specularPower, roughness);
 };
