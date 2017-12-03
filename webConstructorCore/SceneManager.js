@@ -70,8 +70,12 @@ SceneManager.prototype.create3DScene = function()
 	this.camera.setTarget(BABYLON.Vector3.Zero());
 	this.camera.upperBetaLimit = 2 * Math.PI;
 	this.camera.attachControl(this.canvas, false);
-	this.scene.createDefaultCameraOrLight(true);
 	this.camera.useFramingBehavior = true;
+	
+	var lightUp = new BABYLON.HemisphericLight("HemiLight Up", new BABYLON.Vector3(0, -100, 0), this.scene);
+	lightUp.intensity = 1;
+	var lightDown = new BABYLON.HemisphericLight("HemiLight Down", new BABYLON.Vector3(0, 100, 0), this.scene);
+	lightDown.intensity = .7;
 	
 	// Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
 	var ground = BABYLON.Mesh.CreateGround("Grid", 20, 20, 20, this.scene);
