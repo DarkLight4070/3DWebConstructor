@@ -20,6 +20,8 @@
 		<script src="webConstructorCore/SceneManager.js"></script>
 		<script src="webConstructorCore/SelectionManager.js"></script>
 		<script src="webConstructorCore/UiManager.js"></script>
+		<script src="webConstructorCore/MiniMaterial3DView.js"></script>
+		
 		<script src="babylon/event_emitter.js"></script>
 		<script src="babylon/ShaderBuilder.js"></script>
 		
@@ -116,8 +118,34 @@
 					fieldLabel: __label,
 					id: __id,
 					handleMouseEvents: true,
-					listeners: 
+					listeners:
 					{
+						'change': function(__this, newValue, oldValue, eOpts )
+						{
+							var extractColorValue = function(id)
+							{
+								var text = Ext.getCmp(id).getValue();
+								var color = null;
+								if(text != null)
+								{
+									color = text.split(', ');
+									if(color.length != 3)
+									{
+										color = null;
+									}
+								}
+								return color;
+							};
+							
+							var ambientColor = extractColorValue('ambientColorId');
+							var diffuseColor = extractColorValue('diffuseColorId');
+							var specularColor = extractColorValue('specularColorId');
+							var emmisiveColor = extractColorValue('emmisiveColorId');
+							var specularPower = Ext.getCmp('specularPowerId').getValue();
+							var roughness = Ext.getCmp('roughnessId').getValue();
+							
+							emmiter.emit('MATERAIL_MINI_VIEW_UPDATE_MATERIAL', ambientColor, diffuseColor, specularColor, emmisiveColor, specularPower, roughness);
+						},
 						'render': function(cmp) 
 						{
 							var pickColor = function()
@@ -159,7 +187,6 @@
 												var rgb = value.toRgb();
 												var colorText = rgb.r / 255 + ', ' + rgb.g / 255 + ', ' + rgb.b / 255
 												cmp.setValue(colorText);
-												//cmp.setFieldStyle('background-color: rgba(' + colorText + '); background-image:none');
 												Ext.getCmp('colorPaletteWindowId').destroy();
 												$("#paletteId").spectrum("destroy");
 											}
@@ -419,7 +446,36 @@
 															id: 'specularPowerId',
 															value: 0,
 															step: 0.1,
-															minValue: 0
+															minValue: 0,
+															listeners:
+															{
+																'change': function(__this, newValue, oldValue, eOpts )
+																{
+																	var extractColorValue = function(id)
+																	{
+																		var text = Ext.getCmp(id).getValue();
+																		var color = null;
+																		if(text != null)
+																		{
+																			color = text.split(', ');
+																			if(color.length != 3)
+																			{
+																				color = null;
+																			}
+																		}
+																		return color;
+																	};
+																	
+																	var ambientColor = extractColorValue('ambientColorId');
+																	var diffuseColor = extractColorValue('diffuseColorId');
+																	var specularColor = extractColorValue('specularColorId');
+																	var emmisiveColor = extractColorValue('emmisiveColorId');
+																	var specularPower = Ext.getCmp('specularPowerId').getValue();
+																	var roughness = Ext.getCmp('roughnessId').getValue();
+																	
+																	emmiter.emit('MATERAIL_MINI_VIEW_UPDATE_MATERIAL', ambientColor, diffuseColor, specularColor, emmisiveColor, specularPower, roughness);
+																}
+															}
 														},
 														createColorPicker('Emmisive', 'emmisiveColorId')
 													]
@@ -443,7 +499,24 @@
 															minValue: 0
 														}
 													]
+												},
+												{
+													xtype:'fieldset',
+													bodyPadding: 5,
+													title: 'Result',
+													defaults: 
+													{
+														anchor: '100%'
+													},
+													layout: 'anchor',
+													items :
+													[
+														{
+															html: '<canvas id="miniViewCanvas" style="width:100%;height:200;" touch-action="none"></canvas>',
+														}
+													]
 												}
+												
 											],
 											buttons: 
 											[
@@ -477,7 +550,19 @@
 												}
 											]
 										}
-									]
+									],
+									listeners:
+									{
+										afterrender: 
+										{
+
+											fn: function(__this, eOpts)
+											{
+												console.log('Material tab rendered');
+												sceneManager.miniMaterial3DView.createMaterialMiniView();
+											}
+										}
+									}
 								},
 								{
 									title: 'Prefabs Factory',

@@ -8,6 +8,7 @@ function SceneManager()
 	this.selectionManager = null;
 	this.uid = 0;
 	this.targetSelection = false;
+	this.miniMaterial3DView = new MiniMaterial3DView();
 	
 	this.selectionMaterial = null;
 	var filesInput = null;
@@ -851,7 +852,6 @@ SceneManager.prototype.changeMaterial = function(mesh, ambient, diffuse, specula
 	mesh.data.originalMaterial.specularPower = specularPower;
 	mesh.data.originalMaterial.roughness = roughness;
 };
-
 
 SceneManager.prototype.computeRootNodeBbox = function(rootNode)
 {
