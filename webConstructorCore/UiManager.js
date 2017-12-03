@@ -860,7 +860,7 @@ UiManager.prototype.updateMaterialView = function(mesh)
 		Ext.getCmp('alphaId').reset();
 		return;
 	}
-	console.log('UiManager.prototype.uiSetMeshVibility');
+	
 	var ambient = mesh.data.originalMaterial.ambientColor;
 	var diffuse = mesh.data.originalMaterial.diffuseColor;
 	var specular = mesh.data.originalMaterial.specularColor;
