@@ -74,10 +74,11 @@ SceneManager.prototype.create3DScene = function()
 	
 	var lightUp = new BABYLON.HemisphericLight("HemiLight Up", new BABYLON.Vector3(0, -1, 0), this.scene);
 	lightUp.intensity = 1;
+	lightUp.data = {uid: -1, type: 'LIGHT'};
 	var lightDown = new BABYLON.HemisphericLight("HemiLight Down", new BABYLON.Vector3(0, 1, 0), this.scene);
 	lightDown.intensity = .7;
+	lightDown.data = {uid: -1, type: 'LIGHT'};
 	
-	// Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
 	var ground = BABYLON.Mesh.CreateGround("Grid", 20, 20, 20, this.scene);
 	ground.material = new BABYLON.StandardMaterial("GridMaterial", this.scene);
 	ground.material.wireframe = true;

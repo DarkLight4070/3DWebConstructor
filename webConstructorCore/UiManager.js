@@ -24,6 +24,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_SET_MESH_VISIBILITY', this.uiSetMeshVibility.bind(this));
 	emmiter.on('UI_UPDATE_MATERIAL_VIEW', this.updateMaterialView.bind(this));
 	emmiter.on('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE', this.extractMaterialDataAndUpdateMiniViewScene.bind(this));
+	emmiter.on('UI_UPDATE_LIGHT_PROPERTIES', this.updateLightPropertiesUi.bind(this));
 }
 
 UiManager.prototype.UI_CreateNumberField = function(__label, __id, __defaultValue)
@@ -952,4 +953,47 @@ UiManager.prototype.createLightProperties = function(lightType)
 		var exponent = uiManager.UI_CreateNumberField('Exponent:', 'spotExponentId', 0);
 		Ext.getCmp('lightPropertiesId').add(exponent);
 	}
+};
+
+UiManager.prototype.updateLightPropertiesUi = function(light)
+{
+	console.log('UiManager.prototype.updateLightPropertiesUi');
+	
+	var diffuse = light.diffuse;
+	var specular = light.specular;
+	var name = light.name;
+	var intensity = light.intensity;
+	var range = light.range;
+	
+	Ext.getCmp('lightGeneralId').query('textfield[id=lightDiffuseId]')[0].setValue(diffuse.r + ', ' + diffuse.g + ', ' + diffuse.b);
+	Ext.getCmp('lightGeneralId').query('textfield[id=lightSpecularId]')[0].setValue(specular.r + ', ' + specular.g + ', ' + specular.b);
+	Ext.getCmp('lightNameId').setValue(name);
+	Ext.getCmp('lightIntensityId').setValue(intensity);
+	Ext.getCmp('lightRangeId').setValue(range);
+	
+	
+	if(light instanceof BABYLON.HemisphericLight)
+	{
+		var direction = light.direction;
+		var groundColor = light.groundColor;
+		
+		Ext.getCmp('lightTypeId').setValue('hemispheric');
+		Ext.getCmp('lightPropertiesId').query('textfield[id=hemisphericDirectionXId]')[0].setValue(direction.x);
+		Ext.getCmp('lightPropertiesId').query('textfield[id=hemisphericDirectionYId]')[0].setValue(direction.y);
+		Ext.getCmp('lightPropertiesId').query('textfield[id=hemisphericDirectionZId]')[0].setValue(direction.z);
+		Ext.getCmp('lightPropertiesId').query('textfield[id=hemisphericGroundColorId]')[0].setValue(groundColor.r + ', ' + groundColor.g + ', ' + groundColor.b);
+	}
+	if(light instanceof BABYLON.DirectionalLight)
+	{
+		Ext.getCmp('lightTypeId').setValue('directional');
+	}
+	if(light instanceof BABYLON.PointLight)
+	{
+		Ext.getCmp('lightTypeId').setValue('point');
+	}
+	if(light instanceof BABYLON.SpotLight)
+	{
+		Ext.getCmp('lightTypeId').setValue('spot');
+	}
+	
 };

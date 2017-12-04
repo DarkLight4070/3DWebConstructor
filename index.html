@@ -829,6 +829,7 @@
 													xtype:'fieldset',
 													bodyPadding: 5,
 													title: 'General',
+													id: 'lightGeneralId',
 													defaults: 
 													{
 														anchor: '100%'
@@ -1635,32 +1636,39 @@
 
 									fn: function (view, record, item, index, e)
 									{
-										var mesh = record.raw.object;
-										var hasMesh = mesh != undefined;
+										var object = record.raw.object;
+										var hasMesh = object != undefined;
 										if(hasMesh)
 										{
-											var meshHasData = mesh.data != undefined;
+											var meshHasData = object.data != undefined;
 											if(meshHasData)
 											{
-												if(mesh.data.type == 'sceneObject')
+												if(object.data.type == 'sceneObject')
 												{
-													if(mesh.getTotalVertices() > 0)
+													if(object.getTotalVertices() > 0)
 													{
-														if(mesh.data.originalMaterial == undefined)
+														if(object.data.originalMaterial == undefined)
 														{
-															if(mesh.material != undefined)
+															if(object.material != undefined)
 															{
-																mesh.data.originalMaterial = mesh.material.clone();
+																object.data.originalMaterial = object.material.clone();
 															}
 														}
+														emmiter.emit('SELECT_MESH', object);
 													}
 													else
 													{
 														emmiter.emit('SELECT_MESH', null);
-														return;
 													}
 												}
-												emmiter.emit('SELECT_MESH', mesh);
+												else if(object.data.type == 'rootNode')
+												{
+													emmiter.emit('SELECT_MESH', object);
+												}
+												else if(object.data.type == 'LIGHT')
+												{
+													emmiter.emit('UI_UPDATE_LIGHT_PROPERTIES', object);
+												}
 												return;
 											}
 										}
