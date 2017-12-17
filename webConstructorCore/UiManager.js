@@ -16,7 +16,7 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_MIRROR_MESH', this.mirrorMesh.bind(this));
 	emmiter.on('UI_CLEAR_SCENE', this.clearScene.bind(this));
 	emmiter.on('CREATE_SCENE_CONTEXT_MENU', this.createSceneContextMenu.bind(this));
-	emmiter.on('UI_DELETE_SELECTED_MESH', this.deleteSelectedMesh.bind(this));
+	emmiter.on('UI_DELETE_SELECTED_OBJECT', this.deleteSelectedObject.bind(this));
 	emmiter.on('UI_RESET_PREFAB_UI', this.resetPrefabUi.bind(this));
 	emmiter.on('UI_RESET_PREFAB_POS_UI', this.resetPrefabPositionUi.bind(this));
 	emmiter.on('UI_INIT_PREFAB_POS_UI_FROM_SELECTION', this.initPrefabPositionUiFromSelection.bind(this));
@@ -659,15 +659,28 @@ UiManager.prototype.clearScene = function()
 	});
 };
 
-UiManager.prototype.deleteSelectedMesh = function()
+UiManager.prototype.deleteSelectedObject = function(object)
 {
-	if(this.sceneManager.selectionManager.lastPickedMesh == null)
+	if(object == null)
 	{
-		Ext.MessageBox.alert('Delete Mesh', 'Please select an object !');
+		Ext.MessageBox.alert('Delete', 'Please select an object !');
 		return;
 	}
+	if(object instanceof BABYLON.Light)
+	{
+		this.sceneManager.scene.removeLight(object);
+		object.dispose();
+		var mainTree = Ext.getCmp('mainTree');
+		var record = mainTree.getSelectionModel().getLastSelected();
+		var root = mainTree.getRootNode();
+		var lightsNode = root.findChild('text', 'Lights');
+		lightsNode.removeChild(record);
+	}
+	else
+	{
+		emmiter.emit('DELETE_SELECTED_MESH');
+	}
 	this.updateMeshPropertiesUiFromSelection(null);
-	emmiter.emit('DELETE_SELECTED_MESH');
 };
 
 UiManager.prototype.createSceneContextMenu = function(x, y)

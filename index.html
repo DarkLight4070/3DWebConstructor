@@ -1339,7 +1339,12 @@
 											icon: 'icons/delete.png',
 											handler: function()
 											{
-												emmiter.emit('UI_DELETE_SELECTED_MESH');
+												var selection = sceneManager.selectionManager.lastPickedMesh;
+												if(selection == null)
+												{
+													selection = sceneManager.selectionManager.selectedLight;
+												}
+												emmiter.emit('UI_DELETE_SELECTED_OBJECT', selection);
 											}
 										}
 									]
