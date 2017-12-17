@@ -134,6 +134,8 @@ SceneManager.prototype.create3DScene = function()
 	this.filesInput = new BABYLON.FilesInput(this.engine, this.scene, null, null, null, null, function () { BABYLON.Tools.ClearLogCache() }, null, sceneError);
 	BABYLON.FilesInput.prototype.reload = function()
 	{
+		this.selectionManager.selectMesh(null);
+		emmiter.emit('UI_UPDATE_SELECTION', null);
 		var onSuccess = function(currentScene)
 		{
 			this.importMeshes(currentScene.meshes);
