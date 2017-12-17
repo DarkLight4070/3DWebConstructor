@@ -197,10 +197,10 @@ SelectionManager.prototype.initSceneSelection = function(__sceneManager)
 		emmiter.emit('POINTER_DOWN', evt);
 	};
 	
-	__sceneManager.scene.onPointerUp = function (evt, pickResult) 
+	__sceneManager.scene.onPointerUp = function (evt, pickResult)
 	{	
-		emmiter.emit('POINTER_UP', evt, pickResult);
-	};
+		this.pointerUp(evt, pickResult);
+	}.bind(this);
 };
 
 SelectionManager.prototype.setCompoundObjectsMode = function(enable)

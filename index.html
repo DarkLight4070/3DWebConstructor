@@ -9,13 +9,19 @@
 	    <link rel="stylesheet" type="text/css" href="extjs/resources/css/ext-all.css">
     	<script type="text/javascript" src="extjs/ext-all.js"></script>
 
-    	<!-- Babylon.js -->
-    	<script src="babylon/hand.minified-1.2.js"></script>
-        <script src="babylon/cannon.js"></script>
-        <script src="babylon/oimo.js"></script>
-		<script src="https://cdn.babylonjs.com/babylon.js"></script>
-		<script src="babylon/OBJFileLoader.js"></script>
+    	<script src="https://preview.babylonjs.com/cannon.js"></script>
+		<script src="https://preview.babylonjs.com/Oimo.js"></script>
+		<script src="https://preview.babylonjs.com/babylon.js"></script>
+		<script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+		<script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+		<script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+		<script src="https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+		<script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+		
+		<script src="https://code.jquery.com/pep/0.4.2/pep.js"></script>
 		<script src="babylon/editcontrol.js"></script>
+		
+		<script src="babylon/OBJFileLoader.js"></script>
 		
 		<script src="webConstructorCore/SceneManager.js"></script>
 		<script src="webConstructorCore/SelectionManager.js"></script>
@@ -807,7 +813,8 @@
 											}
 										}
 									}
-								},
+								}
+								/*,
 								{
 									title: 'Light',
 									layout: 'fit',
@@ -918,19 +925,83 @@
 									buttons: 
 									[
 										{
-											text: 'Create',
+											text: 'Update',
 											handler: function()
 											{
 											}
 										},
 										{
-											text: 'Update',
+											text: 'Create',
 											handler: function()
 											{
+												var extractColorValue = function(text)
+												{
+													var color = new BABYLON.Color3(0, 0, 0);
+													if(text != null)
+													{
+														var split = text.split(', ');
+														if(split.length == 3)
+														{
+															color.r = split[0];
+															color.g = split[1];
+															color.b = split[2];
+														}
+													}
+													return color;
+												};
+												
+												var diffuse = extractColorValue(Ext.getCmp('lightDiffuseId').getValue());
+												var specular = extractColorValue(Ext.getCmp('lightSpecularId').getValue());
+												var intensity = Ext.getCmp('lightIntensityId').getValue();
+												var range = Ext.getCmp('lightRangeId').getValue();
+												var name = Ext.getCmp('lightNameId').getValue();
+												var type = Ext.getCmp('lightTypeId').getValue();
+												if(type == 'hemispheric')
+												{
+													var dx = Ext.getCmp('lightPropertiesId').query('textfield[id=hemisphericDirectionXId]')[0].getValue();
+													var dy = Ext.getCmp('lightPropertiesId').query('textfield[id=hemisphericDirectionYId]')[0].getValue();
+													var dz = Ext.getCmp('lightPropertiesId').query('textfield[id=hemisphericDirectionZId]')[0].getValue();
+													var groundColor = extractColorValue(Ext.getCmp('lightPropertiesId').query('textfield[id=hemisphericGroundColorId]')[0].getValue());
+													var data = {name: name, diffuse: diffuse, specular: specular, intensity: intensity, range: range, direction: new BABYLON.Vector3(dx, dy, dz), groundColor: groundColor};
+													emmiter.emit('LIGHT_CREATE', type, data);
+												}
+												if(type == 'directional')
+												{
+													var dx = Ext.getCmp('lightPropertiesId').query('textfield[id=directionalDirectionXId]')[0].getValue();
+													var dy = Ext.getCmp('lightPropertiesId').query('textfield[id=directionalDirectionYId]')[0].getValue();
+													var dz = Ext.getCmp('lightPropertiesId').query('textfield[id=directionalDirectionZId]')[0].getValue();
+													var data = {name: name, diffuse: diffuse, specular: specular, intensity: intensity, range: range, direction: new BABYLON.Vector3(dx, dy, dz)};
+													emmiter.emit('LIGHT_CREATE', type, data);
+												}
+												if(type == 'point')
+												{
+													var px = Ext.getCmp('lightPropertiesId').query('textfield[id=pointPositionXId]')[0].getValue();
+													var py = Ext.getCmp('lightPropertiesId').query('textfield[id=pointPositionYId]')[0].getValue();
+													var pz = Ext.getCmp('lightPropertiesId').query('textfield[id=pointPositionZId]')[0].getValue();
+													var data = {name: name, diffuse: diffuse, specular: specular, intensity: intensity, range: range, position: new BABYLON.Vector3(px, py, pz)};
+													emmiter.emit('LIGHT_CREATE', type, data);
+												}
+												if(type == 'spot')
+												{
+													var px = Ext.getCmp('lightPropertiesId').query('textfield[id=spotPositionXId]')[0].getValue();
+													var py = Ext.getCmp('lightPropertiesId').query('textfield[id=spotPositionYId]')[0].getValue();
+													var pz = Ext.getCmp('lightPropertiesId').query('textfield[id=spotPositionZId]')[0].getValue();
+													
+													var dx = Ext.getCmp('lightPropertiesId').query('textfield[id=spotDirectionXId]')[0].getValue();
+													var dy = Ext.getCmp('lightPropertiesId').query('textfield[id=spotDirectionYId]')[0].getValue();
+													var dz = Ext.getCmp('lightPropertiesId').query('textfield[id=spotDirectionZId]')[0].getValue();
+													
+													var angle = Ext.getCmp('lightPropertiesId').query('textfield[id=spotAngleId]')[0].getValue();
+													var exponent = Ext.getCmp('lightPropertiesId').query('textfield[id=spotExponentId]')[0].getValue();
+													
+													var data = {name: name, diffuse: diffuse, specular: specular, intensity: intensity, range: range, position: new BABYLON.Vector3(px, py, pz), direction: new BABYLON.Vector3(dx, dy, dz), angle: angle, exponent: exponent};
+													emmiter.emit('LIGHT_CREATE', type, data);
+												}
 											}
 										}
 									]
-								},
+								}*/
+								,
 								{
 									title: 'Compound Objects',
 									layout: 'fit',
