@@ -39,6 +39,7 @@ function SceneManager()
 	emmiter.on('MESH_REFRESH_ROOT_BBOX', this.computeRootNodeBbox.bind(this));
 	emmiter.on('MESH_CHANGE_METERIAL', this.changeMaterial.bind(this));
 	emmiter.on('LIGHT_CREATE', this.createLight.bind(this));
+	emmiter.on('LIGHT_UPDATE', this.updateLight.bind(this));
 }
 
 SceneManager.prototype.instance = function()
@@ -61,7 +62,7 @@ SceneManager.prototype.create3DScene = function()
 	this.scene = new BABYLON.Scene(this.engine);
 	
 	this.selectionMaterial = new BABYLON.StandardMaterial("SelectionMaterial", this.scene);
-	this.selectionMaterial.backFaceCulling = false;
+	this.selectionMaterial.backFaceCulling = true;
 	this.selectionMaterial.diffuseColor = new BABYLON.Color3(1, 0, 0);
 	this.selectionMaterial.alpha = .3;
 	
@@ -74,11 +75,11 @@ SceneManager.prototype.create3DScene = function()
 	this.camera.useFramingBehavior = false;
 	
 	
-	var lightUp = new BABYLON.HemisphericLight("HemiLight Up", new BABYLON.Vector3(0, -1, 0), this.scene);
+	var lightUp = new BABYLON.HemisphericLight("HemiLight Up", new BABYLON.Vector3(0, 1, 0), this.scene);
 	lightUp.intensity = 1;
 	console.log(lightUp.range);
 	lightUp.data = {uid: -1, type: 'LIGHT'};
-	var lightDown = new BABYLON.HemisphericLight("HemiLight Down", new BABYLON.Vector3(0, 1, 0), this.scene);
+	var lightDown = new BABYLON.HemisphericLight("HemiLight Down", new BABYLON.Vector3(0, -1, 0), this.scene);
 	lightDown.intensity = .7;
 	lightDown.data = {uid: -1, type: 'LIGHT'};
 	
@@ -87,7 +88,7 @@ SceneManager.prototype.create3DScene = function()
 	var ground = BABYLON.Mesh.CreateGround("Grid", 20, 20, 20, this.scene);
 	ground.material = new BABYLON.StandardMaterial("GridMaterial", this.scene);
 	ground.material.wireframe = true;
-	ground.material.backFaceCulling = false;
+	ground.material.backFaceCulling = true;
 	ground.material.diffuseColor = new BABYLON.Color3(1, 1, 1);
 	ground.isPickable = false;
 	ground.data = {uid: -1, type: 'staticSceneObject'};
@@ -303,7 +304,7 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 	}
 	
 	var material = new BABYLON.StandardMaterial("mat", this.scene);
-	material.backFaceCulling = false;
+	material.backFaceCulling = true;
 	material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	var result = csg.toMesh(this.selectionManager.coFirst.name + "*" + this.selectionManager.coSecond.name + this.getNextUid(), material, this.scene, true);
 	result.data = {type: 'sceneObject', uid: this.getNextUid(), isCo: true, visible: true, selectionMaterial: this.selectionMaterial.clone(), originalMaterial: result.material};
@@ -378,7 +379,7 @@ SceneManager.prototype.createBox = function(width, height, depth, position, rota
 	
 	box.material = new BABYLON.StandardMaterial("boxMat", this.scene);
 	box.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-	box.material.backFaceCulling = false;
+	box.material.backFaceCulling = true;
 	box.edgesWidth = 0;
 	
 	box.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: box.material, selectionMaterial: this.selectionMaterial.clone()};
@@ -394,7 +395,7 @@ SceneManager.prototype.createCylinder = function(height, topDiameter, bottomDiam
 	
 	cylinder.material = new BABYLON.StandardMaterial("cylinderMat", this.scene);
 	cylinder.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-	cylinder.material.backFaceCulling = false;
+	cylinder.material.backFaceCulling = true;
 	cylinder.edgesWidth = 0;
 	cylinder.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: cylinder.material, selectionMaterial: this.selectionMaterial.clone()};
 	
@@ -409,7 +410,7 @@ SceneManager.prototype.createSphere = function(diameter, segments, position, rot
 	
 	mesh.material = new BABYLON.StandardMaterial("SphereMat", this.scene);
 	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-	mesh.material.backFaceCulling = false;
+	mesh.material.backFaceCulling = true;
 	mesh.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: mesh.material, selectionMaterial: this.selectionMaterial.clone()};
 	mesh.edgesWidth = 0;
 	
@@ -432,7 +433,7 @@ SceneManager.prototype.createPlane = function(width, height, subdivisions, posit
 	mesh.rotation = rotation.clone();
 	
 	mesh.material = new BABYLON.StandardMaterial("PlaneMat", this.scene);
-	mesh.material.backFaceCulling = false;
+	mesh.material.backFaceCulling = true;
 	mesh.material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
 	mesh.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: mesh.material, selectionMaterial: this.selectionMaterial.clone()};
 	mesh.edgesWidth = 0;
@@ -532,7 +533,7 @@ SceneManager.prototype.setWireframe = function(mesh, value)
 		if(mesh.data.originalMaterial == undefined && mesh.material != undefined)	
 		{
 			mesh.data.originalMaterial = mesh.material.clone();
-			mesh.data.originalMaterial.backFaceCulling = false;
+			mesh.data.originalMaterial.backFaceCulling = true;
 			mesh.material.wireframe = value;
 			mesh.data.originalMaterial.wireframe = value;
 			mesh.data.selectionMaterial.wireframe = value;
@@ -842,8 +843,8 @@ SceneManager.prototype.mirrorMesh = function(axe)
 	clone.edgesWidth = 0;
 	if(clone.data.type == 'sceneObject')
 	{
-		clone.material.backFaceCulling = false;
-		clone.data.originalMaterial.backFaceCulling = false;
+		clone.material.backFaceCulling = true;
+		clone.data.originalMaterial.backFaceCulling = true;
 	}
 	
 	if(axe == 'x')
@@ -924,8 +925,51 @@ SceneManager.prototype.createLight = function(type, data)
 		light.intensity = data.intensity;
 		light.range = data.range;
 		light.data = {uid: -1, type: 'LIGHT'};
+		emmiter.emit('UI_ADD_LIGHT_TO_TREE', light);
 	}
 	
+};
+
+SceneManager.prototype.updateLight = function(type, data)
+{
+	console.log('SceneManager.prototype.updateLight');
+	var light = this.selectionManager.selectedLight;
+	if(light != null)
+	{
+	
+		if(type == 'hemispheric')
+		{
+			light.groundColor = data.groundColor;
+		}
+		if(type == 'directional')
+		{
+			light.direction = data.direction.clone();
+		}
+		if(type == 'point')
+		{
+			light.position = data.position.clone();
+		}
+		if(type == 'spot')
+		{
+			light.position = data.position.clone();
+			light.direction = data.direction.clone();
+			light.angle = data.angle;
+			light.exponent = data.exponent;
+		}
+		
+		if(light != null)
+		{
+			light.diffuse = data.diffuse.clone();
+			light.specular = data.specular.clone();
+			light.intensity = data.intensity;
+			light.range = data.range;
+			light.data = {uid: -1, type: 'LIGHT'};
+		}
+	}
+	else
+	{
+		console.log('SceneManager.prototype.updateLight: Light is null');
+	}
 };
 
 SceneManager.prototype.computeRootNodeBbox = function(rootNode)

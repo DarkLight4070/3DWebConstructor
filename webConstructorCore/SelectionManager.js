@@ -15,6 +15,8 @@ function SelectionManager(__sceneManager)
 	this.coSecond = null;
 	this.sectionMode = false;
 	
+	this.selectedLight = null;
+	
 	this.sceneManager = __sceneManager;
 	
 	emmiter.on('POINTER_UP', this.pointerUp.bind(this));
@@ -47,6 +49,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 	{
 		return;
 	}
+	
 	if(this.sectionMode == true)
 	{
 		return;
@@ -60,6 +63,8 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 	}
 	if(this.lastClickX == evt.clientX && this.lastClickY == evt.clientY)
 	{
+		this.selectedLight = null;
+		
 		if(this.lastPickedMesh != null)
 		{
 			if(this.lastPickedMesh.data.type == 'sceneObject')
@@ -106,7 +111,7 @@ SelectionManager.prototype.pointerUp = function(evt, pickResult)
 			if(pickResult.pickedMesh.data.originalMaterial == undefined)
 			{
 				pickResult.pickedMesh.data.originalMaterial = pickResult.pickedMesh.material.clone();
-				pickResult.pickedMesh.data.originalMaterial.backFaceCulling = false;
+				pickResult.pickedMesh.data.originalMaterial.backFaceCulling = true;
 			}
 			
 			emmiter.emit('UI_UPDATE_SELECTION', pickResult.pickedMesh.data.uid);
@@ -220,6 +225,7 @@ SelectionManager.prototype.setCompoundObjectsMode = function(enable)
 
 SelectionManager.prototype.selectMesh = function(mesh)
 {
+	this.selectedLight = null;
 	if(mesh == null)
 	{
 		if(this.lastPickedMesh != null)
@@ -514,7 +520,7 @@ SelectionManager.prototype.enableSectionMode = function(pressed)
 		shaderMaterial.setVector3("color", new BABYLON.Vector3(dc.r, dc.g, dc.b));
 		
 		shaderMaterial.setVector3("cameraPosition", this.sceneManager.scene.cameras[0].position);
-		shaderMaterial.backFaceCulling = false;
+		shaderMaterial.backFaceCulling = true;
 		
 		this.lastPickedMesh.material = shaderMaterial;
 	}
@@ -541,7 +547,7 @@ SelectionManager.prototype.selecRootNode = function(rootNode)
 		if(mesh.data.originalMaterial == undefined)
 		{
 			mesh.data.originalMaterial = mesh.material.clone();
-			mesh.data.originalMaterial.backFaceCulling = false;
+			mesh.data.originalMaterial.backFaceCulling = true;
 		}
 		mesh.material = mesh.data.selectionMaterial;
 	}

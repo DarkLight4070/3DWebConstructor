@@ -25,6 +25,9 @@ function UiManager(__sceneManager)
 	emmiter.on('UI_UPDATE_MATERIAL_VIEW', this.updateMaterialView.bind(this));
 	emmiter.on('UI_EXTRACT_MATERIAL_DATA_AND_UPDATE_MINI_SCENE', this.extractMaterialDataAndUpdateMiniViewScene.bind(this));
 	emmiter.on('UI_UPDATE_LIGHT_PROPERTIES', this.updateLightPropertiesUi.bind(this));
+	emmiter.on('UI_ADD_LIGHT_TO_TREE', this.addLightToTree.bind(this));
+	emmiter.on('UI_CREATE_LIGHT', this.createLight.bind(this));
+	emmiter.on('UI_UPDATE_LIGHT', this.updateLight.bind(this));
 }
 
 UiManager.prototype.UI_CreateNumberField = function(__label, __id, __defaultValue)
@@ -316,7 +319,17 @@ UiManager.prototype.addMeshToTree = function(mesh)
 	}
 	
 	meshesNode.appendChild({text: mesh.name, icon: icon, leaf: true, object: mesh, uid: mesh.data.uid, visible: mesh.data.visible});
-}
+};
+
+UiManager.prototype.addLightToTree = function(light)
+{
+	console.log('UiManager.prototype.addLightToTree');
+	var mainTree = Ext.getCmp('mainTree');
+	var root = mainTree.getRootNode();
+	var meshesNode = root.findChild('text', 'Lights');
+	var icon = 'icons/light.png';
+	meshesNode.appendChild({text: light.id, icon: 'icons/light.png', leaf: true, object: light});
+};
 
 UiManager.prototype.addMeshesToTree = function(meshes)
 {
@@ -336,7 +349,7 @@ UiManager.prototype.addMeshesToTree = function(meshes)
 		nodes.push({text: mesh.name, icon: icon, leaf: true, object: mesh, uid: mesh.data.uid, visible: mesh.data.visible});
 	}
 	meshesNode.appendChild(nodes);
-}
+};
 
 UiManager.prototype.addNodeToTree = function(node)
 {
@@ -356,7 +369,7 @@ UiManager.prototype.addNodeToTree = function(node)
 	}
 	
 	uiNode.appendChild(nodes);
-}
+};
 
 UiManager.prototype.removeMeshFromTree = function(meshId)
 {
@@ -959,6 +972,8 @@ UiManager.prototype.updateLightPropertiesUi = function(light)
 {
 	console.log('UiManager.prototype.updateLightPropertiesUi');
 	
+	this.sceneManager.selectionManager.selectedLight = light;
+	
 	var diffuse = light.diffuse;
 	var specular = light.specular;
 	var name = light.name;
@@ -995,5 +1010,93 @@ UiManager.prototype.updateLightPropertiesUi = function(light)
 	{
 		Ext.getCmp('lightTypeId').setValue('spot');
 	}
-	
 };
+
+UiManager.prototype.extractLightProperties = function()
+{
+	console.log('UiManager.prototype.extractLightProperties');
+	var extractColorValue = function(text)
+	{
+		var color = new BABYLON.Color3(0, 0, 0);
+		if(text != null)
+		{
+			var split = text.split(', ');
+			if(split.length == 3)
+			{
+				color.r = split[0];
+				color.g = split[1];
+				color.b = split[2];
+			}
+		}
+		return color;
+	};
+	
+	var diffuse = extractColorValue(Ext.getCmp('lightDiffuseId').getValue());
+	var specular = extractColorValue(Ext.getCmp('lightSpecularId').getValue());
+	var intensity = Ext.getCmp('lightIntensityId').getValue();
+	var range = Ext.getCmp('lightRangeId').getValue();
+	var name = Ext.getCmp('lightNameId').getValue();
+	var type = Ext.getCmp('lightTypeId').getValue();
+	
+	var data = null;
+	
+	if(type == 'hemispheric')
+	{
+		var dx = Ext.getCmp('lightPropertiesId').query('textfield[id=hemisphericDirectionXId]')[0].getValue();
+		var dy = Ext.getCmp('lightPropertiesId').query('textfield[id=hemisphericDirectionYId]')[0].getValue();
+		var dz = Ext.getCmp('lightPropertiesId').query('textfield[id=hemisphericDirectionZId]')[0].getValue();
+		var groundColor = extractColorValue(Ext.getCmp('lightPropertiesId').query('textfield[id=hemisphericGroundColorId]')[0].getValue());
+		data = {name: name, diffuse: diffuse, specular: specular, intensity: intensity, range: range, direction: new BABYLON.Vector3(dx, dy, dz), groundColor: groundColor};
+	}
+	if(type == 'directional')
+	{
+		var dx = Ext.getCmp('lightPropertiesId').query('textfield[id=directionalDirectionXId]')[0].getValue();
+		var dy = Ext.getCmp('lightPropertiesId').query('textfield[id=directionalDirectionYId]')[0].getValue();
+		var dz = Ext.getCmp('lightPropertiesId').query('textfield[id=directionalDirectionZId]')[0].getValue();
+		data = {name: name, diffuse: diffuse, specular: specular, intensity: intensity, range: range, direction: new BABYLON.Vector3(dx, dy, dz)};
+	}
+	if(type == 'point')
+	{
+		var px = Ext.getCmp('lightPropertiesId').query('textfield[id=pointPositionXId]')[0].getValue();
+		var py = Ext.getCmp('lightPropertiesId').query('textfield[id=pointPositionYId]')[0].getValue();
+		var pz = Ext.getCmp('lightPropertiesId').query('textfield[id=pointPositionZId]')[0].getValue();
+		data = {name: name, diffuse: diffuse, specular: specular, intensity: intensity, range: range, position: new BABYLON.Vector3(px, py, pz)};
+	}
+	if(type == 'spot')
+	{
+		var px = Ext.getCmp('lightPropertiesId').query('textfield[id=spotPositionXId]')[0].getValue();
+		var py = Ext.getCmp('lightPropertiesId').query('textfield[id=spotPositionYId]')[0].getValue();
+		var pz = Ext.getCmp('lightPropertiesId').query('textfield[id=spotPositionZId]')[0].getValue();
+		
+		var dx = Ext.getCmp('lightPropertiesId').query('textfield[id=spotDirectionXId]')[0].getValue();
+		var dy = Ext.getCmp('lightPropertiesId').query('textfield[id=spotDirectionYId]')[0].getValue();
+		var dz = Ext.getCmp('lightPropertiesId').query('textfield[id=spotDirectionZId]')[0].getValue();
+		
+		var angle = Ext.getCmp('lightPropertiesId').query('textfield[id=spotAngleId]')[0].getValue();
+		var exponent = Ext.getCmp('lightPropertiesId').query('textfield[id=spotExponentId]')[0].getValue();
+		
+		data = {name: name, diffuse: diffuse, specular: specular, intensity: intensity, range: range, position: new BABYLON.Vector3(px, py, pz), direction: new BABYLON.Vector3(dx, dy, dz), angle: angle, exponent: exponent};
+	}
+	return data;
+};
+
+UiManager.prototype.createLight = function()
+{
+	console.log('UiManager.prototype.createLight');
+	var type = Ext.getCmp('lightTypeId').getValue();
+	var data = this.extractLightProperties();
+	emmiter.emit('LIGHT_CREATE', type, data);
+};
+
+UiManager.prototype.updateLight = function()
+{
+	console.log('UiManager.prototype.updateLight');
+	if(this.sceneManager.selectionManager.selectedLight == null)
+	{
+		Ext.MessageBox.alert('Light', 'Please select a Light object !');
+		return;
+	}
+	var data = this.extractLightProperties();
+	var type = Ext.getCmp('lightTypeId').getValue();
+	emmiter.emit('LIGHT_UPDATE', type, data);
+}
