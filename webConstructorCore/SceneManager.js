@@ -614,8 +614,8 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 			mesh.parent = root;
 		}
 		
-		//if(rootsCount == 1)
-		//{
+		if(rootsCount == 1)
+		{
 			if(mesh.parent != null)
 			{
 				if(tree.contains(mesh.parent))
@@ -627,15 +627,10 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 			{
 				tree.add(mesh);
 			}
-		//}
+		}
 		
 		meshes.push(mesh);
 	}
-	
-	tree.traverseBFS(function(treeNode)
-	{
-		console.log(treeNode.data.name);
-	});
 	
 	this.setView('FRONT');
 	if(rootsCount > 1)

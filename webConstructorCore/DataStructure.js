@@ -13,13 +13,13 @@ Tree.prototype.add = function(data, toNodeData) {
 	var parent = toNodeData ? this.findBFS(toNodeData) : null;
 	if(parent) 
 	{
-		node.uiModel = {text: node.data.name, icon: 'icons/co_mesh.png', leaf: node.children.length false, object: node.data, uid: node.data.data.uid, children: []};
+		node.uiModel = {text: node.data.name, icon: 'icons/co_mesh.png', leaf: false, object: node.data, uid: node.data.data.uid, children: []};
 		parent.children.push(node);
 		parent.uiModel.children.push(node.uiModel);
   } else {
     if(!this.root) {
       this.root = node;
-	  this.root.uiModel = {text: node.data.name, icon: 'icons/co_mesh.png', leaf: node.children.length false, object: node.data, uid: node.data.data.uid, children: []};
+	  this.root.uiModel = {text: node.data.name, icon: 'icons/co_mesh.png', leaf: false, object: node.data, uid: node.data.data.uid, children: []};
     } else {
       return 'Root node is already assigned';
     }
