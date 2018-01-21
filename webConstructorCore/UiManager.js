@@ -357,18 +357,39 @@ UiManager.prototype.addNodeToTree = function(node)
 	var mainTree = Ext.getCmp('mainTree');
 	var root = mainTree.getRootNode();
 	var meshesNode = root.findChild('text', 'Meshes');
-	var uiNode = meshesNode.appendChild({text: node.name, icon: 'icons/co_mesh.png', leaf: false, object: node, uid: node.data.uid});
-	
-	var nodes = [];
-	var meshes = node.getChildren();
-	for(var i=0; i<meshes.length; i++)
+	if(node instanceof BABYLON.Mesh)
 	{
-		var mesh = meshes[i];
-		var icon = 'icons/mesh.png';
-		nodes.push({text: mesh.name, icon: icon, leaf: true, object: mesh, uid: mesh.data.uid, visible: mesh.data.visible});
+		var uiNode = meshesNode.appendChild({text: node.name, icon: 'icons/co_mesh.png', leaf: false, object: node, uid: node.data.uid});
+		
+		var nodes = [];
+		var meshes = node.getChildren();
+		for(var i=0; i<meshes.length; i++)
+		{
+			var mesh = meshes[i];
+			var icon = 'icons/mesh.png';
+			nodes.push({text: mesh.name, icon: icon, leaf: true, object: mesh, uid: mesh.data.uid, visible: mesh.data.visible});
+		}
+		uiNode.appendChild(nodes);
 	}
-	
-	uiNode.appendChild(nodes);
+	else
+	{
+		meshesNode.appendChild(node.root.uiModel);
+		/*node.traverseBFS(function(treeNode)
+		{
+			console.log(treeNode.data.name);
+			var parentNode = null;
+			if(treeNode.data.parent != null)
+			{
+				parentNode = root.findChild('text', treeNode.data.parent.name);
+			}
+			if(parentNode == null)
+			{
+				parentNode = meshesNode;
+			}
+			var uiNode = parentNode.appendChild();
+		});
+		*/
+	}	
 };
 
 UiManager.prototype.removeMeshFromTree = function(meshId)

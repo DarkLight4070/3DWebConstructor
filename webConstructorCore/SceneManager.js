@@ -558,76 +558,95 @@ SceneManager.prototype.importMeshes = function(loadedMeshes)
 	var camera = this.camera;
 	var meshes = [];
 	
-	var root = new BABYLON.Mesh('Prefab', scene);
-	root.data = {type: 'rootNode', uid: this.getNextUid()};
+	var root = null;//new BABYLON.Mesh('Prefab', scene);
+	//root.data = {type: 'rootNode', uid: this.getNextUid()};
+	
+	//Find the root node for GLTF
+	var rootsCount = 0;
 	for(var i=0; i<loadedMeshes.length; i++)
 	{
 		var mesh = loadedMeshes[i];
-		
-		if(mesh.getTotalVertices() == 0)
-		{
-			continue;
-		}
-		
 		if(mesh.data != undefined)
 		{
 			continue;
 		}
+		if(mesh.parent == null)
+		{
+			if(rootsCount == 0)
+			{
+				console.log('Root Node: ' + mesh.name);
+				root = mesh;
+			}
+			rootsCount++;
+		}
+	}
+	
+	if(rootsCount > 1)
+	{
+		root = new BABYLON.Mesh('Prefab', scene);
+		//root.data = {type: 'rootNode', uid: this.getNextUid()};
+	}
+	
+	var tree = new Tree();
+	
+	for(var i=0; i<loadedMeshes.length; i++)
+	{
+		var mesh = loadedMeshes[i];
+		if(mesh.data != undefined)
+		{
+			continue;
+		}
+		
+		/*
+		if(mesh.getTotalVertices() == 0)
+		{
+			continue;
+		}
+		*/
 		mesh.edgesWidth = 0;
-		mesh.computeWorldMatrix(true);
-		mesh.setPivotPoint(mesh.getBoundingInfo().boundingBox.center);
 		mesh.data = {type: 'sceneObject', uid: this.getNextUid(), visible: true, originalMaterial: mesh.material, selectionMaterial: selectionMaterial.clone()};
-		mesh.parent = root;
+		if(root.data == undefined)
+		{
+			root.data = {type: 'rootNode', uid: this.getNextUid()};
+		}
+		if(rootsCount > 1)
+		{
+			mesh.parent = root;
+		}
+		
+		//if(rootsCount == 1)
+		//{
+			if(mesh.parent != null)
+			{
+				if(tree.contains(mesh.parent))
+				{
+					tree.add(mesh, mesh.parent);
+				}
+			}
+			else
+			{
+				tree.add(mesh);
+			}
+		//}
+		
 		meshes.push(mesh);
 	}
 	
-	var totalBoundingInfo = function(meshes)
+	tree.traverseBFS(function(treeNode)
 	{
-		meshes[0].computeWorldMatrix(true);
-		meshes[0].refreshBoundingInfo();
-
-		var boundingInfo = meshes[0].getBoundingInfo();
-		var min = boundingInfo.boundingBox.minimumWorld;
-		var max = boundingInfo.boundingBox.maximumWorld;
-		for(var i=1; i<meshes.length; i++)
-		{
-			if(meshes[i].getTotalVertices() == 0)
-			{
-				continue;
-			}
-			meshes[i].computeWorldMatrix(true);
-			meshes[i].refreshBoundingInfo();
-			boundingInfo = meshes[i].getBoundingInfo();
-			min = BABYLON.Vector3.Minimize(min, boundingInfo.boundingBox.minimumWorld);
-			max = BABYLON.Vector3.Maximize(max, boundingInfo.boundingBox.maximumWorld);
-		}
-		console.log('Min: ' + min);
-		console.log('max: ' + max);
-		return new BABYLON.BoundingInfo(min, max);
-	};
+		console.log(treeNode.data.name);
+	});
 	
-	var bboxInfo = totalBoundingInfo(root.getChildren());
-	var vectors = bboxInfo.boundingBox.vectors; 
-	var width = Number(vectors[1].x - vectors[0].x);
-	var heigh = Number(vectors[1].y - vectors[0].y);
-	var depth = Number(vectors[1].z - vectors[0].z);
-	root.setBoundingInfo(bboxInfo);
-	root.position = new BABYLON.Vector3(0, 0, 0);
-	root.setPivotPoint(new BABYLON.Vector3(bboxInfo.boundingBox.center.x / 2 , bboxInfo.boundingBox.center.y / 2, bboxInfo.boundingBox.center.z / 2));
-	/*
-	var max = width;
-	if(max > heigh)
-	{
-		max = heigh;
-	}
-	if(depth > max)
-	{
-		max = depth
-	}
-	camera.setTarget(new BABYLON.Vector3(bboxInfo.boundingBox.center.x / 2, bboxInfo.boundingBox.center.y / 2, bboxInfo.boundingBox.center.z / 2));
-	*/
 	this.setView('FRONT');
-	emmiter.emit('UI_ADD_NODE', root);
+	if(rootsCount > 1)
+	{
+		emmiter.emit('UI_ADD_NODE', root);
+	}
+	else if(rootsCount == 1)
+	{
+		emmiter.emit('UI_ADD_NODE', tree);
+	}
+	
 };
 
 SceneManager.prototype.loadMeshFile = function(path, objFileName)
