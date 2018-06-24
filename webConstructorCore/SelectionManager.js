@@ -399,14 +399,13 @@ SelectionManager.prototype.createEditControl = function()
 	{
 		console.log('SelectionManager.prototype.createEditControl');
 		var EditControl = org.ssatguru.babylonjs.component.EditControl;
-		this.editControl = new EditControl(this.lastPickedMesh, this.sceneManager.camera, this.sceneManager.canvas, 0.75, true);
+		this.editControl = new EditControl(this.lastPickedMesh, this.sceneManager.camera, this.sceneManager.canvas, 0.75, true, 0.02);
 		this.editControl.enableTranslation(3.14/18);
-		this.editControl.enableTranslation(3.14/18);
+		this.editControl.setTransSnapValue(.1);
 		this.editControl.setRotSnapValue(3.14 / 18);
 		this.editControl.setScaleSnapValue(.5);
-		this.editControl.setTransSnapValue(.1);
-		this.bindEditControlActionListeners();
 		this.editControl.setLocal(false);
+		this.bindEditControlActionListeners();
 	}
 };
 

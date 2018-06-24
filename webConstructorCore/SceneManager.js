@@ -315,6 +315,11 @@ SceneManager.prototype.executeCo = function(operationType, deleteObjs)
 	result.updateVerticesData(BABYLON.VertexBuffer.NormalKind, normals, true, true);
 	result.edgesWidth = 0;
 	
+	result.showBoundingBox = true;
+	result.refreshBoundingInfo();
+	var bboxInfo = result.getBoundingInfo();
+	console.log(bboxInfo);
+	//result.setPivotPoint(new BABYLON.Vector3(bboxInfo.boundingBox.center.x / 2 , bboxInfo.boundingBox.center.y / 2, bboxInfo.boundingBox.center.z / 2));
 	emmiter.emit('UI_ADD_MESH_TO_TREE', result);
 	
 	if(deleteObjs)
