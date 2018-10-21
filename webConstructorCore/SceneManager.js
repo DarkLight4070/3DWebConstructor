@@ -123,7 +123,7 @@ SceneManager.prototype.create3DScene = function()
 		axisZ.data = {uid: -1, type: 'staticSceneObject'};
 		axisZ.isPickable = false;
 	};
-	//showWorldAxis(20, this.scene);
+	showWorldAxis(1000, this.scene);
 	
 	this.engine.runRenderLoop(this.renderFrames.bind(this));
 	
@@ -135,10 +135,12 @@ SceneManager.prototype.create3DScene = function()
 	this.filesInput = new BABYLON.FilesInput(this.engine, this.scene, null, null, null, null, function () { BABYLON.Tools.ClearLogCache() }, null, sceneError);
 	BABYLON.FilesInput.prototype.reload = function()
 	{
+		console.log('BABYLON.FilesInput.prototype.reload');
 		this.selectionManager.selectMesh(null);
 		emmiter.emit('UI_UPDATE_SELECTION', null);
 		var onSuccess = function(currentScene)
 		{
+			console.log('onSuccess');
 			this.importMeshes(currentScene.meshes);
 			console.log('Load success');
 		};
@@ -150,7 +152,8 @@ SceneManager.prototype.create3DScene = function()
 		{
 			console.log('onError');
 		};
-		BABYLON.SceneLoader.Append("file:", this.filesInput._sceneFileToLoad, this.scene, onSuccess.bind(this), onProgress, onError);
+		console.log('Calling BABYLON.SceneLoader.Append...');
+		BABYLON.SceneLoader.Append("file:", this.filesInput._sceneFileToLoad, this.scene, onSuccess.bind(this), onProgress.bind(this), onError.bind(this));
 		
 	}.bind(this);
 	
@@ -777,7 +780,7 @@ SceneManager.prototype.hideAll = function()
 	for(var i=0; i<meshes.length; i++)
 	{
 		var mesh = meshes[i];
-		if(mesh.name != 'Grid')
+		if(mesh.data.type == 'sceneObject')
 		{
 			mesh.visibility = false;
 			mesh.isPickable = false;
@@ -794,9 +797,9 @@ SceneManager.prototype.showAll = function()
 	for(var i=0; i<meshes.length; i++)
 	{
 		var mesh = meshes[i];
-		mesh.visibility = true;
-		if(mesh.name != 'Grid')
+		if(mesh.data.type == 'sceneObject')
 		{
+			mesh.visibility = true;
 			mesh.isPickable = true;
 		}
 	}

@@ -283,10 +283,27 @@ UiManager.prototype.updateRootTreeUi = function()
 		children:
 		[]
 	};
-
+	
+	var staticObjects = 
+	{
+		text: 'Static',
+		expanded: true,
+		icon: 'icons/config.png',
+		leaf: false,
+		children:
+		[]
+	};
+	
 	for(var i = 0; i < sceneDataModel.meshes.length; i++)
 	{
-		meshes.children.push({text: sceneDataModel.meshes[i].id, icon: 'icons/mesh.png', leaf: true, object: sceneDataModel.meshes[i], uid: sceneDataModel.meshes[i].data.uid, visible: true});
+		if(sceneDataModel.meshes[i].data.type != 'staticSceneObject')
+		{
+			meshes.children.push({text: sceneDataModel.meshes[i].id, icon: 'icons/mesh.png', leaf: true, object: sceneDataModel.meshes[i], uid: sceneDataModel.meshes[i].data.uid, visible: true});
+		}
+		else
+		{
+			staticObjects.children.push({text: sceneDataModel.meshes[i].id, icon: 'icons/sub_config.png', leaf: true, object: sceneDataModel.meshes[i], uid: sceneDataModel.meshes[i].data.uid, visible: true});
+		}
 	}
 
 	for(var i = 0; i < sceneDataModel.cameras.length; i++)
@@ -303,6 +320,7 @@ UiManager.prototype.updateRootTreeUi = function()
 	var root = mainTree.getRootNode();
 	root.appendChild(cameras);
 	root.appendChild(lights);
+	root.appendChild(staticObjects);
 	root.appendChild(meshes);
 };
 
