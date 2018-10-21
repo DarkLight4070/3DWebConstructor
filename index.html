@@ -1452,6 +1452,53 @@
 											]
 										}
 									]
+								},
+								{
+									xtype: 'buttongroup',
+									columns: 3,
+									defaults:
+									{
+										scale: 'small'
+									},
+									items:
+									[
+										{
+											xtype: 'button',
+											tooltip: 'Primitives Factory',
+											icon: 'icons/scene.png',
+											menu: 
+											[
+												{
+													text: 'Cube',
+													handler: function()
+													{
+														emmiter.emit('MESH_CREATE_BOX', 1, 1, 1, new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, 0));
+													}
+												},
+												{
+													text: 'Sphere',
+													handler: function()
+													{
+														emmiter.emit('MESH_CREATE_SPHERE', 1, 10, new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, 0));
+													}
+												},
+												{
+													text: 'Cylinder',
+													handler: function()
+													{
+														emmiter.emit('MESH_CREATE_CYLINDER', 1, 1, 1, 10, new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, 0));
+													}
+												},
+												{
+													text: 'Plane',
+													handler: function()
+													{
+														emmiter.emit('MESH_CREATE_PLANE', 1, 1, 2, new BABYLON.Vector3(0, 0, 0), new BABYLON.Vector3(0, 0, 0));
+													}
+												}
+											]
+										}
+									]
 								}
 							]
 						}
