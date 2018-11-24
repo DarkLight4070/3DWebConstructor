@@ -1275,35 +1275,6 @@
 									[
 										{
 											xtype: 'button',
-											tooltip: 'Import',
-											icon: 'icons/import.png',
-											handler: function()
-											{
-												Ext.create('Ext.window.Window', 
-												{
-													title: 'Select a .obj with .mtl files',
-													width: 400,
-													bodyPadding: 10,
-													layout: 'anchor',
-													id: 'importDialogId',
-													frame: true,
-													items: 
-													[
-														Ext.create('Ext.ux.form.MultiFile', 
-														{
-															fieldLabel: 'Mesh',
-															labelWidth: 50,
-															msgTarget: 'side',
-															allowBlank: false,
-															anchor: '100%',
-															buttonText: 'Select Files...'
-														})
-													]
-												}).show();
-											}
-										},
-										{
-											xtype: 'button',
 											tooltip: 'Clone Selected Mesh',
 											icon: 'icons/clone.png',
 											handler: function()
@@ -1510,43 +1481,94 @@
 			    	],
 			    	tbar: 
 			    	[
-		        		{
-		        			xtype: 'button',
-		        			text: 'File',
-						    menu: 
-						    [
-						        {
-						        	text: 'New Project',
-									disabled: true
-						        },
-						        {
-						        	text: 'Load Project',
-									disabled: true
-						        },
-						        {
-						        	text: 'Save',
-									disabled: true
-						        },
-						        {
-						        	text: 'Export',
-									disabled: true
-						        }
-						    ]
-		        		},
 						{
-		        			xtype: 'button',
-		        			text: 'Preferences',
-						    menu: 
-						    [
-						        {
-						        	text: 'General',
+							xtype: 'buttongroup',
+							columns: 4,
+							defaults: 
+							{
+								scale: 'small'
+							},
+							items:
+							[
+								{
+									xtype: 'button',
+									text: 'File',
+									menu: 
+									[
+										{
+											text: 'New Project',
+											disabled: true
+										},
+										{
+											text: 'Load Project',
+											disabled: true
+										},
+										{
+											text: 'Save',
+											disabled: true
+										},
+										{
+											text: 'Export',
+											disabled: true
+										}
+									]
+								},
+								{
+									xtype: 'button',
+									text: 'Preferences',
+									menu: 
+									[
+										{
+											text: 'General',
+											handler: function()
+											{
+												emmiter.emit('UI_PREF_PAGE');
+											}
+										}
+									]
+								}
+							]
+						},
+						{
+							xtype: 'buttongroup',
+							columns: 4,
+							defaults: 
+							{
+								scale: 'small'
+							},
+							items:
+							[
+								{
+									xtype: 'button',
+									tooltip: 'Import',
+									icon: 'icons/import.png',
 									handler: function()
 									{
-										emmiter.emit('UI_PREF_PAGE');
+										Ext.create('Ext.window.Window', 
+										{
+											title: 'Select a .obj with .mtl files',
+											width: 400,
+											bodyPadding: 10,
+											layout: 'anchor',
+											id: 'importDialogId',
+											frame: true,
+											items: 
+											[
+												Ext.create('Ext.ux.form.MultiFile', 
+												{
+													fieldLabel: 'Mesh',
+													labelWidth: 50,
+													msgTarget: 'side',
+													allowBlank: false,
+													anchor: '100%',
+													buttonText: 'Select Files...'
+												})
+											]
+										}).show();
 									}
-						        }
-						    ]
-		        		}
+								}
+							]
+						}
 				    ],
 				    renderTo: Ext.getBody()
 				});
