@@ -536,7 +536,7 @@ SceneManager.prototype.changeMeshVisibility = function(mesh, visibility)
 SceneManager.prototype.setWireframe = function(mesh, value)
 {
 	console.log('SceneManager.prototype.setWireframe');
-	if(mesh.name != 'Grid' && mesh.data != undefined && mesh.data.type != 'rootNode')
+	if(mesh.name != 'Grid' && mesh.data.type != 'staticSceneObject' && mesh.data != undefined && mesh.data.type != 'rootNode')
 	{
 		if(mesh.data.originalMaterial == undefined && mesh.material != undefined)	
 		{
